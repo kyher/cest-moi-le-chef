@@ -32,15 +32,13 @@ function SignIn() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-neutral-50 dark:bg-neutral-950">
-      <div className="w-full max-w-sm p-8 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-neutral-50">
-        <h1 className="text-2xl font-bold mb-6">Sign in</h1>
+    <div className="min-h-screen flex items-center justify-center bg-stone-100">
+      <div className="w-full max-w-sm p-8 bg-white border border-stone-200 shadow-sm">
+        <h1 className="text-2xl font-serif font-bold text-stone-900 mb-6">Sign in</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {error && (
-            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-          )}
+          {error && <p className="text-sm text-red-600">{error}</p>}
           <div className="space-y-1">
-            <label className="text-sm font-medium" htmlFor="email">
+            <label className="text-sm font-medium text-stone-700" htmlFor="email">
               Email
             </label>
             <input
@@ -49,11 +47,11 @@ function SignIn() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full h-9 px-3 text-sm text-neutral-900 dark:text-neutral-50 border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900 dark:focus:ring-neutral-100"
+              className="w-full h-9 px-3 text-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
             />
           </div>
           <div className="space-y-1">
-            <label className="text-sm font-medium" htmlFor="password">
+            <label className="text-sm font-medium text-stone-700" htmlFor="password">
               Password
             </label>
             <input
@@ -62,20 +60,20 @@ function SignIn() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full h-9 px-3 text-sm text-neutral-900 dark:text-neutral-50 border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900 dark:focus:ring-neutral-100"
+              className="w-full h-9 px-3 text-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
             />
           </div>
           <button
             type="submit"
             disabled={pending}
-            className="w-full h-9 px-4 text-sm font-medium bg-neutral-900 dark:bg-neutral-50 text-white dark:text-neutral-900 hover:bg-neutral-700 dark:hover:bg-neutral-200 disabled:opacity-50 transition-colors"
+            className="w-full h-9 px-4 text-sm font-medium bg-stone-800 text-white hover:bg-stone-700 disabled:opacity-50 transition-colors"
           >
             {pending ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
-        <p className="mt-4 text-sm text-neutral-600 dark:text-neutral-400">
+        <p className="mt-4 text-sm text-stone-500">
           No account?{' '}
-          <Link to="/sign-up" className="underline underline-offset-2">
+          <Link to="/sign-up" className="text-stone-800 underline underline-offset-2">
             Sign up
           </Link>
         </p>

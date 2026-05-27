@@ -1,0 +1,143 @@
+import { Link, createFileRoute, useRouter } from '@tanstack/react-router'
+import { useState } from 'react'
+import { createRecipe } from '#/lib/recipes'
+
+export const Route = createFileRoute('/_auth/recipes/new')({
+  component: NewRecipe,
+})
+
+function NewRecipe() {
+  const router = useRouter()
+  const [title, setTitle] = useState('')
+  const [ingredients, setIngredients] = useState('')
+  const [method, setMethod] = useState('')
+  const [tags, setTags] = useState<string[]>([])
+  const [tagInput, setTagInput] = useState('')
+  const [pending, setPending] = useState(false)
+  const [error, setError] = useState('')
+
+  function addTag(value: string) {
+    const name = value.toLowerCase().trim()
+    if (name && !tags.includes(name)) setTags([...tags, name])
+    setTagInput('')
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!title.trim()) return
+    setPending(true)
+    setError('')
+    try {
+      const recipe = await createRecipe({
+        data: {
+          title: title.trim(),
+          ingredients: ingredients || undefined,
+          method: method || undefined,
+          tags,
+        },
+      })
+      await router.navigate({ to: '/recipes/$recipeId', params: { recipeId: recipe.id } })
+    } catch {
+      setError('Failed to save recipe.')
+      setPending(false)
+    }
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 py-10">
+      <Link to="/recipes" className="text-sm text-stone-500 hover:text-stone-800 mb-6 inline-block">
+        ← Recipes
+      </Link>
+      <h1 className="text-3xl font-serif font-bold text-stone-900 mb-8">New Recipe</h1>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {error && <p className="text-sm text-red-600">{error}</p>}
+
+        <div className="space-y-1">
+          <label htmlFor="title" className="text-sm font-medium text-stone-700">
+            Title <span className="text-red-500">*</span>
+          </label>
+          <input
+            id="title"
+            type="text"
+            required
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full h-9 px-3 text-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-stone-700">Tags</label>
+          {tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mb-2">
+              {tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="flex items-center gap-1 px-2 py-0.5 text-xs bg-amber-50 text-stone-700 border border-amber-200"
+                >
+                  {tag}
+                  <button
+                    type="button"
+                    onClick={() => setTags(tags.filter((t) => t !== tag))}
+                    className="text-stone-400 hover:text-stone-700 leading-none"
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+          <input
+            type="text"
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ',') {
+                e.preventDefault()
+                addTag(tagInput)
+              }
+            }}
+            onBlur={() => tagInput && addTag(tagInput)}
+            placeholder="Type a tag and press Enter"
+            className="w-full h-9 px-3 text-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <label htmlFor="ingredients" className="text-sm font-medium text-stone-700">
+            Ingredients
+          </label>
+          <textarea
+            id="ingredients"
+            value={ingredients}
+            onChange={(e) => setIngredients(e.target.value)}
+            rows={6}
+            className="w-full px-3 py-2 text-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400 resize-y"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <label htmlFor="method" className="text-sm font-medium text-stone-700">
+            Method
+          </label>
+          <textarea
+            id="method"
+            value={method}
+            onChange={(e) => setMethod(e.target.value)}
+            rows={8}
+            className="w-full px-3 py-2 text-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400 resize-y"
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={pending}
+          className="h-9 px-6 text-sm font-medium bg-stone-800 text-white hover:bg-stone-700 disabled:opacity-50 transition-colors"
+        >
+          {pending ? 'Saving…' : 'Save Recipe'}
+        </button>
+      </form>
+    </div>
+  )
+}

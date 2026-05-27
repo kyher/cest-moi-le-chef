@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { auth } from "#/lib/auth";
-import { prisma } from "#/db";
+import * as recipeService from "#/lib/recipe-service";
 
 async function requireUser() {
   const request = getRequest();
@@ -10,43 +10,16 @@ async function requireUser() {
   return session.user;
 }
 
-async function syncTags(recipeId: string, tagNames: string[], userId: string) {
-  await prisma.recipeTag.deleteMany({ where: { recipeId } });
-  for (const raw of tagNames) {
-    const name = raw.toLowerCase().trim();
-    if (!name) continue;
-    const tag = await prisma.tag.upsert({
-      where: { name_userId: { name, userId } },
-      create: { name, userId },
-      update: {},
-    });
-    await prisma.recipeTag.create({ data: { recipeId, tagId: tag.id } });
-  }
-}
-
 export const getRecipes = createServerFn().handler(async () => {
   const user = await requireUser();
-  return prisma.recipe.findMany({
-    where: { userId: user.id },
-    include: {
-      tags: { include: { tag: true } },
-      _count: { select: { notes: true } },
-    },
-    orderBy: { updatedAt: "desc" },
-  });
+  return recipeService.listRecipes(user.id);
 });
 
 export const getRecipe = createServerFn()
   .inputValidator((d: { recipeId: string }) => d)
   .handler(async ({ data }) => {
     const user = await requireUser();
-    return prisma.recipe.findFirst({
-      where: { id: data.recipeId, userId: user.id },
-      include: {
-        tags: { include: { tag: true } },
-        notes: { orderBy: { createdAt: "desc" } },
-      },
-    });
+    return recipeService.findRecipe(data.recipeId, user.id);
   });
 
 export const createRecipe = createServerFn({ method: "POST" })
@@ -60,16 +33,7 @@ export const createRecipe = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     const user = await requireUser();
-    const recipe = await prisma.recipe.create({
-      data: {
-        title: data.title,
-        ingredients: data.ingredients || null,
-        method: data.method || null,
-        userId: user.id,
-      },
-    });
-    await syncTags(recipe.id, data.tags, user.id);
-    return recipe;
+    return recipeService.createRecipe(user.id, data);
   });
 
 export const updateRecipe = createServerFn({ method: "POST" })
@@ -84,47 +48,26 @@ export const updateRecipe = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     const user = await requireUser();
-    const recipe = await prisma.recipe.update({
-      where: { id: data.recipeId, userId: user.id },
-      data: {
-        title: data.title,
-        ingredients: data.ingredients || null,
-        method: data.method || null,
-      },
-    });
-    await syncTags(recipe.id, data.tags, user.id);
-    return recipe;
+    return recipeService.updateRecipe(data.recipeId, user.id, data);
   });
 
 export const deleteRecipe = createServerFn({ method: "POST" })
   .inputValidator((d: { recipeId: string }) => d)
   .handler(async ({ data }) => {
     const user = await requireUser();
-    await prisma.recipe.delete({
-      where: { id: data.recipeId, userId: user.id },
-    });
+    await recipeService.removeRecipe(data.recipeId, user.id);
   });
 
 export const addNote = createServerFn({ method: "POST" })
   .inputValidator((d: { recipeId: string; body: string }) => d)
   .handler(async ({ data }) => {
     const user = await requireUser();
-    const recipe = await prisma.recipe.findFirst({
-      where: { id: data.recipeId, userId: user.id },
-    });
-    if (!recipe) throw new Error("Recipe not found");
-    return prisma.note.create({
-      data: { body: data.body, recipeId: data.recipeId },
-    });
+    return recipeService.addNote(data.recipeId, user.id, data.body);
   });
 
 export const deleteNote = createServerFn({ method: "POST" })
   .inputValidator((d: { noteId: string }) => d)
   .handler(async ({ data }) => {
     const user = await requireUser();
-    const note = await prisma.note.findFirst({
-      where: { id: data.noteId, recipe: { userId: user.id } },
-    });
-    if (!note) throw new Error("Note not found");
-    await prisma.note.delete({ where: { id: data.noteId } });
+    await recipeService.removeNote(data.noteId, user.id);
   });

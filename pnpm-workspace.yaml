@@ -2,7 +2,8 @@ packages:
   - "."
 
 allowBuilds:
-  - esbuild: true
-  - lightningcss: true
+  "@prisma/engines": true
+  esbuild: true
+  prisma: true
 
 minimumReleaseAge: 4320

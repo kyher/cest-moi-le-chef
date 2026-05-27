@@ -7,10 +7,44 @@ datasource db {
   provider = "postgresql"
 }
 
-model Todo {
-  id        Int      @id @default(autoincrement())
-  title     String
+model Recipe {
+  id          String   @id @default(cuid())
+  title       String
+  ingredients String?
+  method      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notes       Note[]
+  tags        RecipeTag[]
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  body      String
   createdAt DateTime @default(now())
+  recipeId  String
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+}
+
+model Tag {
+  id      String      @id @default(cuid())
+  name    String
+  userId  String
+  user    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipes RecipeTag[]
+
+  @@unique([name, userId])
+}
+
+model RecipeTag {
+  recipeId String
+  tagId    String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  tag      Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([recipeId, tagId])
 }
 
 model User {
@@ -23,6 +57,8 @@ model User {
   updatedAt     DateTime
   sessions      Session[]
   accounts      Account[]
+  recipes       Recipe[]
+  tags          Tag[]
 }
 
 model Session {

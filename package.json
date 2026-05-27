@@ -53,11 +53,5 @@
     "vite": "^8.0.14",
     "vitest": "^4.1.7"
   },
-  "packageManager": "pnpm@11.4.0",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "lightningcss"
-    ]
-  }
+  "packageManager": "pnpm@11.4.0"
 }

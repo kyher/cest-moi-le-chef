@@ -15,7 +15,9 @@
     "db:push": "dotenv -e .env.local -- prisma db push",
     "db:migrate": "dotenv -e .env.local -- prisma migrate dev",
     "db:studio": "dotenv -e .env.local -- prisma studio",
-    "db:seed": "dotenv -e .env.local -- prisma db seed"
+    "db:seed": "dotenv -e .env.local -- prisma db seed",
+    "db:up": "docker compose --env-file .env.local up -d",
+    "db:down": "docker compose --env-file .env.local down"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.4.2",

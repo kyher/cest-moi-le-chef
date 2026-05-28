@@ -16,6 +16,10 @@ _Avoid_: Comment, tip, annotation
 A flat, user-defined label applied to Recipes for filtering and categorisation. Tags are personal — they belong to the user, not to the system. There are no predefined tag values and no tag categories.
 _Avoid_: Category, type, label
 
+**Total Time**:
+The estimated duration to prepare and cook a Recipe from start to finish, stored as an integer number of minutes. Optional — a Recipe without a Total Time is valid. Displayed in compact format (e.g. "1h 30m", "45m"). Entered as separate hours and minutes fields.
+_Avoid_: Cook time, prep time, duration
+
 ## Example dialogue
 
 > "I want to find all my starter recipes."

@@ -1,6 +1,7 @@
 import { Link, createFileRoute, useRouter } from '@tanstack/react-router'
 import { useState } from 'react'
 import { addNote, deleteNote, deleteRecipe, getRecipe } from '#/lib/recipes'
+import { formatTotalTime } from '#/lib/format'
 
 export const Route = createFileRoute('/_auth/recipes/$recipeId/')({
   loader: ({ params }) => getRecipe({ data: { recipeId: params.recipeId } }),
@@ -77,6 +78,10 @@ function Detail({ recipe }: { recipe: Recipe }) {
             </span>
           ))}
         </div>
+      )}
+
+      {recipe.totalTime != null && (
+        <p className="text-sm text-stone-500 mb-6">{formatTotalTime(recipe.totalTime)}</p>
       )}
 
       {recipe.ingredients && (

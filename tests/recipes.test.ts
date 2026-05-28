@@ -60,6 +60,16 @@ describe('createRecipe', () => {
     expect(full?.tags.map(({ tag }) => tag.name).sort()).toEqual(['italian', 'main'])
   })
 
+  it('creates a recipe with totalTime', async () => {
+    const recipe = await createRecipe(TEST_USER_ID, { title: 'Soup', totalTime: 90, tags: [] })
+    expect(recipe.totalTime).toBe(90)
+  })
+
+  it('stores totalTime as null when omitted', async () => {
+    const recipe = await createRecipe(TEST_USER_ID, { title: 'Soup', tags: [] })
+    expect(recipe.totalTime).toBeNull()
+  })
+
   it('normalises tags to lowercase', async () => {
     const recipe = await createRecipe(TEST_USER_ID, { title: 'Recipe', tags: ['MAIN', 'Italian'] })
     const full = await findRecipe(recipe.id, TEST_USER_ID)
@@ -104,6 +114,20 @@ describe('updateRecipe', () => {
     await updateRecipe(recipe.id, TEST_USER_ID, { title: 'Recipe', tags: [] })
     const updated = await findRecipe(recipe.id, TEST_USER_ID)
     expect(updated?.tags).toHaveLength(0)
+  })
+
+  it('updates totalTime', async () => {
+    const recipe = await createRecipe(TEST_USER_ID, { title: 'Recipe', totalTime: 30, tags: [] })
+    await updateRecipe(recipe.id, TEST_USER_ID, { title: 'Recipe', totalTime: 60, tags: [] })
+    const updated = await findRecipe(recipe.id, TEST_USER_ID)
+    expect(updated?.totalTime).toBe(60)
+  })
+
+  it('clears totalTime when omitted', async () => {
+    const recipe = await createRecipe(TEST_USER_ID, { title: 'Recipe', totalTime: 30, tags: [] })
+    await updateRecipe(recipe.id, TEST_USER_ID, { title: 'Recipe', tags: [] })
+    const updated = await findRecipe(recipe.id, TEST_USER_ID)
+    expect(updated?.totalTime).toBeNull()
   })
 
   it('clears an optional field when passed an empty string', async () => {

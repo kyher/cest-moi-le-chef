@@ -12,6 +12,7 @@ model Recipe {
   title       String
   ingredients String?
   method      String?
+  totalTime   Int?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   userId      String

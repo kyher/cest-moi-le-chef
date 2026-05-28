@@ -28,6 +28,7 @@ export const createRecipe = createServerFn({ method: "POST" })
       title: string;
       ingredients?: string;
       method?: string;
+      totalTime?: number;
       tags: string[];
     }) => d,
   )
@@ -43,6 +44,7 @@ export const updateRecipe = createServerFn({ method: "POST" })
       title: string;
       ingredients?: string;
       method?: string;
+      totalTime?: number;
       tags: string[];
     }) => d,
   )

@@ -1,5 +1,6 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { getRecipes } from '#/lib/recipes'
+import { formatTotalTime } from '#/lib/format'
 
 export const Route = createFileRoute('/_auth/recipes/')({
   loader: () => getRecipes(),
@@ -52,9 +53,14 @@ function RecipeList() {
                   </div>
                 )}
               </div>
-              <span className="text-xs text-stone-400 whitespace-nowrap shrink-0 mt-0.5">
-                {recipe._count.notes} {recipe._count.notes === 1 ? 'note' : 'notes'}
-              </span>
+              <div className="flex flex-col items-end gap-1 shrink-0 mt-0.5">
+                {recipe.totalTime != null && (
+                  <span className="text-xs text-stone-500">{formatTotalTime(recipe.totalTime)}</span>
+                )}
+                <span className="text-xs text-stone-400 whitespace-nowrap">
+                  {recipe._count.notes} {recipe._count.notes === 1 ? 'note' : 'notes'}
+                </span>
+              </div>
             </Link>
           ))}
         </div>

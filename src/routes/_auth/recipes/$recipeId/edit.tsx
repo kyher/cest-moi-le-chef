@@ -22,6 +22,8 @@ function EditForm({ recipe }: { recipe: Recipe }) {
   const [title, setTitle] = useState(recipe.title)
   const [ingredients, setIngredients] = useState(recipe.ingredients ?? '')
   const [method, setMethod] = useState(recipe.method ?? '')
+  const [hours, setHours] = useState(recipe.totalTime ? String(Math.floor(recipe.totalTime / 60)) : '')
+  const [minutes, setMinutes] = useState(recipe.totalTime ? String(recipe.totalTime % 60) : '')
   const [tags, setTags] = useState<string[]>(initialTags)
   const [tagInput, setTagInput] = useState('')
   const [pending, setPending] = useState(false)
@@ -39,12 +41,16 @@ function EditForm({ recipe }: { recipe: Recipe }) {
     setPending(true)
     setError('')
     try {
+      const h = parseInt(hours) || 0
+      const m = parseInt(minutes) || 0
+      const totalTime = h * 60 + m || undefined
       await updateRecipe({
         data: {
           recipeId: recipe.id,
           title: title.trim(),
           ingredients: ingredients || undefined,
           method: method || undefined,
+          totalTime,
           tags,
         },
       })
@@ -118,6 +124,31 @@ function EditForm({ recipe }: { recipe: Recipe }) {
             placeholder="Type a tag and press Enter"
             className="w-full h-9 px-3 text-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
           />
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-stone-700">Total Time</label>
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              min="0"
+              value={hours}
+              onChange={(e) => setHours(e.target.value)}
+              placeholder="0"
+              className="w-20 h-9 px-3 text-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
+            />
+            <span className="text-sm text-stone-500">hr</span>
+            <input
+              type="number"
+              min="0"
+              max="59"
+              value={minutes}
+              onChange={(e) => setMinutes(e.target.value)}
+              placeholder="0"
+              className="w-20 h-9 px-3 text-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
+            />
+            <span className="text-sm text-stone-500">min</span>
+          </div>
         </div>
 
         <div className="space-y-1">

@@ -37,13 +37,14 @@ export function findRecipe(recipeId: string, userId: string) {
 
 export async function createRecipe(
   userId: string,
-  data: { title: string; ingredients?: string; method?: string; tags: string[] },
+  data: { title: string; ingredients?: string; method?: string; totalTime?: number; tags: string[] },
 ) {
   const recipe = await prisma.recipe.create({
     data: {
       title: data.title,
       ingredients: data.ingredients || null,
       method: data.method || null,
+      totalTime: data.totalTime ?? null,
       userId,
     },
   })
@@ -54,7 +55,7 @@ export async function createRecipe(
 export async function updateRecipe(
   recipeId: string,
   userId: string,
-  data: { title: string; ingredients?: string; method?: string; tags: string[] },
+  data: { title: string; ingredients?: string; method?: string; totalTime?: number; tags: string[] },
 ) {
   const recipe = await prisma.recipe.update({
     where: { id: recipeId, userId },
@@ -62,6 +63,7 @@ export async function updateRecipe(
       title: data.title,
       ingredients: data.ingredients || null,
       method: data.method || null,
+      totalTime: data.totalTime ?? null,
     },
   })
   await syncTags(recipe.id, data.tags, userId)

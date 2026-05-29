@@ -40,7 +40,7 @@ function Detail({ recipe }: { recipe: Recipe }) {
 	async function handleDeleteRecipe() {
 		if (!confirm("Delete this recipe? This cannot be undone.")) return;
 		await deleteRecipe({ data: { recipeId: recipe.id } });
-		await router.navigate({ to: "/recipes" });
+		await router.navigate({ to: "/recipes", search: {} });
 	}
 
 	return (
@@ -48,6 +48,7 @@ function Detail({ recipe }: { recipe: Recipe }) {
 			<div className="flex items-center justify-between mb-6">
 				<Link
 					to="/recipes"
+					search={{}}
 					className="text-sm text-stone-500 hover:text-stone-800"
 				>
 					← Recipes

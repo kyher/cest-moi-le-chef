@@ -56,6 +56,7 @@ function NewRecipe() {
 		<div className="max-w-2xl mx-auto px-4 py-10">
 			<Link
 				to="/recipes"
+				search={{}}
 				className="text-sm text-stone-500 hover:text-stone-800 mb-6 inline-block"
 			>
 				← Recipes

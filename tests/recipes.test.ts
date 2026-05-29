@@ -5,6 +5,7 @@ import {
 	createRecipe,
 	findRecipe,
 	listRecipes,
+	listTagsInUse,
 	removeNote,
 	removeRecipe,
 	updateRecipe,
@@ -306,5 +307,147 @@ describe("listRecipes", () => {
 		const [listed] = await listRecipes(TEST_USER_ID);
 		expect(listed._count.notes).toBe(2);
 		expect(listed.tags).toHaveLength(2);
+	});
+
+	describe("tag filter", () => {
+		it("returns recipes that have the specified tag", async () => {
+			await createRecipe(TEST_USER_ID, { title: "Pasta", tags: ["italian"] });
+			await createRecipe(TEST_USER_ID, { title: "Burger", tags: ["american"] });
+			const results = await listRecipes(TEST_USER_ID, { tags: ["italian"] });
+			expect(results.map((r) => r.title)).toEqual(["Pasta"]);
+		});
+
+		it("excludes recipes that do not have the specified tag", async () => {
+			await createRecipe(TEST_USER_ID, { title: "Pasta", tags: ["italian"] });
+			await createRecipe(TEST_USER_ID, { title: "Soup", tags: [] });
+			const results = await listRecipes(TEST_USER_ID, { tags: ["italian"] });
+			expect(results.map((r) => r.title)).not.toContain("Soup");
+		});
+
+		it("applies AND logic — requires all specified tags to match", async () => {
+			await createRecipe(TEST_USER_ID, {
+				title: "Quick Italian",
+				tags: ["italian", "quick"],
+			});
+			await createRecipe(TEST_USER_ID, {
+				title: "Slow Italian",
+				tags: ["italian"],
+			});
+			await createRecipe(TEST_USER_ID, {
+				title: "Quick Other",
+				tags: ["quick"],
+			});
+			const results = await listRecipes(TEST_USER_ID, {
+				tags: ["italian", "quick"],
+			});
+			expect(results.map((r) => r.title)).toEqual(["Quick Italian"]);
+		});
+	});
+
+	describe("maxTime filter", () => {
+		it("returns recipes at or under the time threshold", async () => {
+			await createRecipe(TEST_USER_ID, {
+				title: "Quick",
+				totalTime: 20,
+				tags: [],
+			});
+			await createRecipe(TEST_USER_ID, {
+				title: "Exact",
+				totalTime: 30,
+				tags: [],
+			});
+			const results = await listRecipes(TEST_USER_ID, { maxTime: 30 });
+			expect(results.map((r) => r.title).sort()).toEqual(["Exact", "Quick"]);
+		});
+
+		it("excludes recipes over the time threshold", async () => {
+			await createRecipe(TEST_USER_ID, {
+				title: "Slow",
+				totalTime: 90,
+				tags: [],
+			});
+			const results = await listRecipes(TEST_USER_ID, { maxTime: 30 });
+			expect(results.map((r) => r.title)).not.toContain("Slow");
+		});
+
+		it("excludes recipes with no total time when filter is active", async () => {
+			await createRecipe(TEST_USER_ID, { title: "No Time", tags: [] });
+			const results = await listRecipes(TEST_USER_ID, { maxTime: 30 });
+			expect(results.map((r) => r.title)).not.toContain("No Time");
+		});
+	});
+
+	describe("combined filters", () => {
+		it("applies tag and maxTime filters together", async () => {
+			await createRecipe(TEST_USER_ID, {
+				title: "Quick Italian",
+				tags: ["italian"],
+				totalTime: 20,
+			});
+			await createRecipe(TEST_USER_ID, {
+				title: "Slow Italian",
+				tags: ["italian"],
+				totalTime: 90,
+			});
+			await createRecipe(TEST_USER_ID, {
+				title: "Quick Other",
+				tags: ["other"],
+				totalTime: 20,
+			});
+			const results = await listRecipes(TEST_USER_ID, {
+				tags: ["italian"],
+				maxTime: 30,
+			});
+			expect(results.map((r) => r.title)).toEqual(["Quick Italian"]);
+		});
+	});
+});
+
+describe("listTagsInUse", () => {
+	it("returns tags applied to at least one recipe", async () => {
+		await createRecipe(TEST_USER_ID, { title: "Recipe", tags: ["main"] });
+		const tags = await listTagsInUse(TEST_USER_ID);
+		expect(tags.map((t) => t.name)).toContain("main");
+	});
+
+	it("does not return tags with no recipes", async () => {
+		await prisma.tag.create({
+			data: { name: "orphan", userId: TEST_USER_ID },
+		});
+		const tags = await listTagsInUse(TEST_USER_ID);
+		expect(tags.map((t) => t.name)).not.toContain("orphan");
+	});
+
+	it("returns tags sorted by name", async () => {
+		await createRecipe(TEST_USER_ID, {
+			title: "Recipe",
+			tags: ["zucchini", "apple", "mango"],
+		});
+		const tags = await listTagsInUse(TEST_USER_ID);
+		const names = tags.map((t) => t.name);
+		expect(names).toEqual([...names].sort());
+	});
+
+	it("does not return tags belonging to another user", async () => {
+		const OTHER_ID = "test-user-tags-isolation";
+		await prisma.user.upsert({
+			where: { id: OTHER_ID },
+			create: {
+				id: OTHER_ID,
+				name: "Other",
+				email: "other-tags@test.local",
+				emailVerified: false,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			},
+			update: {},
+		});
+		try {
+			await createRecipe(OTHER_ID, { title: "Their Recipe", tags: ["secret"] });
+			const tags = await listTagsInUse(TEST_USER_ID);
+			expect(tags.map((t) => t.name)).not.toContain("secret");
+		} finally {
+			await prisma.user.delete({ where: { id: OTHER_ID } });
+		}
 	});
 });

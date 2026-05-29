@@ -14,14 +14,33 @@ async function syncTags(recipeId: string, tagNames: string[], userId: string) {
 	}
 }
 
-export function listRecipes(userId: string) {
+export function listRecipes(
+	userId: string,
+	filters: { tags?: string[]; maxTime?: number } = {},
+) {
+	const tagFilters =
+		filters.tags && filters.tags.length > 0
+			? filters.tags.map((name) => ({ tags: { some: { tag: { name } } } }))
+			: undefined;
+
 	return prisma.recipe.findMany({
-		where: { userId },
+		where: {
+			userId,
+			AND: tagFilters,
+			totalTime: filters.maxTime != null ? { lte: filters.maxTime } : undefined,
+		},
 		include: {
 			tags: { include: { tag: true } },
 			_count: { select: { notes: true } },
 		},
 		orderBy: { updatedAt: "desc" },
+	});
+}
+
+export function listTagsInUse(userId: string) {
+	return prisma.tag.findMany({
+		where: { userId, recipes: { some: {} } },
+		orderBy: { name: "asc" },
 	});
 }
 

@@ -10,9 +10,17 @@ async function requireUser() {
 	return session.user;
 }
 
-export const getRecipes = createServerFn().handler(async () => {
+export const getRecipes = createServerFn()
+	.inputValidator((d: { tags?: string; maxTime?: number }) => d)
+	.handler(async ({ data }) => {
+		const user = await requireUser();
+		const tags = data.tags?.split(",").filter(Boolean);
+		return recipeService.listRecipes(user.id, { tags, maxTime: data.maxTime });
+	});
+
+export const getTagsInUse = createServerFn().handler(async () => {
 	const user = await requireUser();
-	return recipeService.listRecipes(user.id);
+	return recipeService.listTagsInUse(user.id);
 });
 
 export const getRecipe = createServerFn()

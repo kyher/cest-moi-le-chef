@@ -377,6 +377,44 @@ describe("listRecipes", () => {
 		});
 	});
 
+	describe("search filter (q)", () => {
+		it("returns recipes whose title contains the query", async () => {
+			await createRecipe(TEST_USER_ID, { title: "Creamy Pasta Bake", tags: [] });
+			await createRecipe(TEST_USER_ID, { title: "Burger", tags: [] });
+			const results = await listRecipes(TEST_USER_ID, { q: "pasta" });
+			expect(results.map((r) => r.title)).toEqual(["Creamy Pasta Bake"]);
+		});
+
+		it("is case-insensitive", async () => {
+			await createRecipe(TEST_USER_ID, { title: "Creamy Pasta Bake", tags: [] });
+			const lower = await listRecipes(TEST_USER_ID, { q: "pasta" });
+			const upper = await listRecipes(TEST_USER_ID, { q: "PASTA" });
+			const mixed = await listRecipes(TEST_USER_ID, { q: "Creamy" });
+			expect(lower).toHaveLength(1);
+			expect(upper).toHaveLength(1);
+			expect(mixed).toHaveLength(1);
+		});
+
+		it("matches a substring anywhere in the title", async () => {
+			await createRecipe(TEST_USER_ID, { title: "Tomato Soup", tags: [] });
+			const results = await listRecipes(TEST_USER_ID, { q: "ato" });
+			expect(results.map((r) => r.title)).toContain("Tomato Soup");
+		});
+
+		it("returns no results when nothing matches", async () => {
+			await createRecipe(TEST_USER_ID, { title: "Risotto", tags: [] });
+			const results = await listRecipes(TEST_USER_ID, { q: "xyz" });
+			expect(results).toHaveLength(0);
+		});
+
+		it("excludes recipes that do not match the query", async () => {
+			await createRecipe(TEST_USER_ID, { title: "Pasta", tags: [] });
+			await createRecipe(TEST_USER_ID, { title: "Salad", tags: [] });
+			const results = await listRecipes(TEST_USER_ID, { q: "pasta" });
+			expect(results.map((r) => r.title)).not.toContain("Salad");
+		});
+	});
+
 	describe("combined filters", () => {
 		it("applies tag and maxTime filters together", async () => {
 			await createRecipe(TEST_USER_ID, {
@@ -399,6 +437,26 @@ describe("listRecipes", () => {
 				maxTime: 30,
 			});
 			expect(results.map((r) => r.title)).toEqual(["Quick Italian"]);
+		});
+
+		it("applies search and tag filters together", async () => {
+			await createRecipe(TEST_USER_ID, {
+				title: "Italian Pasta",
+				tags: ["italian"],
+			});
+			await createRecipe(TEST_USER_ID, {
+				title: "Italian Risotto",
+				tags: ["italian"],
+			});
+			await createRecipe(TEST_USER_ID, {
+				title: "French Pasta",
+				tags: ["french"],
+			});
+			const results = await listRecipes(TEST_USER_ID, {
+				q: "pasta",
+				tags: ["italian"],
+			});
+			expect(results.map((r) => r.title)).toEqual(["Italian Pasta"]);
 		});
 	});
 });

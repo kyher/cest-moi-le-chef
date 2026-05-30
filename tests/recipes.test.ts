@@ -379,14 +379,20 @@ describe("listRecipes", () => {
 
 	describe("search filter (q)", () => {
 		it("returns recipes whose title contains the query", async () => {
-			await createRecipe(TEST_USER_ID, { title: "Creamy Pasta Bake", tags: [] });
+			await createRecipe(TEST_USER_ID, {
+				title: "Creamy Pasta Bake",
+				tags: [],
+			});
 			await createRecipe(TEST_USER_ID, { title: "Burger", tags: [] });
 			const results = await listRecipes(TEST_USER_ID, { q: "pasta" });
 			expect(results.map((r) => r.title)).toEqual(["Creamy Pasta Bake"]);
 		});
 
 		it("is case-insensitive", async () => {
-			await createRecipe(TEST_USER_ID, { title: "Creamy Pasta Bake", tags: [] });
+			await createRecipe(TEST_USER_ID, {
+				title: "Creamy Pasta Bake",
+				tags: [],
+			});
 			const lower = await listRecipes(TEST_USER_ID, { q: "pasta" });
 			const upper = await listRecipes(TEST_USER_ID, { q: "PASTA" });
 			const mixed = await listRecipes(TEST_USER_ID, { q: "Creamy" });

@@ -16,7 +16,7 @@ async function syncTags(recipeId: string, tagNames: string[], userId: string) {
 
 export function listRecipes(
 	userId: string,
-	filters: { tags?: string[]; maxTime?: number } = {},
+	filters: { tags?: string[]; maxTime?: number; q?: string } = {},
 ) {
 	const tagFilters =
 		filters.tags && filters.tags.length > 0
@@ -28,6 +28,9 @@ export function listRecipes(
 			userId,
 			AND: tagFilters,
 			totalTime: filters.maxTime != null ? { lte: filters.maxTime } : undefined,
+			title: filters.q
+				? { contains: filters.q, mode: "insensitive" }
+				: undefined,
 		},
 		include: {
 			tags: { include: { tag: true } },

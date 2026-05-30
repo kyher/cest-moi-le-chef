@@ -11,11 +11,15 @@ async function requireUser() {
 }
 
 export const getRecipes = createServerFn()
-	.inputValidator((d: { tags?: string; maxTime?: number }) => d)
+	.inputValidator((d: { tags?: string; maxTime?: number; q?: string }) => d)
 	.handler(async ({ data }) => {
 		const user = await requireUser();
 		const tags = data.tags?.split(",").filter(Boolean);
-		return recipeService.listRecipes(user.id, { tags, maxTime: data.maxTime });
+		return recipeService.listRecipes(user.id, {
+			tags,
+			maxTime: data.maxTime,
+			q: data.q,
+		});
 	});
 
 export const getTagsInUse = createServerFn().handler(async () => {

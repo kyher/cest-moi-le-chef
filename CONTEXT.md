@@ -22,7 +22,11 @@ _Avoid_: Cook time, prep time, duration
 
 **Filter**:
 A constraint applied to the Recipe list to narrow results. Filters are expressed as URL search params and evaluated server-side. Tag filters use AND logic (a recipe must match all selected Tags). The Total Time filter is a maximum threshold expressed as a preset bucket (≤15m, ≤30m, ≤1h, ≤2h); recipes with no Total Time are excluded when this filter is active. Only Tags currently applied to at least one Recipe are offered as filter options.
-_Avoid_: Search (reserved for title text search), query
+_Avoid_: Search, query
+
+**Search**:
+A free-text constraint on Recipe title, distinct from Filter. Expressed as the URL param `q` and evaluated server-side as a case-insensitive substring match. Composes with Filters — both can be active simultaneously. Rendered as a standalone input above the filter panel. Counts toward the "has active constraints" state alongside Filters; "Clear all" resets Search and all Filters together.
+_Avoid_: Filter, query
 
 ## Example dialogue
 

@@ -70,7 +70,7 @@ function EditForm({ recipe }: { recipe: Recipe }) {
 	}
 
 	return (
-		<div className="max-w-2xl mx-auto px-4 py-10">
+		<div className="py-10">
 			<Link
 				to="/recipes/$recipeId"
 				params={{ recipeId: recipe.id }}
@@ -78,9 +78,7 @@ function EditForm({ recipe }: { recipe: Recipe }) {
 			>
 				← {recipe.title}
 			</Link>
-			<h1 className="text-3xl font-serif font-bold text-stone-900 mb-8">
-				Edit Recipe
-			</h1>
+			<h1 className="text-3xl font-bold text-stone-900 mb-8">Edit Recipe</h1>
 
 			<form onSubmit={handleSubmit} className="space-y-6">
 				{error && <p className="text-sm text-red-600">{error}</p>}

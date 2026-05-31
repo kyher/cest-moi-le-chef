@@ -44,8 +44,8 @@ function Detail({ recipe }: { recipe: Recipe }) {
 	}
 
 	return (
-		<div className="max-w-2xl mx-auto px-4 py-10">
-			<div className="flex items-center justify-between mb-6">
+		<div className="py-10">
+			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
 				<Link
 					to="/recipes"
 					search={{}}
@@ -71,9 +71,7 @@ function Detail({ recipe }: { recipe: Recipe }) {
 				</div>
 			</div>
 
-			<h1 className="text-3xl font-serif font-bold text-stone-900 mb-3">
-				{recipe.title}
-			</h1>
+			<h1 className="text-3xl font-bold text-stone-900 mb-3">{recipe.title}</h1>
 
 			{recipe.tags.length > 0 && (
 				<div className="flex flex-wrap gap-1 mb-6">
@@ -121,18 +119,18 @@ function Detail({ recipe }: { recipe: Recipe }) {
 					Notes{recipe.notes.length > 0 ? ` (${recipe.notes.length})` : ""}
 				</h2>
 
-				<form onSubmit={handleAddNote} className="flex gap-2 mb-6">
+				<form onSubmit={handleAddNote} className="flex flex-col gap-2 mb-6">
 					<textarea
 						value={noteBody}
 						onChange={(e) => setNoteBody(e.target.value)}
 						placeholder="Add a note…"
 						rows={2}
-						className="flex-1 px-3 py-2 text-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400 resize-none"
+						className="w-full px-3 py-2 text-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400 resize-none"
 					/>
 					<button
 						type="submit"
 						disabled={addingNote || !noteBody.trim()}
-						className="px-4 text-sm font-medium bg-stone-800 text-white hover:bg-stone-700 disabled:opacity-50 transition-colors self-end h-9"
+						className="self-end h-9 px-4 text-sm font-medium bg-stone-800 text-white hover:bg-stone-700 disabled:opacity-50 transition-colors"
 					>
 						Add
 					</button>

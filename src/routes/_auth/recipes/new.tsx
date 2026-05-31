@@ -53,7 +53,7 @@ function NewRecipe() {
 	}
 
 	return (
-		<div className="max-w-2xl mx-auto px-4 py-10">
+		<div className="py-10">
 			<Link
 				to="/recipes"
 				search={{}}
@@ -61,9 +61,7 @@ function NewRecipe() {
 			>
 				← Recipes
 			</Link>
-			<h1 className="text-3xl font-serif font-bold text-stone-900 mb-8">
-				New Recipe
-			</h1>
+			<h1 className="text-3xl font-bold text-stone-900 mb-8">New Recipe</h1>
 
 			<form onSubmit={handleSubmit} className="space-y-6">
 				{error && <p className="text-sm text-red-600">{error}</p>}

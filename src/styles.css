@@ -21,3 +21,8 @@ textarea,
 select {
 	color: inherit;
 }
+
+button,
+a {
+	cursor: pointer;
+}

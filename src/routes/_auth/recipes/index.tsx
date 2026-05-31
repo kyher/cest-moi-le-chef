@@ -1,9 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { getRecipes, getTagsInUse } from "#/lib/recipes";
-import { RecipeFilters } from "./_components/recipe-filters";
-import { RecipeList } from "./_components/recipe-list";
-import { RecipeSearch } from "./_components/recipe-search";
+import { RecipeFilters } from "./_components/-recipe-filters";
+import { RecipeList } from "./_components/-recipe-list";
+import { RecipeSearch } from "./_components/-recipe-search";
 
 export const Route = createFileRoute("/_auth/recipes/")({
 	validateSearch: (
@@ -82,14 +82,12 @@ function RecipesPage() {
 	}
 
 	return (
-		<div className="max-w-3xl mx-auto px-4 py-10">
-			<div className="flex items-center justify-between mb-8">
-				<h1 className="text-3xl font-serif font-bold text-stone-900">
-					My Recipes
-				</h1>
+		<div className="py-10">
+			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+				<h1 className="text-3xl font-bold text-stone-900">My Recipes</h1>
 				<Link
 					to="/recipes/new"
-					className="h-9 px-4 text-sm font-medium bg-stone-800 text-white hover:bg-stone-700 transition-colors flex items-center"
+					className="h-9 px-4 text-sm font-medium bg-stone-800 text-white hover:bg-stone-700 transition-colors flex items-center self-start sm:self-auto"
 				>
 					+ New Recipe
 				</Link>

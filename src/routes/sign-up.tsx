@@ -40,7 +40,7 @@ function SignUp() {
 	return (
 		<div className="min-h-screen flex items-center justify-center bg-stone-100">
 			<div className="w-full max-w-sm p-8 bg-white border border-stone-200 shadow-sm">
-				<h1 className="text-2xl font-serif font-bold text-stone-900 mb-6">
+				<h1 className="text-2xl font-bold text-stone-900 mb-6">
 					Create account
 				</h1>
 				<form onSubmit={handleSubmit} className="space-y-4">

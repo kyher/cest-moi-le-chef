@@ -132,7 +132,9 @@ Mix butter with thyme, salt and pepper. Rub all over the chicken and under the s
 Stuff the cavity with the lemon, garlic and rosemary.
 Roast for 20 minutes per 500g plus 20 minutes extra.
 Rest for at least 15 minutes before carving.`,
-		notes: ["Resting is non-negotiable — makes all the difference to the juices."],
+		notes: [
+			"Resting is non-negotiable — makes all the difference to the juices.",
+		],
 	},
 	{
 		title: "Guacamole",
@@ -213,7 +215,9 @@ Grill until the cheese is bubbling and golden.`,
 ];
 
 async function seedUser(): Promise<string> {
-	const existing = await prisma.user.findUnique({ where: { email: TEST_EMAIL } });
+	const existing = await prisma.user.findUnique({
+		where: { email: TEST_EMAIL },
+	});
 	if (existing) {
 		console.log(`  ↩  User already exists (${TEST_EMAIL})`);
 		return existing.id;
@@ -223,7 +227,11 @@ async function seedUser(): Promise<string> {
 		new Request("http://localhost/api/auth/sign-up/email", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ email: TEST_EMAIL, password: TEST_PASSWORD, name: TEST_NAME }),
+			body: JSON.stringify({
+				email: TEST_EMAIL,
+				password: TEST_PASSWORD,
+				name: TEST_NAME,
+			}),
 		}),
 	);
 
@@ -232,7 +240,9 @@ async function seedUser(): Promise<string> {
 		throw new Error(`Failed to create user: ${res.status} ${body}`);
 	}
 
-	const user = await prisma.user.findUniqueOrThrow({ where: { email: TEST_EMAIL } });
+	const user = await prisma.user.findUniqueOrThrow({
+		where: { email: TEST_EMAIL },
+	});
 	console.log(`  ✓  Created user ${TEST_EMAIL}`);
 	return user.id;
 }

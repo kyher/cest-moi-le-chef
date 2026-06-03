@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { createRecipe } from "#/lib/recipes";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_auth/recipes/new")({
 	component: NewRecipe,
@@ -42,6 +43,7 @@ function NewRecipe() {
 					tags,
 				},
 			});
+			toast("Recipe saved");
 			await router.navigate({
 				to: "/recipes/$recipeId",
 				params: { recipeId: recipe.id },

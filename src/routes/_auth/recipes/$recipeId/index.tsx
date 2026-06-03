@@ -2,6 +2,7 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { formatTotalTime } from "#/lib/format";
 import { addNote, deleteNote, deleteRecipe, getRecipe } from "#/lib/recipes";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_auth/recipes/$recipeId/")({
 	loader: ({ params }) => getRecipe({ data: { recipeId: params.recipeId } }),
@@ -29,17 +30,20 @@ function Detail({ recipe }: { recipe: Recipe }) {
 		await addNote({ data: { recipeId: recipe.id, body: noteBody.trim() } });
 		setNoteBody("");
 		setAddingNote(false);
+		toast("Note added");
 		await router.invalidate();
 	}
 
 	async function handleDeleteNote(noteId: string) {
 		await deleteNote({ data: { noteId } });
+		toast("Note deleted");
 		await router.invalidate();
 	}
 
 	async function handleDeleteRecipe() {
 		if (!confirm("Delete this recipe? This cannot be undone.")) return;
 		await deleteRecipe({ data: { recipeId: recipe.id } });
+		toast("Recipe deleted");
 		await router.navigate({ to: "/recipes", search: {} });
 	}
 

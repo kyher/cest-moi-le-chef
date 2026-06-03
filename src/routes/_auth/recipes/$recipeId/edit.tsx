@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
-import { getRecipe, updateRecipe } from "#/lib/recipes";
 import { toast } from "sonner";
+import { getRecipe, updateRecipe } from "#/lib/recipes";
 
 export const Route = createFileRoute("/_auth/recipes/$recipeId/edit")({
 	loader: ({ params }) => getRecipe({ data: { recipeId: params.recipeId } }),

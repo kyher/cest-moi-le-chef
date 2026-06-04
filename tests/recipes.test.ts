@@ -542,7 +542,10 @@ describe("listTagsInUse", () => {
 
 describe("isPublic on createRecipe", () => {
 	it("defaults to false when isPublic is not specified", async () => {
-		const recipe = await createRecipe(TEST_USER_ID, { title: "Private by Default", tags: [] });
+		const recipe = await createRecipe(TEST_USER_ID, {
+			title: "Private by Default",
+			tags: [],
+		});
 		expect(recipe.isPublic).toBe(false);
 	});
 
@@ -558,9 +561,14 @@ describe("isPublic on createRecipe", () => {
 
 describe("setRecipeVisibility", () => {
 	it("makes a private recipe public", async () => {
-		const recipe = await createRecipe(TEST_USER_ID, { title: "Recipe", tags: [] });
+		const recipe = await createRecipe(TEST_USER_ID, {
+			title: "Recipe",
+			tags: [],
+		});
 		await setRecipeVisibility(recipe.id, TEST_USER_ID, true);
-		const updated = await prisma.recipe.findUnique({ where: { id: recipe.id } });
+		const updated = await prisma.recipe.findUnique({
+			where: { id: recipe.id },
+		});
 		expect(updated?.isPublic).toBe(true);
 	});
 
@@ -571,7 +579,9 @@ describe("setRecipeVisibility", () => {
 			tags: [],
 		});
 		await setRecipeVisibility(recipe.id, TEST_USER_ID, false);
-		const updated = await prisma.recipe.findUnique({ where: { id: recipe.id } });
+		const updated = await prisma.recipe.findUnique({
+			where: { id: recipe.id },
+		});
 		expect(updated?.isPublic).toBe(false);
 	});
 
@@ -594,7 +604,10 @@ describe("setRecipeVisibility", () => {
 
 describe("findRecipe — visibility access control", () => {
 	it("owner can view their own private recipe", async () => {
-		const recipe = await createRecipe(TEST_USER_ID, { title: "Private", tags: [] });
+		const recipe = await createRecipe(TEST_USER_ID, {
+			title: "Private",
+			tags: [],
+		});
 		const result = await findRecipe(recipe.id, TEST_USER_ID);
 		expect(result).not.toBeNull();
 		expect(result?.title).toBe("Private");
@@ -611,13 +624,19 @@ describe("findRecipe — visibility access control", () => {
 	});
 
 	it("owner result has isOwner: true", async () => {
-		const recipe = await createRecipe(TEST_USER_ID, { title: "Recipe", tags: [] });
+		const recipe = await createRecipe(TEST_USER_ID, {
+			title: "Recipe",
+			tags: [],
+		});
 		const result = await findRecipe(recipe.id, TEST_USER_ID);
 		expect(result?.isOwner).toBe(true);
 	});
 
 	it("owner result includes notes", async () => {
-		const recipe = await createRecipe(TEST_USER_ID, { title: "Recipe", tags: [] });
+		const recipe = await createRecipe(TEST_USER_ID, {
+			title: "Recipe",
+			tags: [],
+		});
 		await addNote(recipe.id, TEST_USER_ID, "My note");
 		const result = await findRecipe(recipe.id, TEST_USER_ID);
 		expect(result?.notes).toHaveLength(1);
@@ -662,7 +681,9 @@ describe("findRecipe — visibility access control", () => {
 				isPublic: true,
 				tags: [],
 			});
-			await prisma.note.create({ data: { body: "Secret note", recipeId: recipe.id } });
+			await prisma.note.create({
+				data: { body: "Secret note", recipeId: recipe.id },
+			});
 			const result = await findRecipe(recipe.id, TEST_USER_ID);
 			expect(result?.notes).toHaveLength(0);
 		} finally {
@@ -697,7 +718,10 @@ describe("findRecipe — visibility access control", () => {
 	});
 
 	it("unauthenticated viewer cannot see a private recipe — returns null", async () => {
-		const recipe = await createRecipe(TEST_USER_ID, { title: "Private", tags: [] });
+		const recipe = await createRecipe(TEST_USER_ID, {
+			title: "Private",
+			tags: [],
+		});
 		const result = await findRecipe(recipe.id, null);
 		expect(result).toBeNull();
 	});
@@ -715,8 +739,16 @@ describe("findRecipe — visibility access control", () => {
 
 describe("listPublicRecipes", () => {
 	it("only returns public recipes", async () => {
-		await createRecipe(TEST_USER_ID, { title: "Private", isPublic: false, tags: [] });
-		await createRecipe(TEST_USER_ID, { title: "Public", isPublic: true, tags: [] });
+		await createRecipe(TEST_USER_ID, {
+			title: "Private",
+			isPublic: false,
+			tags: [],
+		});
+		await createRecipe(TEST_USER_ID, {
+			title: "Public",
+			isPublic: true,
+			tags: [],
+		});
 		const results = await listPublicRecipes();
 		expect(results.map((r) => r.title)).toContain("Public");
 		expect(results.map((r) => r.title)).not.toContain("Private");
@@ -725,8 +757,16 @@ describe("listPublicRecipes", () => {
 	it("includes recipes from multiple users", async () => {
 		await upsertOtherUser();
 		try {
-			await createRecipe(TEST_USER_ID, { title: "My Public", isPublic: true, tags: [] });
-			await createRecipe(OTHER_USER_ID, { title: "Their Public", isPublic: true, tags: [] });
+			await createRecipe(TEST_USER_ID, {
+				title: "My Public",
+				isPublic: true,
+				tags: [],
+			});
+			await createRecipe(OTHER_USER_ID, {
+				title: "Their Public",
+				isPublic: true,
+				tags: [],
+			});
 			const results = await listPublicRecipes();
 			const titles = results.map((r) => r.title);
 			expect(titles).toContain("My Public");
@@ -737,29 +777,59 @@ describe("listPublicRecipes", () => {
 	});
 
 	it("includes the author's name on each recipe", async () => {
-		await createRecipe(TEST_USER_ID, { title: "Public", isPublic: true, tags: [] });
+		await createRecipe(TEST_USER_ID, {
+			title: "Public",
+			isPublic: true,
+			tags: [],
+		});
 		const [result] = await listPublicRecipes();
 		expect(result.user.name).toBe("Test User");
 	});
 
 	it("filters by tag", async () => {
-		await createRecipe(TEST_USER_ID, { title: "Italian", isPublic: true, tags: ["italian"] });
-		await createRecipe(TEST_USER_ID, { title: "French", isPublic: true, tags: ["french"] });
+		await createRecipe(TEST_USER_ID, {
+			title: "Italian",
+			isPublic: true,
+			tags: ["italian"],
+		});
+		await createRecipe(TEST_USER_ID, {
+			title: "French",
+			isPublic: true,
+			tags: ["french"],
+		});
 		const results = await listPublicRecipes({ tags: ["italian"] });
 		expect(results.map((r) => r.title)).toEqual(["Italian"]);
 	});
 
 	it("filters by maxTime", async () => {
-		await createRecipe(TEST_USER_ID, { title: "Quick", isPublic: true, totalTime: 15, tags: [] });
-		await createRecipe(TEST_USER_ID, { title: "Slow", isPublic: true, totalTime: 90, tags: [] });
+		await createRecipe(TEST_USER_ID, {
+			title: "Quick",
+			isPublic: true,
+			totalTime: 15,
+			tags: [],
+		});
+		await createRecipe(TEST_USER_ID, {
+			title: "Slow",
+			isPublic: true,
+			totalTime: 90,
+			tags: [],
+		});
 		const results = await listPublicRecipes({ maxTime: 30 });
 		expect(results.map((r) => r.title)).toContain("Quick");
 		expect(results.map((r) => r.title)).not.toContain("Slow");
 	});
 
 	it("filters by search query", async () => {
-		await createRecipe(TEST_USER_ID, { title: "Creamy Pasta", isPublic: true, tags: [] });
-		await createRecipe(TEST_USER_ID, { title: "Burger", isPublic: true, tags: [] });
+		await createRecipe(TEST_USER_ID, {
+			title: "Creamy Pasta",
+			isPublic: true,
+			tags: [],
+		});
+		await createRecipe(TEST_USER_ID, {
+			title: "Burger",
+			isPublic: true,
+			tags: [],
+		});
 		const results = await listPublicRecipes({ q: "pasta" });
 		expect(results.map((r) => r.title)).toEqual(["Creamy Pasta"]);
 	});
@@ -767,13 +837,21 @@ describe("listPublicRecipes", () => {
 
 describe("listPublicTagsInUse", () => {
 	it("returns tag names from public recipes", async () => {
-		await createRecipe(TEST_USER_ID, { title: "Recipe", isPublic: true, tags: ["italian"] });
+		await createRecipe(TEST_USER_ID, {
+			title: "Recipe",
+			isPublic: true,
+			tags: ["italian"],
+		});
 		const tags = await listPublicTagsInUse();
 		expect(tags.map((t) => t.name)).toContain("italian");
 	});
 
 	it("does not return tags only applied to private recipes", async () => {
-		await createRecipe(TEST_USER_ID, { title: "Private", isPublic: false, tags: ["secret"] });
+		await createRecipe(TEST_USER_ID, {
+			title: "Private",
+			isPublic: false,
+			tags: ["secret"],
+		});
 		const tags = await listPublicTagsInUse();
 		expect(tags.map((t) => t.name)).not.toContain("secret");
 	});
@@ -781,8 +859,16 @@ describe("listPublicTagsInUse", () => {
 	it("deduplicates tag names across users", async () => {
 		await upsertOtherUser();
 		try {
-			await createRecipe(TEST_USER_ID, { title: "My Recipe", isPublic: true, tags: ["italian"] });
-			await createRecipe(OTHER_USER_ID, { title: "Their Recipe", isPublic: true, tags: ["italian"] });
+			await createRecipe(TEST_USER_ID, {
+				title: "My Recipe",
+				isPublic: true,
+				tags: ["italian"],
+			});
+			await createRecipe(OTHER_USER_ID, {
+				title: "Their Recipe",
+				isPublic: true,
+				tags: ["italian"],
+			});
 			const tags = await listPublicTagsInUse();
 			const italianTags = tags.filter((t) => t.name === "italian");
 			expect(italianTags).toHaveLength(1);

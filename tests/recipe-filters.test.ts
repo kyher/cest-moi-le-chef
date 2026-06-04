@@ -3,7 +3,11 @@ import { validateRecipeSearch } from "#/lib/recipe-filters";
 
 describe("validateRecipeSearch", () => {
 	it("returns all fields when valid values are provided", () => {
-		const result = validateRecipeSearch({ tags: "italian,quick", maxTime: 30, q: "pasta" });
+		const result = validateRecipeSearch({
+			tags: "italian,quick",
+			maxTime: 30,
+			q: "pasta",
+		});
 		expect(result).toEqual({ tags: "italian,quick", maxTime: 30, q: "pasta" });
 	});
 

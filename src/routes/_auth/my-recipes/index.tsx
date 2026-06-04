@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { RecipeFilterPanel } from "#/components/-recipe-filter-panel";
-import { validateRecipeSearch, useRecipeFilters } from "#/lib/recipe-filters";
+import { useRecipeFilters, validateRecipeSearch } from "#/lib/recipe-filters";
 import { getRecipes, getTagsInUse } from "#/lib/recipes";
 import { RecipeList } from "./_components/-recipe-list";
 

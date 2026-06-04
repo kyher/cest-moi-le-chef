@@ -92,7 +92,11 @@ export const setVisibility = createServerFn({ method: "POST" })
 	.inputValidator((d: { recipeId: string; isPublic: boolean }) => d)
 	.handler(async ({ data }) => {
 		const user = await requireUser();
-		return recipeService.setRecipeVisibility(data.recipeId, user.id, data.isPublic);
+		return recipeService.setRecipeVisibility(
+			data.recipeId,
+			user.id,
+			data.isPublic,
+		);
 	});
 
 export const deleteRecipe = createServerFn({ method: "POST" })

@@ -146,7 +146,10 @@ function Detail({ recipe, isOwner }: { recipe: Recipe; isOwner: boolean }) {
 			{isOwner && (
 				<section>
 					<h2 className="text-xs font-semibold uppercase tracking-wide text-stone-400 mb-4">
-						Notes{"notes" in recipe && recipe.notes.length > 0 ? ` (${recipe.notes.length})` : ""}
+						Notes
+						{"notes" in recipe && recipe.notes.length > 0
+							? ` (${recipe.notes.length})`
+							: ""}
 					</h2>
 
 					<form onSubmit={handleAddNote} className="flex flex-col gap-2 mb-6">

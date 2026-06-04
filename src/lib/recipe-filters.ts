@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 
-export type RecipeSearchParams = { tags?: string; maxTime?: number; q?: string };
+export type RecipeSearchParams = {
+	tags?: string;
+	maxTime?: number;
+	q?: string;
+};
 
 export function validateRecipeSearch(
 	search: Record<string, unknown>,
@@ -9,9 +13,7 @@ export function validateRecipeSearch(
 		typeof search.tags === "string" && search.tags ? search.tags : undefined;
 	const maxTimeRaw = Number(search.maxTime);
 	const maxTime =
-		search.maxTime != null &&
-		search.maxTime !== "" &&
-		!Number.isNaN(maxTimeRaw)
+		search.maxTime != null && search.maxTime !== "" && !Number.isNaN(maxTimeRaw)
 			? maxTimeRaw
 			: undefined;
 	const q = typeof search.q === "string" && search.q ? search.q : undefined;
@@ -38,7 +40,9 @@ export function useRecipeFilters(
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
-			navigate({ search: (prev) => ({ ...prev, q: searchInput || undefined }) });
+			navigate({
+				search: (prev) => ({ ...prev, q: searchInput || undefined }),
+			});
 		}, 300);
 		return () => clearTimeout(timer);
 	}, [searchInput, navigate]);

@@ -19,7 +19,7 @@ export const Route = createFileRoute("/recipes/$recipeId/edit")({
 	},
 	loader: async ({ params, context }) => {
 		const recipe = await getRecipe({ data: { recipeId: params.recipeId } });
-		if (!recipe || !recipe.isOwner) throw notFound();
+		if (!recipe?.isOwner) throw notFound();
 		return { recipe, session: context.session };
 	},
 	notFoundComponent: () => (
@@ -219,7 +219,10 @@ function EditForm({ recipe }: { recipe: Recipe }) {
 				</div>
 
 				<div className="space-y-1">
-					<label htmlFor="method" className="text-sm font-medium text-stone-700">
+					<label
+						htmlFor="method"
+						className="text-sm font-medium text-stone-700"
+					>
 						Method
 					</label>
 					<textarea

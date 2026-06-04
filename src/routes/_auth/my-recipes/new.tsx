@@ -175,7 +175,10 @@ function NewRecipe() {
 				</div>
 
 				<div className="space-y-1">
-					<label htmlFor="method" className="text-sm font-medium text-stone-700">
+					<label
+						htmlFor="method"
+						className="text-sm font-medium text-stone-700"
+					>
 						Method
 					</label>
 					<textarea
@@ -204,7 +207,9 @@ function NewRecipe() {
 						/>
 					</button>
 					<span className="text-sm text-stone-700">
-						{isPublic ? "Public — visible to everyone" : "Private — only visible to you"}
+						{isPublic
+							? "Public — visible to everyone"
+							: "Private — only visible to you"}
 					</span>
 				</div>
 

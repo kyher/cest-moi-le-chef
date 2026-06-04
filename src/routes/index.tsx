@@ -1,34 +1,108 @@
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { RecipeFilterPanel } from "#/components/-recipe-filter-panel";
+import { SiteHeader } from "#/components/-site-header";
+import { formatTotalTime } from "#/lib/format";
+import { useRecipeFilters, validateRecipeSearch } from "#/lib/recipe-filters";
+import { getPublicRecipes, getPublicTagsInUse } from "#/lib/recipes";
 import { getSession } from "#/lib/session";
 
 export const Route = createFileRoute("/")({
-	beforeLoad: async () => {
-		const session = await getSession();
-		if (session) throw redirect({ to: "/recipes" });
-	},
+	validateSearch: validateRecipeSearch,
+	loaderDeps: ({ search }) => search,
+	loader: ({ deps }) =>
+		Promise.all([
+			getSession(),
+			getPublicRecipes({ data: deps }),
+			getPublicTagsInUse(),
+		]).then(([session, recipes, tagsInUse]) => ({
+			session,
+			recipes,
+			tagsInUse,
+		})),
 	component: HomePage,
 });
 
 function HomePage() {
+	const { session, recipes, tagsInUse } = Route.useLoaderData();
+	const search = Route.useSearch();
+	const navigate = useNavigate({ from: Route.fullPath });
+	const filters = useRecipeFilters(search, navigate);
+	const showFilters = recipes.length > 0 || filters.hasConstraints;
+
 	return (
-		<div className="min-h-screen flex flex-col items-center justify-center bg-stone-50">
-			<h1 className="text-4xl font-bold text-stone-900 mb-3">
-				C'est moi le chef
-			</h1>
-			<p className="text-stone-500 mb-8">Your personal recipe collection.</p>
-			<div className="flex gap-3">
-				<Link
-					to="/sign-in"
-					className="h-9 px-6 text-sm font-medium bg-stone-800 text-white hover:bg-stone-700 transition-colors flex items-center"
-				>
-					Sign in
-				</Link>
-				<Link
-					to="/sign-up"
-					className="h-9 px-6 text-sm font-medium border border-stone-300 text-stone-700 hover:border-stone-500 transition-colors flex items-center"
-				>
-					Create an account
-				</Link>
+		<div className="min-h-screen flex flex-col">
+			<SiteHeader user={session?.user ?? null} />
+			<div className="w-3/4 mx-auto py-10">
+				<h1 className="text-3xl font-bold text-stone-900 mb-8">Recipes</h1>
+
+				<RecipeFilterPanel
+					show={showFilters}
+					tagsInUse={tagsInUse}
+					activeTags={filters.activeTags}
+					activeMaxTime={filters.activeMaxTime}
+					hasConstraints={filters.hasConstraints}
+					searchInput={filters.searchInput}
+					onSearchChange={filters.setSearchInput}
+					onToggleTag={filters.toggleTag}
+					onToggleMaxTime={filters.toggleMaxTime}
+					onReset={filters.reset}
+				/>
+
+				{recipes.length === 0 ? (
+					<p className="text-stone-500">
+						{filters.hasConstraints ? (
+							<>
+								No recipes match your filters.{" "}
+								<button
+									type="button"
+									onClick={filters.reset}
+									className="text-stone-800 underline underline-offset-2 cursor-pointer"
+								>
+									Reset
+								</button>
+							</>
+						) : (
+							"No public recipes yet."
+						)}
+					</p>
+				) : (
+					<div className="space-y-2">
+						{recipes.map((recipe) => (
+							<Link
+								key={recipe.id}
+								to="/recipes/$recipeId"
+								params={{ recipeId: recipe.id }}
+								className="flex items-start justify-between gap-4 p-4 bg-white border border-stone-200 hover:border-stone-400 transition-colors"
+							>
+								<div>
+									<h2 className="font-semibold text-stone-900">
+										{recipe.title}
+									</h2>
+									<p className="text-xs text-stone-400 mt-0.5">
+										by {recipe.user.name}
+									</p>
+									{recipe.tags.length > 0 && (
+										<div className="flex flex-wrap gap-1 mt-2">
+											{recipe.tags.map(({ tag }) => (
+												<span
+													key={tag.id}
+													className="px-2 py-0.5 text-xs bg-amber-50 text-stone-600 border border-amber-200"
+												>
+													{tag.name}
+												</span>
+											))}
+										</div>
+									)}
+								</div>
+								{recipe.totalTime != null && (
+									<span className="text-xs text-stone-500 shrink-0 mt-0.5">
+										{formatTotalTime(recipe.totalTime)}
+									</span>
+								)}
+							</Link>
+						))}
+					</div>
+				)}
 			</div>
 		</div>
 	);

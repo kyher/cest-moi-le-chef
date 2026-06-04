@@ -1,18 +1,45 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	Link,
+	notFound,
+	redirect,
+	useRouter,
+} from "@tanstack/react-router";
 import { useState } from "react";
+import { SiteHeader } from "#/components/-site-header";
 import { toast } from "sonner";
 import { getRecipe, updateRecipe } from "#/lib/recipes";
+import { getSession } from "#/lib/session";
 
-export const Route = createFileRoute("/_auth/recipes/$recipeId/edit")({
-	loader: ({ params }) => getRecipe({ data: { recipeId: params.recipeId } }),
+export const Route = createFileRoute("/recipes/$recipeId/edit")({
+	beforeLoad: async () => {
+		const session = await getSession();
+		if (!session) throw redirect({ to: "/sign-in" });
+		return { session };
+	},
+	loader: async ({ params, context }) => {
+		const recipe = await getRecipe({ data: { recipeId: params.recipeId } });
+		if (!recipe || !recipe.isOwner) throw notFound();
+		return { recipe, session: context.session };
+	},
+	notFoundComponent: () => (
+		<div className="min-h-screen flex flex-col">
+			<div className="p-8 text-stone-500">Recipe not found.</div>
+		</div>
+	),
 	component: EditRecipe,
 });
 
 function EditRecipe() {
-	const recipe = Route.useLoaderData();
-	if (!recipe)
-		return <div className="p-8 text-stone-500">Recipe not found.</div>;
-	return <EditForm recipe={recipe} />;
+	const { recipe, session } = Route.useLoaderData();
+	return (
+		<div className="min-h-screen flex flex-col">
+			<SiteHeader user={session.user} />
+			<div className="w-3/4 mx-auto">
+				<EditForm recipe={recipe} />
+			</div>
+		</div>
+	);
 }
 
 type Recipe = NonNullable<Awaited<ReturnType<typeof getRecipe>>>;
@@ -32,6 +59,7 @@ function EditForm({ recipe }: { recipe: Recipe }) {
 	);
 	const [tags, setTags] = useState<string[]>(initialTags);
 	const [tagInput, setTagInput] = useState("");
+	const [isPublic, setIsPublic] = useState(recipe.isPublic);
 	const [pending, setPending] = useState(false);
 	const [error, setError] = useState("");
 
@@ -57,6 +85,7 @@ function EditForm({ recipe }: { recipe: Recipe }) {
 					ingredients: ingredients || undefined,
 					method: method || undefined,
 					totalTime,
+					isPublic,
 					tags,
 				},
 			});
@@ -190,10 +219,7 @@ function EditForm({ recipe }: { recipe: Recipe }) {
 				</div>
 
 				<div className="space-y-1">
-					<label
-						htmlFor="method"
-						className="text-sm font-medium text-stone-700"
-					>
+					<label htmlFor="method" className="text-sm font-medium text-stone-700">
 						Method
 					</label>
 					<textarea
@@ -203,6 +229,29 @@ function EditForm({ recipe }: { recipe: Recipe }) {
 						rows={8}
 						className="w-full px-3 py-2 text-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400 resize-y"
 					/>
+				</div>
+
+				<div className="flex items-center gap-3">
+					<button
+						type="button"
+						role="switch"
+						aria-checked={isPublic}
+						onClick={() => setIsPublic(!isPublic)}
+						className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${
+							isPublic ? "bg-amber-500" : "bg-stone-300"
+						}`}
+					>
+						<span
+							className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+								isPublic ? "translate-x-4.5" : "translate-x-0.5"
+							}`}
+						/>
+					</button>
+					<span className="text-sm text-stone-700">
+						{isPublic
+							? "Public — visible to everyone"
+							: "Private — only visible to you"}
+					</span>
 				</div>
 
 				<button

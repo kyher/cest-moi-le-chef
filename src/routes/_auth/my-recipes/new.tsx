@@ -3,7 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { createRecipe } from "#/lib/recipes";
 
-export const Route = createFileRoute("/_auth/recipes/new")({
+export const Route = createFileRoute("/_auth/my-recipes/new")({
 	component: NewRecipe,
 });
 
@@ -16,6 +16,7 @@ function NewRecipe() {
 	const [minutes, setMinutes] = useState("");
 	const [tags, setTags] = useState<string[]>([]);
 	const [tagInput, setTagInput] = useState("");
+	const [isPublic, setIsPublic] = useState(false);
 	const [pending, setPending] = useState(false);
 	const [error, setError] = useState("");
 
@@ -40,6 +41,7 @@ function NewRecipe() {
 					ingredients: ingredients || undefined,
 					method: method || undefined,
 					totalTime,
+					isPublic,
 					tags,
 				},
 			});
@@ -57,11 +59,11 @@ function NewRecipe() {
 	return (
 		<div className="py-10">
 			<Link
-				to="/recipes"
+				to="/my-recipes"
 				search={{}}
 				className="text-sm text-stone-500 hover:text-stone-800 mb-6 inline-block"
 			>
-				← Recipes
+				← My Recipes
 			</Link>
 			<h1 className="text-3xl font-bold text-stone-900 mb-8">New Recipe</h1>
 
@@ -173,10 +175,7 @@ function NewRecipe() {
 				</div>
 
 				<div className="space-y-1">
-					<label
-						htmlFor="method"
-						className="text-sm font-medium text-stone-700"
-					>
+					<label htmlFor="method" className="text-sm font-medium text-stone-700">
 						Method
 					</label>
 					<textarea
@@ -186,6 +185,27 @@ function NewRecipe() {
 						rows={8}
 						className="w-full px-3 py-2 text-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400 resize-y"
 					/>
+				</div>
+
+				<div className="flex items-center gap-3">
+					<button
+						type="button"
+						role="switch"
+						aria-checked={isPublic}
+						onClick={() => setIsPublic(!isPublic)}
+						className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${
+							isPublic ? "bg-amber-500" : "bg-stone-300"
+						}`}
+					>
+						<span
+							className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+								isPublic ? "translate-x-4.5" : "translate-x-0.5"
+							}`}
+						/>
+					</button>
+					<span className="text-sm text-stone-700">
+						{isPublic ? "Public — visible to everyone" : "Private — only visible to you"}
+					</span>
 				</div>
 
 				<button

@@ -40,6 +40,33 @@ export function listRecipes(
 	});
 }
 
+export function listPublicRecipes(
+	filters: { tags?: string[]; maxTime?: number; q?: string } = {},
+) {
+	const tagFilters =
+		filters.tags && filters.tags.length > 0
+			? filters.tags.map((name) => ({
+					tags: { some: { tag: { name: name.toLowerCase() } } },
+				}))
+			: undefined;
+
+	return prisma.recipe.findMany({
+		where: {
+			isPublic: true,
+			AND: tagFilters,
+			totalTime: filters.maxTime != null ? { lte: filters.maxTime } : undefined,
+			title: filters.q
+				? { contains: filters.q, mode: "insensitive" }
+				: undefined,
+		},
+		include: {
+			tags: { include: { tag: true } },
+			user: { select: { name: true } },
+		},
+		orderBy: { updatedAt: "desc" },
+	});
+}
+
 export function listTagsInUse(userId: string) {
 	return prisma.tag.findMany({
 		where: { userId, recipes: { some: {} } },
@@ -47,14 +74,48 @@ export function listTagsInUse(userId: string) {
 	});
 }
 
-export function findRecipe(recipeId: string, userId: string) {
-	return prisma.recipe.findFirst({
-		where: { id: recipeId, userId },
+export async function listPublicTagsInUse() {
+	const tags = await prisma.tag.findMany({
+		where: { recipes: { some: { recipe: { isPublic: true } } } },
+		select: { name: true },
+		orderBy: { name: "asc" },
+	});
+	// Tags are already stored lowercase; deduplicate by name
+	const seen = new Set<string>();
+	const result: { name: string }[] = [];
+	for (const tag of tags) {
+		if (!seen.has(tag.name)) {
+			seen.add(tag.name);
+			result.push(tag);
+		}
+	}
+	return result;
+}
+
+export async function findRecipe(recipeId: string, viewerId: string | null) {
+	// Owner: return full recipe with notes
+	if (viewerId) {
+		const owned = await prisma.recipe.findFirst({
+			where: { id: recipeId, userId: viewerId },
+			include: {
+				tags: { include: { tag: true } },
+				notes: { orderBy: { createdAt: "desc" } },
+				user: { select: { name: true } },
+			},
+		});
+		if (owned) return { ...owned, isOwner: true as const };
+	}
+
+	// Non-owner: only public recipes, notes never sent
+	const recipe = await prisma.recipe.findFirst({
+		where: { id: recipeId, isPublic: true },
 		include: {
 			tags: { include: { tag: true } },
-			notes: { orderBy: { createdAt: "desc" } },
+			user: { select: { name: true } },
 		},
 	});
+	if (!recipe) return null;
+	return { ...recipe, notes: [] as const, isOwner: false as const };
 }
 
 export async function createRecipe(
@@ -64,6 +125,7 @@ export async function createRecipe(
 		ingredients?: string;
 		method?: string;
 		totalTime?: number;
+		isPublic?: boolean;
 		tags: string[];
 	},
 ) {
@@ -73,6 +135,7 @@ export async function createRecipe(
 			ingredients: data.ingredients || null,
 			method: data.method || null,
 			totalTime: data.totalTime ?? null,
+			isPublic: data.isPublic ?? false,
 			userId,
 		},
 	});
@@ -88,6 +151,7 @@ export async function updateRecipe(
 		ingredients?: string;
 		method?: string;
 		totalTime?: number;
+		isPublic?: boolean;
 		tags: string[];
 	},
 ) {
@@ -98,10 +162,22 @@ export async function updateRecipe(
 			ingredients: data.ingredients || null,
 			method: data.method || null,
 			totalTime: data.totalTime ?? null,
+			...(data.isPublic !== undefined && { isPublic: data.isPublic }),
 		},
 	});
 	await syncTags(recipe.id, data.tags, userId);
 	return recipe;
+}
+
+export async function setRecipeVisibility(
+	recipeId: string,
+	userId: string,
+	isPublic: boolean,
+) {
+	return prisma.recipe.update({
+		where: { id: recipeId, userId },
+		data: { isPublic },
+	});
 }
 
 export async function removeRecipe(recipeId: string, userId: string) {

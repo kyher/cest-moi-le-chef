@@ -27,7 +27,7 @@ export function RecipeList({ recipes, hasConstraints, onReset }: Props) {
 			<p className="text-stone-500">
 				No recipes yet.{" "}
 				<Link
-					to="/recipes/new"
+					to="/my-recipes/new"
 					className="text-stone-800 underline underline-offset-2"
 				>
 					Add your first one.
@@ -39,13 +39,15 @@ export function RecipeList({ recipes, hasConstraints, onReset }: Props) {
 	return (
 		<div className="space-y-2">
 			{recipes.map((recipe) => (
-				<Link
+				<div
 					key={recipe.id}
-					to="/recipes/$recipeId"
-					params={{ recipeId: recipe.id }}
 					className="flex items-start justify-between gap-4 p-4 bg-white border border-stone-200 hover:border-stone-400 transition-colors"
 				>
-					<div>
+					<Link
+						to="/recipes/$recipeId"
+						params={{ recipeId: recipe.id }}
+						className="flex-1 min-w-0"
+					>
 						<h2 className="font-semibold text-stone-900">{recipe.title}</h2>
 						{recipe.tags.length > 0 && (
 							<div className="flex flex-wrap gap-1 mt-2">
@@ -59,8 +61,8 @@ export function RecipeList({ recipes, hasConstraints, onReset }: Props) {
 								))}
 							</div>
 						)}
-					</div>
-					<div className="flex flex-col items-end gap-1 shrink-0 mt-0.5">
+					</Link>
+					<div className="flex flex-col items-end gap-2 shrink-0 mt-0.5">
 						{recipe.totalTime != null && (
 							<span className="text-xs text-stone-500">
 								{formatTotalTime(recipe.totalTime)}
@@ -70,8 +72,17 @@ export function RecipeList({ recipes, hasConstraints, onReset }: Props) {
 							{recipe._count.notes}{" "}
 							{recipe._count.notes === 1 ? "note" : "notes"}
 						</span>
+						<span
+							className={
+								recipe.isPublic
+									? "px-2 py-0.5 text-xs bg-amber-50 text-amber-700 border border-amber-300"
+									: "px-2 py-0.5 text-xs text-stone-400 bg-white border border-stone-200"
+							}
+						>
+							{recipe.isPublic ? "Public" : "Private"}
+						</span>
 					</div>
-				</Link>
+				</div>
 			))}
 		</div>
 	);

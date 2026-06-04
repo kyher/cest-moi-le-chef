@@ -5,6 +5,7 @@ import {
 	useRouter,
 } from "@tanstack/react-router";
 import { useState } from "react";
+import { toast } from "sonner";
 import { SiteHeader } from "#/components/-site-header";
 import { formatTotalTime } from "#/lib/format";
 import { addNote, deleteNote, deleteRecipe, getRecipe } from "#/lib/recipes";
@@ -53,17 +54,20 @@ function Detail({ recipe, isOwner }: { recipe: Recipe; isOwner: boolean }) {
 		await addNote({ data: { recipeId: recipe.id, body: noteBody.trim() } });
 		setNoteBody("");
 		setAddingNote(false);
+		toast("Note added");
 		await router.invalidate();
 	}
 
 	async function handleDeleteNote(noteId: string) {
 		await deleteNote({ data: { noteId } });
+		toast("Note deleted");
 		await router.invalidate();
 	}
 
 	async function handleDeleteRecipe() {
 		if (!confirm("Delete this recipe? This cannot be undone.")) return;
 		await deleteRecipe({ data: { recipeId: recipe.id } });
+		toast("Recipe deleted");
 		await router.navigate({ to: "/my-recipes", search: {} });
 	}
 

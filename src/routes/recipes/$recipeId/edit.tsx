@@ -1,21 +1,65 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	Link,
+	notFound,
+	redirect,
+	useRouter,
+} from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { createRecipe } from "#/lib/recipes";
+import { SiteHeader } from "#/components/-site-header";
+import { getRecipe, updateRecipe } from "#/lib/recipes";
+import { getSession } from "#/lib/session";
 
-export const Route = createFileRoute("/_auth/recipes/new")({
-	component: NewRecipe,
+export const Route = createFileRoute("/recipes/$recipeId/edit")({
+	beforeLoad: async () => {
+		const session = await getSession();
+		if (!session) throw redirect({ to: "/sign-in" });
+		return { session };
+	},
+	loader: async ({ params, context }) => {
+		const recipe = await getRecipe({ data: { recipeId: params.recipeId } });
+		if (!recipe?.isOwner) throw notFound();
+		return { recipe, session: context.session };
+	},
+	notFoundComponent: () => (
+		<div className="min-h-screen flex flex-col">
+			<div className="p-8 text-stone-500">Recipe not found.</div>
+		</div>
+	),
+	component: EditRecipe,
 });
 
-function NewRecipe() {
+function EditRecipe() {
+	const { recipe, session } = Route.useLoaderData();
+	return (
+		<div className="min-h-screen flex flex-col">
+			<SiteHeader user={session.user} />
+			<div className="w-3/4 mx-auto">
+				<EditForm recipe={recipe} />
+			</div>
+		</div>
+	);
+}
+
+type Recipe = NonNullable<Awaited<ReturnType<typeof getRecipe>>>;
+
+function EditForm({ recipe }: { recipe: Recipe }) {
 	const router = useRouter();
-	const [title, setTitle] = useState("");
-	const [ingredients, setIngredients] = useState("");
-	const [method, setMethod] = useState("");
-	const [hours, setHours] = useState("");
-	const [minutes, setMinutes] = useState("");
-	const [tags, setTags] = useState<string[]>([]);
+	const initialTags = recipe.tags.map(({ tag }) => tag.name);
+
+	const [title, setTitle] = useState(recipe.title);
+	const [ingredients, setIngredients] = useState(recipe.ingredients ?? "");
+	const [method, setMethod] = useState(recipe.method ?? "");
+	const [hours, setHours] = useState(
+		recipe.totalTime ? String(Math.floor(recipe.totalTime / 60)) : "",
+	);
+	const [minutes, setMinutes] = useState(
+		recipe.totalTime ? String(recipe.totalTime % 60) : "",
+	);
+	const [tags, setTags] = useState<string[]>(initialTags);
 	const [tagInput, setTagInput] = useState("");
+	const [isPublic, setIsPublic] = useState(recipe.isPublic);
 	const [pending, setPending] = useState(false);
 	const [error, setError] = useState("");
 
@@ -34,12 +78,14 @@ function NewRecipe() {
 			const h = parseInt(hours, 10) || 0;
 			const m = parseInt(minutes, 10) || 0;
 			const totalTime = h * 60 + m || undefined;
-			const recipe = await createRecipe({
+			await updateRecipe({
 				data: {
+					recipeId: recipe.id,
 					title: title.trim(),
 					ingredients: ingredients || undefined,
 					method: method || undefined,
 					totalTime,
+					isPublic,
 					tags,
 				},
 			});
@@ -49,7 +95,7 @@ function NewRecipe() {
 				params: { recipeId: recipe.id },
 			});
 		} catch {
-			setError("Failed to save recipe.");
+			setError("Failed to save changes.");
 			setPending(false);
 		}
 	}
@@ -57,13 +103,13 @@ function NewRecipe() {
 	return (
 		<div className="py-10">
 			<Link
-				to="/recipes"
-				search={{}}
+				to="/recipes/$recipeId"
+				params={{ recipeId: recipe.id }}
 				className="text-sm text-stone-500 hover:text-stone-800 mb-6 inline-block"
 			>
-				← Recipes
+				← {recipe.title}
 			</Link>
-			<h1 className="text-3xl font-bold text-stone-900 mb-8">New Recipe</h1>
+			<h1 className="text-3xl font-bold text-stone-900 mb-8">Edit Recipe</h1>
 
 			<form onSubmit={handleSubmit} className="space-y-6">
 				{error && <p className="text-sm text-red-600">{error}</p>}
@@ -188,12 +234,35 @@ function NewRecipe() {
 					/>
 				</div>
 
+				<div className="flex items-center gap-3">
+					<button
+						type="button"
+						role="switch"
+						aria-checked={isPublic}
+						onClick={() => setIsPublic(!isPublic)}
+						className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${
+							isPublic ? "bg-amber-500" : "bg-stone-300"
+						}`}
+					>
+						<span
+							className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+								isPublic ? "translate-x-4.5" : "translate-x-0.5"
+							}`}
+						/>
+					</button>
+					<span className="text-sm text-stone-700">
+						{isPublic
+							? "Public — visible to everyone"
+							: "Private — only visible to you"}
+					</span>
+				</div>
+
 				<button
 					type="submit"
 					disabled={pending}
 					className="h-9 px-6 text-sm font-medium bg-stone-800 text-white hover:bg-stone-700 disabled:opacity-50 transition-colors"
 				>
-					{pending ? "Saving…" : "Save Recipe"}
+					{pending ? "Saving…" : "Save Changes"}
 				</button>
 			</form>
 		</div>

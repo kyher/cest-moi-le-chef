@@ -24,10 +24,12 @@ function MyRecipesPage() {
 	return (
 		<div className="py-10">
 			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-				<h1 className="text-3xl font-bold text-stone-900">My Recipes</h1>
+				<h1 className="text-3xl font-bold font-serif text-stone-900">
+					My Recipes
+				</h1>
 				<Link
 					to="/my-recipes/new"
-					className="h-9 px-4 text-sm font-medium bg-stone-800 text-white hover:bg-stone-700 transition-colors flex items-center self-start sm:self-auto"
+					className="h-9 px-4 text-sm font-medium rounded-sm bg-stone-800 text-white hover:bg-stone-700 transition-colors flex items-center self-start sm:self-auto"
 				>
 					+ New Recipe
 				</Link>

@@ -33,7 +33,9 @@ function HomePage() {
 		<div className="min-h-screen flex flex-col">
 			<SiteHeader user={session?.user ?? null} />
 			<div className="w-3/4 mx-auto py-10">
-				<h1 className="text-3xl font-bold text-stone-900 mb-8">Recipes</h1>
+				<h1 className="text-3xl font-bold font-serif text-stone-900 mb-8">
+					Recipes
+				</h1>
 
 				<RecipeFilterPanel
 					show={showFilters}
@@ -72,10 +74,10 @@ function HomePage() {
 								key={recipe.id}
 								to="/recipes/$recipeId"
 								params={{ recipeId: recipe.id }}
-								className="flex items-start justify-between gap-4 p-4 bg-white border border-stone-200 hover:border-stone-400 transition-colors"
+								className="flex items-start justify-between gap-4 p-5 bg-stone-50 border border-stone-200 border-l-2 border-l-amber-300 hover:border-l-amber-500 transition-colors"
 							>
 								<div>
-									<h2 className="font-semibold text-stone-900">
+									<h2 className="font-semibold font-serif text-stone-900">
 										{recipe.title}
 									</h2>
 									<p className="text-xs text-stone-400 mt-0.5">

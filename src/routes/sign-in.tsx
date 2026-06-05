@@ -39,7 +39,9 @@ function SignIn() {
 	return (
 		<div className="min-h-screen flex items-center justify-center bg-stone-100">
 			<div className="w-full max-w-sm p-8 bg-white border border-stone-200 shadow-sm">
-				<h1 className="text-2xl font-bold text-stone-900 mb-6">Sign in</h1>
+				<h1 className="text-2xl font-bold font-serif text-stone-900 mb-6">
+					Sign in
+				</h1>
 				<form onSubmit={handleSubmit} className="space-y-4">
 					{error && <p className="text-sm text-red-600">{error}</p>}
 					<div className="space-y-1">
@@ -55,7 +57,7 @@ function SignIn() {
 							required
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
-							className="w-full h-9 px-3 text-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
+							className="w-full h-9 px-3 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
 						/>
 					</div>
 					<div className="space-y-1">
@@ -71,13 +73,13 @@ function SignIn() {
 							required
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
-							className="w-full h-9 px-3 text-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
+							className="w-full h-9 px-3 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
 						/>
 					</div>
 					<button
 						type="submit"
 						disabled={pending}
-						className="w-full h-9 px-4 text-sm font-medium bg-stone-800 text-white hover:bg-stone-700 disabled:opacity-50 transition-colors"
+						className="w-full h-9 px-4 text-sm font-medium rounded-sm bg-stone-800 text-white hover:bg-stone-700 disabled:opacity-50 transition-colors"
 					>
 						{pending ? "Signing in…" : "Sign in"}
 					</button>

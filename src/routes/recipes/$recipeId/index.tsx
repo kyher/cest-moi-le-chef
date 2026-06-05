@@ -86,14 +86,14 @@ function Detail({ recipe, isOwner }: { recipe: Recipe; isOwner: boolean }) {
 						<Link
 							to="/recipes/$recipeId/edit"
 							params={{ recipeId: recipe.id }}
-							className="h-8 px-3 text-sm font-medium border border-stone-300 text-stone-700 hover:border-stone-500 transition-colors flex items-center"
+							className="h-8 px-3 text-sm font-medium rounded-sm border border-stone-300 text-stone-700 hover:border-stone-500 transition-colors flex items-center"
 						>
 							Edit
 						</Link>
 						<button
 							type="button"
 							onClick={handleDeleteRecipe}
-							className="h-8 px-3 text-sm font-medium border border-red-200 text-red-600 hover:border-red-400 transition-colors"
+							className="h-8 px-3 text-sm font-medium rounded-sm border border-red-200 text-red-600 hover:border-red-400 transition-colors"
 						>
 							Delete
 						</button>
@@ -101,7 +101,9 @@ function Detail({ recipe, isOwner }: { recipe: Recipe; isOwner: boolean }) {
 				)}
 			</div>
 
-			<h1 className="text-3xl font-bold text-stone-900 mb-1">{recipe.title}</h1>
+			<h1 className="text-3xl font-bold font-serif text-stone-900 mb-1">
+				{recipe.title}
+			</h1>
 			{!isOwner && (
 				<p className="text-sm text-stone-400 mb-3">by {recipe.user.name}</p>
 			)}
@@ -162,12 +164,12 @@ function Detail({ recipe, isOwner }: { recipe: Recipe; isOwner: boolean }) {
 							onChange={(e) => setNoteBody(e.target.value)}
 							placeholder="Add a note…"
 							rows={2}
-							className="w-full px-3 py-2 text-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400 resize-none"
+							className="w-full px-3 py-2 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400 resize-none"
 						/>
 						<button
 							type="submit"
 							disabled={addingNote || !noteBody.trim()}
-							className="self-end h-9 px-4 text-sm font-medium bg-stone-800 text-white hover:bg-stone-700 disabled:opacity-50 transition-colors"
+							className="self-end h-9 px-4 text-sm font-medium rounded-sm bg-stone-800 text-white hover:bg-stone-700 disabled:opacity-50 transition-colors"
 						>
 							Add
 						</button>

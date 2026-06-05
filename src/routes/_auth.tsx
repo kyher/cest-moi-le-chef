@@ -24,10 +24,10 @@ function AuthLayout() {
 
 	return (
 		<div className="min-h-screen flex flex-col">
-			<header className="border-b border-neutral-200 dark:border-neutral-800 px-4 h-14 flex items-center justify-between">
+			<header className="border-b border-stone-200 bg-stone-100 px-4 h-16 flex items-center justify-between">
 				<Link
 					to="/"
-					className="font-bold text-stone-900 hover:text-stone-600 transition-colors"
+					className="font-serif italic text-lg text-stone-900 hover:text-stone-600 transition-colors"
 				>
 					c'est moi le chef
 				</Link>
@@ -47,7 +47,7 @@ function AuthLayout() {
 								},
 							});
 						}}
-						className="h-9 px-4 text-sm font-medium bg-white text-stone-900 border border-stone-300 hover:bg-stone-50 transition-colors"
+						className="h-9 px-4 text-sm font-medium rounded-sm bg-white text-stone-900 border border-stone-300 hover:bg-stone-50 transition-colors"
 					>
 						Sign out
 					</button>

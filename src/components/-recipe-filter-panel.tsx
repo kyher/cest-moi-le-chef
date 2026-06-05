@@ -40,7 +40,7 @@ export function RecipeFilterPanel({
 					placeholder="Search recipes…"
 					value={searchInput}
 					onChange={(e) => onSearchChange(e.target.value)}
-					className="w-full px-3 py-2 text-sm border border-stone-200 bg-white placeholder-stone-400 focus:outline-none focus:border-stone-400"
+					className="w-full px-3 py-2 text-sm rounded-sm border border-stone-200 bg-white placeholder-stone-400 focus:outline-none focus:border-stone-400"
 				/>
 				{searchInput && (
 					<button
@@ -70,8 +70,8 @@ export function RecipeFilterPanel({
 										onClick={() => onToggleTag(tag.name)}
 										className={
 											active
-												? "px-2.5 py-1 text-xs font-medium bg-amber-100 text-stone-800 border border-amber-400 cursor-pointer"
-												: "px-2.5 py-1 text-xs text-stone-600 bg-white border border-stone-300 hover:border-stone-400 transition-colors cursor-pointer"
+												? "px-2.5 py-1 text-xs font-medium rounded-sm bg-amber-100 text-stone-800 border border-amber-400 cursor-pointer"
+												: "px-2.5 py-1 text-xs rounded-sm text-stone-600 bg-white border border-stone-300 hover:border-stone-400 transition-colors cursor-pointer"
 										}
 									>
 										{tag.name}
@@ -90,8 +90,8 @@ export function RecipeFilterPanel({
 									onClick={() => onToggleMaxTime(value)}
 									className={
 										active
-											? "px-2.5 py-1 text-xs font-medium bg-stone-800 text-white cursor-pointer"
-											: "px-2.5 py-1 text-xs text-stone-600 bg-white border border-stone-300 hover:border-stone-400 transition-colors cursor-pointer"
+											? "px-2.5 py-1 text-xs font-medium rounded-sm bg-amber-100 text-stone-800 border border-amber-400 cursor-pointer"
+											: "px-2.5 py-1 text-xs rounded-sm text-stone-600 bg-white border border-stone-300 hover:border-stone-400 transition-colors cursor-pointer"
 									}
 								>
 									{label}

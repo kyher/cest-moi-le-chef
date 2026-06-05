@@ -41,14 +41,16 @@ export function RecipeList({ recipes, hasConstraints, onReset }: Props) {
 			{recipes.map((recipe) => (
 				<div
 					key={recipe.id}
-					className="flex items-start justify-between gap-4 p-4 bg-white border border-stone-200 hover:border-stone-400 transition-colors"
+					className="flex items-start justify-between gap-4 p-5 bg-stone-50 border border-stone-200 border-l-2 border-l-amber-300 hover:border-l-amber-500 transition-colors"
 				>
 					<Link
 						to="/recipes/$recipeId"
 						params={{ recipeId: recipe.id }}
 						className="flex-1 min-w-0"
 					>
-						<h2 className="font-semibold text-stone-900">{recipe.title}</h2>
+						<h2 className="font-semibold font-serif text-stone-900">
+							{recipe.title}
+						</h2>
 						{recipe.tags.length > 0 && (
 							<div className="flex flex-wrap gap-1 mt-2">
 								{recipe.tags.map(({ tag }) => (

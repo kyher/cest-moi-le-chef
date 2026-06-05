@@ -65,7 +65,9 @@ function NewRecipe() {
 			>
 				← My Recipes
 			</Link>
-			<h1 className="text-3xl font-bold text-stone-900 mb-8">New Recipe</h1>
+			<h1 className="text-3xl font-bold font-serif text-stone-900 mb-8">
+				New Recipe
+			</h1>
 
 			<form onSubmit={handleSubmit} className="space-y-6">
 				{error && <p className="text-sm text-red-600">{error}</p>}
@@ -80,7 +82,7 @@ function NewRecipe() {
 						required
 						value={title}
 						onChange={(e) => setTitle(e.target.value)}
-						className="w-full h-9 px-3 text-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
+						className="w-full h-9 px-3 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
 					/>
 				</div>
 
@@ -96,7 +98,7 @@ function NewRecipe() {
 							{tags.map((tag) => (
 								<span
 									key={tag}
-									className="flex items-center gap-1 px-2 py-0.5 text-xs bg-amber-50 text-stone-700 border border-amber-200"
+									className="flex items-center gap-1 px-2 py-0.5 text-xs rounded-sm bg-amber-50 text-stone-700 border border-amber-200"
 								>
 									{tag}
 									<button
@@ -123,7 +125,7 @@ function NewRecipe() {
 						onBlur={() => tagInput && addTag(tagInput)}
 						id="tag-input"
 						placeholder="Type a tag and press Enter"
-						className="w-full h-9 px-3 text-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
+						className="w-full h-9 px-3 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
 					/>
 				</div>
 
@@ -142,7 +144,7 @@ function NewRecipe() {
 							value={hours}
 							onChange={(e) => setHours(e.target.value)}
 							placeholder="0"
-							className="w-20 h-9 px-3 text-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
+							className="w-20 h-9 px-3 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
 						/>
 						<span className="text-sm text-stone-500">hr</span>
 						<input
@@ -152,7 +154,7 @@ function NewRecipe() {
 							value={minutes}
 							onChange={(e) => setMinutes(e.target.value)}
 							placeholder="0"
-							className="w-20 h-9 px-3 text-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
+							className="w-20 h-9 px-3 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
 						/>
 						<span className="text-sm text-stone-500">min</span>
 					</div>
@@ -170,7 +172,7 @@ function NewRecipe() {
 						value={ingredients}
 						onChange={(e) => setIngredients(e.target.value)}
 						rows={6}
-						className="w-full px-3 py-2 text-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400 resize-y"
+						className="w-full px-3 py-2 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400 resize-y"
 					/>
 				</div>
 
@@ -186,7 +188,7 @@ function NewRecipe() {
 						value={method}
 						onChange={(e) => setMethod(e.target.value)}
 						rows={8}
-						className="w-full px-3 py-2 text-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400 resize-y"
+						className="w-full px-3 py-2 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400 resize-y"
 					/>
 				</div>
 
@@ -216,7 +218,7 @@ function NewRecipe() {
 				<button
 					type="submit"
 					disabled={pending}
-					className="h-9 px-6 text-sm font-medium bg-stone-800 text-white hover:bg-stone-700 disabled:opacity-50 transition-colors"
+					className="h-9 px-6 text-sm font-medium rounded-sm bg-stone-800 text-white hover:bg-stone-700 disabled:opacity-50 transition-colors"
 				>
 					{pending ? "Saving…" : "Save Recipe"}
 				</button>

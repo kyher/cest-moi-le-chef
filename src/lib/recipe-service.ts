@@ -1,4 +1,5 @@
 import { prisma } from "#/db";
+import { deleteImageFile } from "#/lib/image-storage";
 
 async function syncTags(recipeId: string, tagNames: string[], userId: string) {
 	await prisma.recipeTag.deleteMany({ where: { recipeId } });
@@ -181,7 +182,16 @@ export async function setRecipeVisibility(
 }
 
 export async function removeRecipe(recipeId: string, userId: string) {
+	const recipe = await prisma.recipe.findFirst({ where: { id: recipeId, userId } });
+	if (recipe?.imageUrl) await deleteImageFile(recipe.imageUrl);
 	await prisma.recipe.delete({ where: { id: recipeId, userId } });
+}
+
+export async function removeRecipeImage(recipeId: string, userId: string) {
+	const recipe = await prisma.recipe.findFirst({ where: { id: recipeId, userId } });
+	if (!recipe) throw new Error("Recipe not found");
+	if (recipe.imageUrl) await deleteImageFile(recipe.imageUrl);
+	await prisma.recipe.update({ where: { id: recipeId }, data: { imageUrl: null } });
 }
 
 export async function addNote(recipeId: string, userId: string, body: string) {

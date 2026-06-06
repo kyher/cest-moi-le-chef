@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { ImageUpload } from "#/components/-image-upload";
 import { createRecipe } from "#/lib/recipes";
 
 export const Route = createFileRoute("/_auth/my-recipes/new")({
@@ -17,6 +18,8 @@ function NewRecipe() {
 	const [tags, setTags] = useState<string[]>([]);
 	const [tagInput, setTagInput] = useState("");
 	const [isPublic, setIsPublic] = useState(false);
+	const [imageFile, setImageFile] = useState<File | null>(null);
+	const [imagePreview, setImagePreview] = useState<string | null>(null);
 	const [pending, setPending] = useState(false);
 	const [error, setError] = useState("");
 
@@ -45,6 +48,12 @@ function NewRecipe() {
 					tags,
 				},
 			});
+			if (imageFile) {
+				const fd = new FormData();
+				fd.append("recipeId", recipe.id);
+				fd.append("image", imageFile);
+				await fetch("/api/recipe-image", { method: "POST", body: fd });
+			}
 			toast("Recipe saved");
 			await router.navigate({
 				to: "/recipes/$recipeId",
@@ -191,6 +200,18 @@ function NewRecipe() {
 						className="w-full px-3 py-2 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400 resize-y"
 					/>
 				</div>
+
+				<ImageUpload
+					previewUrl={imagePreview}
+					onChange={(file, url) => {
+						setImageFile(file);
+						setImagePreview(url);
+					}}
+					onRemove={() => {
+						setImageFile(null);
+						setImagePreview(null);
+					}}
+				/>
 
 				<div className="flex items-center gap-3">
 					<button

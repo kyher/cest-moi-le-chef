@@ -101,6 +101,14 @@ function Detail({ recipe, isOwner }: { recipe: Recipe; isOwner: boolean }) {
 				)}
 			</div>
 
+			{recipe.imageUrl && (
+				<img
+					src={recipe.imageUrl}
+					alt={recipe.title}
+					className="w-full max-w-2xl aspect-video object-cover rounded-sm border border-stone-200 mb-6"
+				/>
+			)}
+
 			<h1 className="text-3xl font-bold font-serif text-stone-900 mb-1">
 				{recipe.title}
 			</h1>

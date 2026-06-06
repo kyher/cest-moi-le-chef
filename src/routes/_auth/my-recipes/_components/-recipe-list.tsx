@@ -46,23 +46,32 @@ export function RecipeList({ recipes, hasConstraints, onReset }: Props) {
 					<Link
 						to="/recipes/$recipeId"
 						params={{ recipeId: recipe.id }}
-						className="flex-1 min-w-0"
+						className="flex items-start gap-4 flex-1 min-w-0"
 					>
-						<h2 className="font-semibold font-serif text-stone-900">
-							{recipe.title}
-						</h2>
-						{recipe.tags.length > 0 && (
-							<div className="flex flex-wrap gap-1 mt-2">
-								{recipe.tags.map(({ tag }) => (
-									<span
-										key={tag.id}
-										className="px-2 py-0.5 text-xs bg-amber-50 text-stone-600 border border-amber-200"
-									>
-										{tag.name}
-									</span>
-								))}
-							</div>
+						{recipe.imageUrl && (
+							<img
+								src={recipe.imageUrl}
+								alt=""
+								className="w-16 h-16 object-cover rounded-sm shrink-0 border border-stone-200"
+							/>
 						)}
+						<div className="min-w-0">
+							<h2 className="font-semibold font-serif text-stone-900">
+								{recipe.title}
+							</h2>
+							{recipe.tags.length > 0 && (
+								<div className="flex flex-wrap gap-1 mt-2">
+									{recipe.tags.map(({ tag }) => (
+										<span
+											key={tag.id}
+											className="px-2 py-0.5 text-xs bg-amber-50 text-stone-600 border border-amber-200"
+										>
+											{tag.name}
+										</span>
+									))}
+								</div>
+							)}
+						</div>
 					</Link>
 					<div className="flex flex-col items-end gap-2 shrink-0 mt-0.5">
 						{recipe.totalTime != null && (

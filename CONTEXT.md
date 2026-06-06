@@ -28,6 +28,10 @@ _Avoid_: Landing page, public feed, discover page
 The authenticated owner's complete recipe list, accessible at `/my-recipes`. Shows all of the owner's recipes regardless of Visibility — both public and private. Supports Search, Filter, and per-recipe Visibility toggling.
 _Avoid_: Dashboard, recipe list
 
+**Cover Image**:
+An optional single photograph attached to a Recipe, used as a visual identifier when browsing. Stored as a file on the server filesystem; the Recipe holds the URL path. Access is not restricted by Visibility — anyone who knows the URL can fetch it. Filenames are random UUIDs to prevent enumeration.
+_Avoid_: Photo, thumbnail, hero image
+
 **Total Time**:
 The estimated duration to prepare and cook a Recipe from start to finish, stored as an integer number of minutes. Optional — a Recipe without a Total Time is valid. Displayed in compact format (e.g. "1h 30m", "45m"). Entered as separate hours and minutes fields.
 _Avoid_: Cook time, prep time, duration

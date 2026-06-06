@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { ImageUpload } from "#/components/-image-upload";
 import { SiteHeader } from "#/components/-site-header";
 import { getRecipe, updateRecipe } from "#/lib/recipes";
 import { getSession } from "#/lib/session";
@@ -60,6 +61,11 @@ function EditForm({ recipe }: { recipe: Recipe }) {
 	const [tags, setTags] = useState<string[]>(initialTags);
 	const [tagInput, setTagInput] = useState("");
 	const [isPublic, setIsPublic] = useState(recipe.isPublic);
+	const [imageFile, setImageFile] = useState<File | null>(null);
+	const [imagePreview, setImagePreview] = useState<string | null>(
+		recipe.imageUrl ?? null,
+	);
+	const [removeImage, setRemoveImage] = useState(false);
 	const [pending, setPending] = useState(false);
 	const [error, setError] = useState("");
 
@@ -78,6 +84,17 @@ function EditForm({ recipe }: { recipe: Recipe }) {
 			const h = parseInt(hours, 10) || 0;
 			const m = parseInt(minutes, 10) || 0;
 			const totalTime = h * 60 + m || undefined;
+			if (imageFile) {
+				const fd = new FormData();
+				fd.append("recipeId", recipe.id);
+				fd.append("image", imageFile);
+				await fetch("/api/recipe-image", { method: "POST", body: fd });
+			} else if (removeImage) {
+				const fd = new FormData();
+				fd.append("recipeId", recipe.id);
+				fd.append("action", "remove");
+				await fetch("/api/recipe-image", { method: "POST", body: fd });
+			}
 			await updateRecipe({
 				data: {
 					recipeId: recipe.id,
@@ -235,6 +252,20 @@ function EditForm({ recipe }: { recipe: Recipe }) {
 						className="w-full px-3 py-2 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400 resize-y"
 					/>
 				</div>
+
+				<ImageUpload
+					previewUrl={imagePreview}
+					onChange={(file, url) => {
+						setImageFile(file);
+						setImagePreview(url);
+						setRemoveImage(false);
+					}}
+					onRemove={() => {
+						setImageFile(null);
+						setImagePreview(null);
+						setRemoveImage(true);
+					}}
+				/>
 
 				<div className="flex items-center gap-3">
 					<button

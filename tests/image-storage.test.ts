@@ -38,9 +38,9 @@ describe("validateImageFile", () => {
 	});
 
 	it("rejects PDF", () => {
-		expect(() =>
-			validateImageFile(makeFile("application/pdf", 100)),
-		).toThrow("Invalid file type");
+		expect(() => validateImageFile(makeFile("application/pdf", 100))).toThrow(
+			"Invalid file type",
+		);
 	});
 
 	it("rejects a file over 5 MB", () => {

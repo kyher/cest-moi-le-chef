@@ -1,4 +1,12 @@
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+	afterAll,
+	beforeAll,
+	beforeEach,
+	describe,
+	expect,
+	it,
+	vi,
+} from "vitest";
 import { prisma } from "#/db";
 import {
 	addNote,
@@ -257,14 +265,21 @@ describe("removeRecipe", () => {
 
 	it("deletes the image file when the recipe has a cover image", async () => {
 		const recipe = await prisma.recipe.create({
-			data: { title: "Recipe", userId: TEST_USER_ID, imageUrl: "/uploads/abc.jpg" },
+			data: {
+				title: "Recipe",
+				userId: TEST_USER_ID,
+				imageUrl: "/uploads/abc.jpg",
+			},
 		});
 		await removeRecipe(recipe.id, TEST_USER_ID);
 		expect(deleteImageFile).toHaveBeenCalledWith("/uploads/abc.jpg");
 	});
 
 	it("does not call deleteImageFile when there is no cover image", async () => {
-		const recipe = await createRecipe(TEST_USER_ID, { title: "Recipe", tags: [] });
+		const recipe = await createRecipe(TEST_USER_ID, {
+			title: "Recipe",
+			tags: [],
+		});
 		await removeRecipe(recipe.id, TEST_USER_ID);
 		expect(deleteImageFile).not.toHaveBeenCalled();
 	});
@@ -273,31 +288,49 @@ describe("removeRecipe", () => {
 describe("removeRecipeImage", () => {
 	it("sets imageUrl to null in the database", async () => {
 		const recipe = await prisma.recipe.create({
-			data: { title: "Recipe", userId: TEST_USER_ID, imageUrl: "/uploads/abc.jpg" },
+			data: {
+				title: "Recipe",
+				userId: TEST_USER_ID,
+				imageUrl: "/uploads/abc.jpg",
+			},
 		});
 		await removeRecipeImage(recipe.id, TEST_USER_ID);
-		const updated = await prisma.recipe.findUnique({ where: { id: recipe.id } });
+		const updated = await prisma.recipe.findUnique({
+			where: { id: recipe.id },
+		});
 		expect(updated?.imageUrl).toBeNull();
 	});
 
 	it("deletes the image file from disk", async () => {
 		const recipe = await prisma.recipe.create({
-			data: { title: "Recipe", userId: TEST_USER_ID, imageUrl: "/uploads/abc.jpg" },
+			data: {
+				title: "Recipe",
+				userId: TEST_USER_ID,
+				imageUrl: "/uploads/abc.jpg",
+			},
 		});
 		await removeRecipeImage(recipe.id, TEST_USER_ID);
 		expect(deleteImageFile).toHaveBeenCalledWith("/uploads/abc.jpg");
 	});
 
 	it("succeeds without calling deleteImageFile when there is no image", async () => {
-		const recipe = await createRecipe(TEST_USER_ID, { title: "Recipe", tags: [] });
+		const recipe = await createRecipe(TEST_USER_ID, {
+			title: "Recipe",
+			tags: [],
+		});
 		await removeRecipeImage(recipe.id, TEST_USER_ID);
 		expect(deleteImageFile).not.toHaveBeenCalled();
-		const updated = await prisma.recipe.findUnique({ where: { id: recipe.id } });
+		const updated = await prisma.recipe.findUnique({
+			where: { id: recipe.id },
+		});
 		expect(updated?.imageUrl).toBeNull();
 	});
 
 	it("throws when the recipe does not belong to the user", async () => {
-		const recipe = await createRecipe(TEST_USER_ID, { title: "Recipe", tags: [] });
+		const recipe = await createRecipe(TEST_USER_ID, {
+			title: "Recipe",
+			tags: [],
+		});
 		await expect(removeRecipeImage(recipe.id, "other-user")).rejects.toThrow(
 			"Recipe not found",
 		);

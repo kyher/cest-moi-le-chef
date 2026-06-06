@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { auth } from "#/lib/auth";
 import { prisma } from "#/db";
+import { auth } from "#/lib/auth";
 import { deleteImageFile, writeImageFile } from "#/lib/image-storage";
 
 export const Route = createFileRoute("/api/recipe-image")({
@@ -46,8 +46,7 @@ export const Route = createFileRoute("/api/recipe-image")({
 					});
 					return Response.json({ imageUrl });
 				} catch (err) {
-					const message =
-						err instanceof Error ? err.message : "Upload failed";
+					const message = err instanceof Error ? err.message : "Upload failed";
 					return new Response(message, { status: 400 });
 				}
 			},

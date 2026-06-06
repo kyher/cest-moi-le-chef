@@ -1,6 +1,6 @@
+import { randomUUID } from "node:crypto";
 import { mkdir, unlink, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { randomUUID } from "node:crypto";
 
 function uploadsDir() {
 	return process.env.UPLOADS_DIR ?? "./public/uploads";

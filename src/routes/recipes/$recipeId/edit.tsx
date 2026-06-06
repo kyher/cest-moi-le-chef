@@ -62,7 +62,9 @@ function EditForm({ recipe }: { recipe: Recipe }) {
 	const [tagInput, setTagInput] = useState("");
 	const [isPublic, setIsPublic] = useState(recipe.isPublic);
 	const [imageFile, setImageFile] = useState<File | null>(null);
-	const [imagePreview, setImagePreview] = useState<string | null>(recipe.imageUrl ?? null);
+	const [imagePreview, setImagePreview] = useState<string | null>(
+		recipe.imageUrl ?? null,
+	);
 	const [removeImage, setRemoveImage] = useState(false);
 	const [pending, setPending] = useState(false);
 	const [error, setError] = useState("");

@@ -52,4 +52,24 @@ describe("validateRecipeSearch", () => {
 		const result = validateRecipeSearch({ tags: 123 });
 		expect(result.tags).toBeUndefined();
 	});
+
+	it("returns 'public' for a valid visibility value", () => {
+		const result = validateRecipeSearch({ visibility: "public" });
+		expect(result.visibility).toBe("public");
+	});
+
+	it("returns 'private' for a valid visibility value", () => {
+		const result = validateRecipeSearch({ visibility: "private" });
+		expect(result.visibility).toBe("private");
+	});
+
+	it("returns undefined for an invalid visibility value", () => {
+		const result = validateRecipeSearch({ visibility: "all" });
+		expect(result.visibility).toBeUndefined();
+	});
+
+	it("returns undefined for a missing visibility field", () => {
+		const result = validateRecipeSearch({});
+		expect(result.visibility).toBeUndefined();
+	});
 });

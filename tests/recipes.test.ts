@@ -39,6 +39,7 @@ async function upsertOtherUser() {
 			name: "Other Chef",
 			email: "other-chef@test.local",
 			emailVerified: false,
+			username: "other-chef",
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		},
@@ -60,6 +61,7 @@ beforeAll(async () => {
 			name: "Test User",
 			email: "test-recipes@test.local",
 			emailVerified: false,
+			username: "test-recipes-user",
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		},
@@ -393,6 +395,7 @@ describe("listRecipes", () => {
 				name: "Other",
 				email: "other-isolation@test.local",
 				emailVerified: false,
+				username: "other-isolation",
 				createdAt: new Date(),
 				updatedAt: new Date(),
 			},
@@ -534,6 +537,71 @@ describe("listRecipes", () => {
 		});
 	});
 
+	describe("visibility filter", () => {
+		it("returns only public recipes when visibility is 'public'", async () => {
+			await createRecipe(TEST_USER_ID, {
+				title: "Public One",
+				tags: [],
+				isPublic: true,
+			});
+			await createRecipe(TEST_USER_ID, { title: "Private One", tags: [] });
+			const results = await listRecipes(TEST_USER_ID, { visibility: "public" });
+			expect(results.map((r) => r.title)).toEqual(["Public One"]);
+		});
+
+		it("returns only private recipes when visibility is 'private'", async () => {
+			await createRecipe(TEST_USER_ID, {
+				title: "Public One",
+				tags: [],
+				isPublic: true,
+			});
+			await createRecipe(TEST_USER_ID, { title: "Private One", tags: [] });
+			const results = await listRecipes(TEST_USER_ID, {
+				visibility: "private",
+			});
+			expect(results.map((r) => r.title)).toEqual(["Private One"]);
+		});
+
+		it("returns all recipes when no visibility filter is set", async () => {
+			await createRecipe(TEST_USER_ID, {
+				title: "Public One",
+				tags: [],
+				isPublic: true,
+			});
+			await createRecipe(TEST_USER_ID, { title: "Private One", tags: [] });
+			const results = await listRecipes(TEST_USER_ID);
+			expect(results).toHaveLength(2);
+		});
+
+		it("returns no results when no recipes match the visibility", async () => {
+			await createRecipe(TEST_USER_ID, { title: "Private Only", tags: [] });
+			const results = await listRecipes(TEST_USER_ID, { visibility: "public" });
+			expect(results).toHaveLength(0);
+		});
+
+		it("combines visibility with another filter", async () => {
+			await createRecipe(TEST_USER_ID, {
+				title: "Public Italian",
+				tags: ["italian"],
+				isPublic: true,
+			});
+			await createRecipe(TEST_USER_ID, {
+				title: "Private Italian",
+				tags: ["italian"],
+			});
+			await createRecipe(TEST_USER_ID, {
+				title: "Public Other",
+				tags: ["other"],
+				isPublic: true,
+			});
+			const results = await listRecipes(TEST_USER_ID, {
+				visibility: "public",
+				tags: ["italian"],
+			});
+			expect(results.map((r) => r.title)).toEqual(["Public Italian"]);
+		});
+	});
+
 	describe("combined filters", () => {
 		it("applies tag and maxTime filters together", async () => {
 			await createRecipe(TEST_USER_ID, {
@@ -614,6 +682,7 @@ describe("listTagsInUse", () => {
 				name: "Other",
 				email: "other-tags@test.local",
 				emailVerified: false,
+				username: "other-tags",
 				createdAt: new Date(),
 				updatedAt: new Date(),
 			},

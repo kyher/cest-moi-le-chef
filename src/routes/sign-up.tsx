@@ -19,6 +19,7 @@ export const Route = createFileRoute("/sign-up")({
 function SignUp() {
 	const router = useRouter();
 	const [name, setName] = useState("");
+	const [username, setUsername] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
@@ -28,7 +29,12 @@ function SignUp() {
 		e.preventDefault();
 		setPending(true);
 		setError("");
-		const { error } = await authClient.signUp.email({ name, email, password });
+		const { error } = await authClient.signUp.email({
+			name,
+			username,
+			email,
+			password,
+		});
 		setPending(false);
 		if (error) {
 			setError(error.message ?? "Sign up failed");
@@ -60,6 +66,28 @@ function SignUp() {
 							onChange={(e) => setName(e.target.value)}
 							className="w-full h-9 px-3 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
 						/>
+					</div>
+					<div className="space-y-1">
+						<label
+							className="text-sm font-medium text-stone-700"
+							htmlFor="username"
+						>
+							Username
+						</label>
+						<input
+							id="username"
+							type="text"
+							required
+							value={username}
+							onChange={(e) => setUsername(e.target.value.toLowerCase())}
+							pattern="[a-z0-9_-]+"
+							minLength={3}
+							maxLength={30}
+							className="w-full h-9 px-3 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
+						/>
+						<p className="text-xs text-stone-400">
+							Letters, numbers, hyphens, underscores. Cannot be changed.
+						</p>
 					</div>
 					<div className="space-y-1">
 						<label

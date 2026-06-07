@@ -17,7 +17,14 @@ async function optionalUser() {
 }
 
 export const getRecipes = createServerFn()
-	.inputValidator((d: { tags?: string; maxTime?: number; q?: string }) => d)
+	.inputValidator(
+		(d: {
+			tags?: string;
+			maxTime?: number;
+			q?: string;
+			visibility?: "public" | "private";
+		}) => d,
+	)
 	.handler(async ({ data }) => {
 		const user = await requireUser();
 		const tags = data.tags?.split(",").filter(Boolean);
@@ -25,6 +32,7 @@ export const getRecipes = createServerFn()
 			tags,
 			maxTime: data.maxTime,
 			q: data.q,
+			visibility: data.visibility,
 		});
 	});
 
@@ -118,4 +126,10 @@ export const deleteNote = createServerFn({ method: "POST" })
 	.handler(async ({ data }) => {
 		const user = await requireUser();
 		await recipeService.removeNote(data.noteId, user.id);
+	});
+
+export const getProfile = createServerFn()
+	.inputValidator((d: { username: string }) => d)
+	.handler(async ({ data }) => {
+		return recipeService.findProfile(data.username);
 	});

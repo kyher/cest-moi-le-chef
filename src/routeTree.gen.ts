@@ -13,6 +13,7 @@ import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProfileUsernameRouteImport } from './routes/profile/$username'
 import { Route as ApiRecipeImageRouteImport } from './routes/api/recipe-image'
 import { Route as RecipesRecipeIdIndexRouteImport } from './routes/recipes/$recipeId/index'
 import { Route as AuthMyRecipesIndexRouteImport } from './routes/_auth/my-recipes/index'
@@ -37,6 +38,11 @@ const AuthRoute = AuthRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileUsernameRoute = ProfileUsernameRouteImport.update({
+  id: '/profile/$username',
+  path: '/profile/$username',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiRecipeImageRoute = ApiRecipeImageRouteImport.update({
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/api/recipe-image': typeof ApiRecipeImageRoute
+  '/profile/$username': typeof ProfileUsernameRoute
   '/my-recipes/new': typeof AuthMyRecipesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/recipes/$recipeId/edit': typeof RecipesRecipeIdEditRoute
@@ -86,6 +93,7 @@ export interface FileRoutesByTo {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/api/recipe-image': typeof ApiRecipeImageRoute
+  '/profile/$username': typeof ProfileUsernameRoute
   '/my-recipes/new': typeof AuthMyRecipesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/recipes/$recipeId/edit': typeof RecipesRecipeIdEditRoute
@@ -99,6 +107,7 @@ export interface FileRoutesById {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/api/recipe-image': typeof ApiRecipeImageRoute
+  '/profile/$username': typeof ProfileUsernameRoute
   '/_auth/my-recipes/new': typeof AuthMyRecipesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/recipes/$recipeId/edit': typeof RecipesRecipeIdEditRoute
@@ -112,6 +121,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/api/recipe-image'
+    | '/profile/$username'
     | '/my-recipes/new'
     | '/api/auth/$'
     | '/recipes/$recipeId/edit'
@@ -123,6 +133,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/api/recipe-image'
+    | '/profile/$username'
     | '/my-recipes/new'
     | '/api/auth/$'
     | '/recipes/$recipeId/edit'
@@ -135,6 +146,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/api/recipe-image'
+    | '/profile/$username'
     | '/_auth/my-recipes/new'
     | '/api/auth/$'
     | '/recipes/$recipeId/edit'
@@ -148,6 +160,7 @@ export interface RootRouteChildren {
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
   ApiRecipeImageRoute: typeof ApiRecipeImageRoute
+  ProfileUsernameRoute: typeof ProfileUsernameRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   RecipesRecipeIdEditRoute: typeof RecipesRecipeIdEditRoute
   RecipesRecipeIdIndexRoute: typeof RecipesRecipeIdIndexRoute
@@ -181,6 +194,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile/$username': {
+      id: '/profile/$username'
+      path: '/profile/$username'
+      fullPath: '/profile/$username'
+      preLoaderRoute: typeof ProfileUsernameRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/recipe-image': {
@@ -246,6 +266,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
   ApiRecipeImageRoute: ApiRecipeImageRoute,
+  ProfileUsernameRoute: ProfileUsernameRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   RecipesRecipeIdEditRoute: RecipesRecipeIdEditRoute,
   RecipesRecipeIdIndexRoute: RecipesRecipeIdIndexRoute,

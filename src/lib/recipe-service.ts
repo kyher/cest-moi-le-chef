@@ -1,6 +1,22 @@
 import { prisma } from "#/db";
 import { deleteImageFile } from "#/lib/image-storage";
 
+export async function findProfile(username: string) {
+	const user = await prisma.user.findUnique({
+		where: { username },
+		select: {
+			name: true,
+			username: true,
+			recipes: {
+				where: { isPublic: true },
+				include: { tags: { include: { tag: true } } },
+				orderBy: { updatedAt: "desc" },
+			},
+		},
+	});
+	return user;
+}
+
 async function syncTags(recipeId: string, tagNames: string[], userId: string) {
 	await prisma.recipeTag.deleteMany({ where: { recipeId } });
 	for (const raw of tagNames) {
@@ -17,7 +33,12 @@ async function syncTags(recipeId: string, tagNames: string[], userId: string) {
 
 export function listRecipes(
 	userId: string,
-	filters: { tags?: string[]; maxTime?: number; q?: string } = {},
+	filters: {
+		tags?: string[];
+		maxTime?: number;
+		q?: string;
+		visibility?: "public" | "private";
+	} = {},
 ) {
 	const tagFilters =
 		filters.tags && filters.tags.length > 0
@@ -32,6 +53,12 @@ export function listRecipes(
 			title: filters.q
 				? { contains: filters.q, mode: "insensitive" }
 				: undefined,
+			isPublic:
+				filters.visibility === "public"
+					? true
+					: filters.visibility === "private"
+						? false
+						: undefined,
 		},
 		include: {
 			tags: { include: { tag: true } },
@@ -62,7 +89,7 @@ export function listPublicRecipes(
 		},
 		include: {
 			tags: { include: { tag: true } },
-			user: { select: { name: true } },
+			user: { select: { name: true, username: true } },
 		},
 		orderBy: { updatedAt: "desc" },
 	});
@@ -101,7 +128,7 @@ export async function findRecipe(recipeId: string, viewerId: string | null) {
 			include: {
 				tags: { include: { tag: true } },
 				notes: { orderBy: { createdAt: "desc" } },
-				user: { select: { name: true } },
+				user: { select: { name: true, username: true } },
 			},
 		});
 		if (owned) return { ...owned, isOwner: true as const };
@@ -112,7 +139,7 @@ export async function findRecipe(recipeId: string, viewerId: string | null) {
 		where: { id: recipeId, isPublic: true },
 		include: {
 			tags: { include: { tag: true } },
-			user: { select: { name: true } },
+			user: { select: { name: true, username: true } },
 		},
 	});
 	if (!recipe) return null;

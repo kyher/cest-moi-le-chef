@@ -40,11 +40,13 @@ function MyRecipesPage() {
 				tagsInUse={tagsInUse}
 				activeTags={filters.activeTags}
 				activeMaxTime={filters.activeMaxTime}
+				activeVisibility={filters.activeVisibility}
 				hasConstraints={filters.hasConstraints}
 				searchInput={filters.searchInput}
 				onSearchChange={filters.setSearchInput}
 				onToggleTag={filters.toggleTag}
 				onToggleMaxTime={filters.toggleMaxTime}
+				onToggleVisibility={filters.toggleVisibility}
 				onReset={filters.reset}
 			/>
 

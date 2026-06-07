@@ -70,27 +70,35 @@ function HomePage() {
 				) : (
 					<div className="space-y-2">
 						{recipes.map((recipe) => (
-							<Link
+							<div
 								key={recipe.id}
-								to="/recipes/$recipeId"
-								params={{ recipeId: recipe.id }}
-								className="flex items-start justify-between gap-4 p-5 bg-stone-50 border border-stone-200 border-l-2 border-l-amber-300 hover:border-l-amber-500 transition-colors"
+								className="relative flex items-start justify-between gap-4 p-5 bg-stone-50 border border-stone-200 border-l-2 border-l-amber-300 hover:border-l-amber-500 transition-colors"
 							>
+								<Link
+									to="/recipes/$recipeId"
+									params={{ recipeId: recipe.id }}
+									className="absolute inset-0"
+									aria-label={recipe.title}
+								/>
 								<div className="flex items-start gap-4 flex-1 min-w-0">
 									{recipe.imageUrl && (
 										<img
 											src={recipe.imageUrl}
 											alt=""
-											className="w-16 h-16 object-cover rounded-sm shrink-0 border border-stone-200"
+											className="relative w-16 h-16 object-cover rounded-sm shrink-0 border border-stone-200"
 										/>
 									)}
-									<div className="min-w-0">
+									<div className="relative min-w-0">
 										<h2 className="font-semibold font-serif text-stone-900">
 											{recipe.title}
 										</h2>
-										<p className="text-xs text-stone-400 mt-0.5">
+										<Link
+											to="/profile/$username"
+											params={{ username: recipe.user.username }}
+											className="text-xs text-stone-400 mt-0.5 hover:text-stone-600 hover:underline underline-offset-2"
+										>
 											by {recipe.user.name}
-										</p>
+										</Link>
 										{recipe.tags.length > 0 && (
 											<div className="flex flex-wrap gap-1 mt-2">
 												{recipe.tags.map(({ tag }) => (
@@ -106,11 +114,11 @@ function HomePage() {
 									</div>
 								</div>
 								{recipe.totalTime != null && (
-									<span className="text-xs text-stone-500 shrink-0 mt-0.5">
+									<span className="relative text-xs text-stone-500 shrink-0 mt-0.5">
 										{formatTotalTime(recipe.totalTime)}
 									</span>
 								)}
-							</Link>
+							</div>
 						))}
 					</div>
 				)}

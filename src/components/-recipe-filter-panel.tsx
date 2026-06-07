@@ -10,11 +10,13 @@ interface Props {
 	tagsInUse: { name: string }[];
 	activeTags: string[];
 	activeMaxTime: number | undefined;
+	activeVisibility?: "public" | "private" | undefined;
 	hasConstraints: boolean;
 	searchInput: string;
 	onSearchChange: (value: string) => void;
 	onToggleTag: (name: string) => void;
 	onToggleMaxTime: (minutes: number) => void;
+	onToggleVisibility?: (value: "public" | "private") => void;
 	onReset: () => void;
 }
 
@@ -23,11 +25,13 @@ export function RecipeFilterPanel({
 	tagsInUse,
 	activeTags,
 	activeMaxTime,
+	activeVisibility,
 	hasConstraints,
 	searchInput,
 	onSearchChange,
 	onToggleTag,
 	onToggleMaxTime,
+	onToggleVisibility,
 	onReset,
 }: Props) {
 	if (!show) return null;
@@ -55,50 +59,80 @@ export function RecipeFilterPanel({
 			</div>
 
 			<div className="mb-6 border border-stone-200 p-4">
-				<p className="text-xs font-semibold uppercase tracking-wide text-stone-400 mb-3">
-					Filters
-				</p>
-				<div className="space-y-2">
+				<div className="space-y-4">
 					{tagsInUse.length > 0 && (
-						<div className="flex flex-wrap gap-2">
-							{tagsInUse.map((tag) => {
-								const active = activeTags.includes(tag.name);
+						<div>
+							<p className="text-xs font-semibold uppercase tracking-wide text-stone-400 mb-2">
+								Tags
+							</p>
+							<div className="flex flex-wrap gap-2">
+								{tagsInUse.map((tag) => {
+									const active = activeTags.includes(tag.name);
+									return (
+										<button
+											type="button"
+											key={tag.name}
+											onClick={() => onToggleTag(tag.name)}
+											className={
+												active
+													? "px-2.5 py-1 text-xs font-medium rounded-sm bg-amber-100 text-stone-800 border border-amber-400 cursor-pointer"
+													: "px-2.5 py-1 text-xs rounded-sm text-stone-600 bg-white border border-stone-300 hover:border-stone-400 transition-colors cursor-pointer"
+											}
+										>
+											{tag.name}
+										</button>
+									);
+								})}
+							</div>
+						</div>
+					)}
+					<div>
+						<p className="text-xs font-semibold uppercase tracking-wide text-stone-400 mb-2">
+							Cooking Time
+						</p>
+						<div className="flex flex-wrap gap-2 items-center">
+							{TIME_BUCKETS.map(({ label, value }) => {
+								const active = activeMaxTime === value;
 								return (
 									<button
 										type="button"
-										key={tag.name}
-										onClick={() => onToggleTag(tag.name)}
+										key={value}
+										onClick={() => onToggleMaxTime(value)}
 										className={
 											active
 												? "px-2.5 py-1 text-xs font-medium rounded-sm bg-amber-100 text-stone-800 border border-amber-400 cursor-pointer"
 												: "px-2.5 py-1 text-xs rounded-sm text-stone-600 bg-white border border-stone-300 hover:border-stone-400 transition-colors cursor-pointer"
 										}
 									>
-										{tag.name}
+										{label}
 									</button>
 								);
 							})}
 						</div>
-					)}
-					<div className="flex flex-wrap gap-2 items-center">
-						{TIME_BUCKETS.map(({ label, value }) => {
-							const active = activeMaxTime === value;
-							return (
-								<button
-									type="button"
-									key={value}
-									onClick={() => onToggleMaxTime(value)}
-									className={
-										active
-											? "px-2.5 py-1 text-xs font-medium rounded-sm bg-amber-100 text-stone-800 border border-amber-400 cursor-pointer"
-											: "px-2.5 py-1 text-xs rounded-sm text-stone-600 bg-white border border-stone-300 hover:border-stone-400 transition-colors cursor-pointer"
-									}
-								>
-									{label}
-								</button>
-							);
-						})}
 					</div>
+					{onToggleVisibility && (
+						<div>
+							<p className="text-xs font-semibold uppercase tracking-wide text-stone-400 mb-2">
+								Visibility
+							</p>
+							<div className="flex flex-wrap gap-2 items-center">
+								{(["public", "private"] as const).map((v) => (
+									<button
+										type="button"
+										key={v}
+										onClick={() => onToggleVisibility(v)}
+										className={
+											activeVisibility === v
+												? "px-2.5 py-1 text-xs font-medium rounded-sm bg-amber-100 text-stone-800 border border-amber-400 cursor-pointer capitalize"
+												: "px-2.5 py-1 text-xs rounded-sm text-stone-600 bg-white border border-stone-300 hover:border-stone-400 transition-colors cursor-pointer capitalize"
+										}
+									>
+										{v}
+									</button>
+								))}
+							</div>
+						</div>
+					)}
 				</div>
 			</div>
 

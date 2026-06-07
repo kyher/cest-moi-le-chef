@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { username } from "better-auth/plugins";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { prisma } from "#/db";
 
@@ -10,5 +11,10 @@ export const auth = betterAuth({
 	emailAndPassword: {
 		enabled: true,
 	},
-	plugins: [tanstackStartCookies()],
+	plugins: [
+		tanstackStartCookies(),
+		username({
+			usernameValidator: (u) => /^[a-z0-9_-]+$/.test(u),
+		}),
+	],
 });

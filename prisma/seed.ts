@@ -4,17 +4,20 @@ import { auth } from "#/lib/auth";
 const TEST_EMAIL = "test@example.com";
 const TEST_PASSWORD = "password";
 const TEST_NAME = "Test User";
+const TEST_USERNAME = "test-user";
 
 const RECIPES: Array<{
 	title: string;
 	ingredients?: string;
 	method?: string;
 	totalTime?: number;
+	isPublic?: boolean;
 	tags: string[];
 	notes?: string[];
 }> = [
 	{
 		title: "Spaghetti Bolognese",
+		isPublic: true,
 		tags: ["italian", "pasta"],
 		totalTime: 90,
 		ingredients: `500g beef mince
@@ -38,6 +41,7 @@ Cook the spaghetti according to packet instructions. Serve with Parmesan.`,
 	},
 	{
 		title: "Chicken Tikka Masala",
+		isPublic: true,
 		tags: ["indian", "curry"],
 		totalTime: 60,
 		ingredients: `4 chicken breasts, cut into chunks
@@ -58,6 +62,7 @@ Serve with basmati rice and naan, topped with fresh coriander.`,
 	},
 	{
 		title: "Caesar Salad",
+		isPublic: true,
 		tags: ["salad", "quick"],
 		totalTime: 15,
 		ingredients: `2 romaine lettuce hearts, roughly chopped
@@ -76,6 +81,7 @@ Scatter over croutons and Parmesan shavings.`,
 	},
 	{
 		title: "Banana Bread",
+		isPublic: true,
 		tags: ["baking"],
 		totalTime: 75,
 		ingredients: `3 very ripe bananas
@@ -98,6 +104,7 @@ Cool in the tin for 10 minutes before turning out.`,
 	},
 	{
 		title: "Shakshuka",
+		isPublic: true,
 		tags: ["breakfast", "eggs", "vegetarian"],
 		totalTime: 30,
 		ingredients: `6 eggs
@@ -231,6 +238,7 @@ async function seedUser(): Promise<string> {
 				email: TEST_EMAIL,
 				password: TEST_PASSWORD,
 				name: TEST_NAME,
+				username: TEST_USERNAME,
 			}),
 		}),
 	);
@@ -274,6 +282,7 @@ async function seedRecipe(userId: string, recipe: (typeof RECIPES)[number]) {
 			ingredients: recipe.ingredients,
 			method: recipe.method,
 			totalTime: recipe.totalTime,
+			isPublic: recipe.isPublic ?? false,
 			tags: { create: tags.map((tag) => ({ tagId: tag.id })) },
 			notes: recipe.notes
 				? { create: recipe.notes.map((body) => ({ body })) }

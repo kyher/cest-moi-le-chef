@@ -44,6 +44,14 @@ _Avoid_: Search, query
 A free-text constraint on Recipe title, distinct from Filter. Expressed as the URL param `q` and evaluated server-side as a case-insensitive substring match. Composes with Filters — both can be active simultaneously. Rendered as a standalone input above the filter panel. Counts toward the "has active constraints" state alongside Filters; "Clear all" resets Search and all Filters together.
 _Avoid_: Filter, query
 
+**Username**:
+A unique, permanent handle chosen by a User at sign-up, used to address their Profile. Stored and matched case-insensitively; always lowercase. Valid characters: `[a-z0-9_-]`, 3–30 characters. Separate from `name` — a user has both a display name ("John Smith") and a username ("johnsmith42"). Cannot be changed after sign-up.
+_Avoid_: Handle, display name, user ID
+
+**Profile**:
+A public page at `/profile/:username` showing a User's `name`, `username`, and all of their public Recipes as an unfiltered list. Accessible to authenticated and unauthenticated users alike. Reached by clicking the username attribution on a public Recipe — both on the Home Page and on the Recipe detail page.
+_Avoid_: User page, public profile, account page
+
 ## Example dialogue
 
 > "I want to find all my starter recipes."

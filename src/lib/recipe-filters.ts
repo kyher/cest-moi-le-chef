@@ -4,6 +4,7 @@ export type RecipeSearchParams = {
 	tags?: string;
 	maxTime?: number;
 	q?: string;
+	visibility?: "public" | "private";
 };
 
 export function validateRecipeSearch(
@@ -17,7 +18,11 @@ export function validateRecipeSearch(
 			? maxTimeRaw
 			: undefined;
 	const q = typeof search.q === "string" && search.q ? search.q : undefined;
-	return { tags, maxTime, q };
+	const visibility =
+		search.visibility === "public" || search.visibility === "private"
+			? search.visibility
+			: undefined;
+	return { tags, maxTime, q, visibility };
 }
 
 type NavigateFn = (opts: {
@@ -33,8 +38,12 @@ export function useRecipeFilters(
 	const activeTags = search.tags?.split(",").filter(Boolean) ?? [];
 	const activeMaxTime = search.maxTime;
 	const activeQ = search.q;
+	const activeVisibility = search.visibility;
 	const hasConstraints =
-		activeTags.length > 0 || activeMaxTime != null || activeQ != null;
+		activeTags.length > 0 ||
+		activeMaxTime != null ||
+		activeQ != null ||
+		activeVisibility != null;
 
 	const [searchInput, setSearchInput] = useState(activeQ ?? "");
 
@@ -68,20 +77,38 @@ export function useRecipeFilters(
 		});
 	}
 
+	function toggleVisibility(value: "public" | "private") {
+		navigate({
+			search: (prev) => ({
+				...prev,
+				visibility: prev.visibility === value ? undefined : value,
+			}),
+		});
+	}
+
 	function reset() {
 		setSearchInput("");
-		navigate({ search: { tags: undefined, maxTime: undefined, q: undefined } });
+		navigate({
+			search: {
+				tags: undefined,
+				maxTime: undefined,
+				q: undefined,
+				visibility: undefined,
+			},
+		});
 	}
 
 	return {
 		activeTags,
 		activeMaxTime,
 		activeQ,
+		activeVisibility,
 		hasConstraints,
 		searchInput,
 		setSearchInput,
 		toggleTag,
 		toggleMaxTime,
+		toggleVisibility,
 		reset,
 	};
 }

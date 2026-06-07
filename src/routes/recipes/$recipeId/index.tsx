@@ -113,7 +113,16 @@ function Detail({ recipe, isOwner }: { recipe: Recipe; isOwner: boolean }) {
 				{recipe.title}
 			</h1>
 			{!isOwner && (
-				<p className="text-sm text-stone-400 mb-3">by {recipe.user.name}</p>
+				<p className="text-sm text-stone-400 mb-3">
+					by{" "}
+					<Link
+						to="/profile/$username"
+						params={{ username: recipe.user.username }}
+						className="hover:text-stone-600 hover:underline underline-offset-2"
+					>
+						{recipe.user.name}
+					</Link>
+				</p>
 			)}
 
 			{recipe.tags.length > 0 && (

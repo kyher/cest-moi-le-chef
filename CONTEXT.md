@@ -13,16 +13,16 @@ A timestamped free-form observation attached to a single Recipe — e.g. "needed
 _Avoid_: Comment, tip, annotation
 
 **Tag**:
-A flat, user-defined label applied to Recipes for filtering and categorisation. Tags are personal — they belong to the user, not to the system. There are no predefined tag values and no tag categories. On the home page, tags from different users compose into a shared filter vocabulary, matched case-insensitively by name across all public recipes.
+A flat, user-defined label applied to Recipes for filtering and categorisation. Tags are personal — they belong to the user, not to the system. There are no predefined tag values and no tag categories. On the Recipes Page, tags from different users compose into a shared filter vocabulary, matched case-insensitively by name across all public recipes.
 _Avoid_: Category, type, label
 
 **Visibility**:
-Whether a Recipe is public or private. Public recipes are visible to anyone (authenticated or not) and appear on the Home Page. Private recipes are visible only to their owner and appear only on My Recipes. All recipes default to private on creation. Notes are always private regardless of Visibility. Non-owners requesting a private recipe receive a 404.
+Whether a Recipe is public or private. Public recipes are visible to anyone (authenticated or not) and appear on the Recipes Page. Private recipes are visible only to their owner and appear only on My Recipes. All recipes default to private on creation. Notes are always private regardless of Visibility. Non-owners requesting a private recipe receive a 404.
 _Avoid_: Status, access level, sharing
 
-**Home Page**:
-The publicly accessible feed of all public recipes from all users, available at `/`. Supports the same Search and Filter capabilities as My Recipes. Tag filters on the Home Page match case-insensitively across all users' public recipes. Visible to authenticated and non-authenticated users alike.
-_Avoid_: Landing page, public feed, discover page
+**Recipes Page**:
+The publicly accessible feed of all public recipes from all users, available at `/recipes`. Supports the same Search and Filter capabilities as My Recipes. Tag filters on the Recipes Page match case-insensitively across all users' public recipes. Visible to authenticated and non-authenticated users alike. Linked from the nav bar ("Recipes") and from the marketing page at `/`.
+_Avoid_: Home page, landing page, public feed, discover page
 
 **My Recipes**:
 The authenticated owner's complete recipe list, accessible at `/my-recipes`. Shows all of the owner's recipes regardless of Visibility — both public and private. Supports Search, Filter, and per-recipe Visibility toggling.
@@ -37,7 +37,7 @@ The estimated duration to prepare and cook a Recipe from start to finish, stored
 _Avoid_: Cook time, prep time, duration
 
 **Filter**:
-A constraint applied to a Recipe list to narrow results. Filters are expressed as URL search params and evaluated server-side. Tag filters use AND logic (a recipe must match all selected Tags). The Total Time filter is a maximum threshold expressed as a preset bucket (≤15m, ≤30m, ≤1h, ≤2h); recipes with no Total Time are excluded when this filter is active. On My Recipes, only Tags applied to at least one of the user's own recipes are offered. On the home page, only Tags applied to at least one public recipe are offered, matched case-insensitively across all users.
+A constraint applied to a Recipe list to narrow results. Filters are expressed as URL search params and evaluated server-side. Tag filters use AND logic (a recipe must match all selected Tags). The Total Time filter is a maximum threshold expressed as a preset bucket (≤15m, ≤30m, ≤1h, ≤2h); recipes with no Total Time are excluded when this filter is active. On My Recipes, only Tags applied to at least one of the user's own recipes are offered. On the Recipes Page, only Tags applied to at least one public recipe are offered, matched case-insensitively across all users.
 _Avoid_: Search, query
 
 **Search**:

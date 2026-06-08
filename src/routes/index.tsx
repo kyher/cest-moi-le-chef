@@ -19,8 +19,8 @@ function MarketingPage() {
 						c'est moi le chef
 					</h1>
 					<p className="text-lg text-stone-600">
-						Your personal recipe book — private by default, shareable when you're
-						ready.
+						Your personal recipe book — private by default, shareable when
+						you're ready.
 					</p>
 					<p className="text-stone-500">
 						Store your recipes exactly how you make them. Add notes after each

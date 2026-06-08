@@ -13,6 +13,7 @@ import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RecipesIndexRouteImport } from './routes/recipes/index'
 import { Route as ProfileUsernameRouteImport } from './routes/profile/$username'
 import { Route as ApiRecipeImageRouteImport } from './routes/api/recipe-image'
 import { Route as RecipesRecipeIdIndexRouteImport } from './routes/recipes/$recipeId/index'
@@ -38,6 +39,11 @@ const AuthRoute = AuthRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecipesIndexRoute = RecipesIndexRouteImport.update({
+  id: '/recipes/',
+  path: '/recipes/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileUsernameRoute = ProfileUsernameRouteImport.update({
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/sign-up': typeof SignUpRoute
   '/api/recipe-image': typeof ApiRecipeImageRoute
   '/profile/$username': typeof ProfileUsernameRoute
+  '/recipes/': typeof RecipesIndexRoute
   '/my-recipes/new': typeof AuthMyRecipesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/recipes/$recipeId/edit': typeof RecipesRecipeIdEditRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/sign-up': typeof SignUpRoute
   '/api/recipe-image': typeof ApiRecipeImageRoute
   '/profile/$username': typeof ProfileUsernameRoute
+  '/recipes': typeof RecipesIndexRoute
   '/my-recipes/new': typeof AuthMyRecipesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/recipes/$recipeId/edit': typeof RecipesRecipeIdEditRoute
@@ -108,6 +116,7 @@ export interface FileRoutesById {
   '/sign-up': typeof SignUpRoute
   '/api/recipe-image': typeof ApiRecipeImageRoute
   '/profile/$username': typeof ProfileUsernameRoute
+  '/recipes/': typeof RecipesIndexRoute
   '/_auth/my-recipes/new': typeof AuthMyRecipesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/recipes/$recipeId/edit': typeof RecipesRecipeIdEditRoute
@@ -122,6 +131,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/api/recipe-image'
     | '/profile/$username'
+    | '/recipes/'
     | '/my-recipes/new'
     | '/api/auth/$'
     | '/recipes/$recipeId/edit'
@@ -134,6 +144,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/api/recipe-image'
     | '/profile/$username'
+    | '/recipes'
     | '/my-recipes/new'
     | '/api/auth/$'
     | '/recipes/$recipeId/edit'
@@ -147,6 +158,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/api/recipe-image'
     | '/profile/$username'
+    | '/recipes/'
     | '/_auth/my-recipes/new'
     | '/api/auth/$'
     | '/recipes/$recipeId/edit'
@@ -161,6 +173,7 @@ export interface RootRouteChildren {
   SignUpRoute: typeof SignUpRoute
   ApiRecipeImageRoute: typeof ApiRecipeImageRoute
   ProfileUsernameRoute: typeof ProfileUsernameRoute
+  RecipesIndexRoute: typeof RecipesIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   RecipesRecipeIdEditRoute: typeof RecipesRecipeIdEditRoute
   RecipesRecipeIdIndexRoute: typeof RecipesRecipeIdIndexRoute
@@ -194,6 +207,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recipes/': {
+      id: '/recipes/'
+      path: '/recipes'
+      fullPath: '/recipes/'
+      preLoaderRoute: typeof RecipesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile/$username': {
@@ -267,6 +287,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignUpRoute: SignUpRoute,
   ApiRecipeImageRoute: ApiRecipeImageRoute,
   ProfileUsernameRoute: ProfileUsernameRoute,
+  RecipesIndexRoute: RecipesIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   RecipesRecipeIdEditRoute: RecipesRecipeIdEditRoute,
   RecipesRecipeIdIndexRoute: RecipesRecipeIdIndexRoute,

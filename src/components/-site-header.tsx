@@ -17,6 +17,12 @@ export function SiteHeader({ user }: Props) {
 				c'est moi le chef
 			</Link>
 			<div className="flex items-center gap-3">
+				<Link
+					to="/recipes"
+					className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
+				>
+					Recipes
+				</Link>
 				{user ? (
 					<>
 						<Link

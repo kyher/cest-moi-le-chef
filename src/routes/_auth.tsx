@@ -33,6 +33,12 @@ function AuthLayout() {
 				</Link>
 				<div className="flex items-center gap-3">
 					<Link
+						to="/recipes"
+						className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
+					>
+						Recipes
+					</Link>
+					<Link
 						to="/my-recipes"
 						className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
 					>

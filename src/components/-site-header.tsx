@@ -1,4 +1,4 @@
-import { Link, useRouter } from "@tanstack/react-router";
+import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { authClient } from "#/lib/auth-client";
 
 interface Props {
@@ -7,6 +7,7 @@ interface Props {
 
 export function SiteHeader({ user }: Props) {
 	const router = useRouter();
+	const pathname = useRouterState({ select: (s) => s.location.pathname });
 
 	return (
 		<header className="border-b border-stone-200 bg-stone-100 px-4 h-16 flex items-center justify-between">
@@ -47,18 +48,22 @@ export function SiteHeader({ user }: Props) {
 					</>
 				) : (
 					<>
-						<Link
-							to="/sign-in"
-							className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
-						>
-							Sign in
-						</Link>
-						<Link
-							to="/sign-up"
-							className="h-9 px-4 text-sm font-medium rounded-sm bg-stone-800 text-white hover:bg-stone-700 transition-colors flex items-center"
-						>
-							Sign up
-						</Link>
+						{pathname !== "/sign-in" && (
+							<Link
+								to="/sign-in"
+								className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
+							>
+								Sign in
+							</Link>
+						)}
+						{pathname !== "/sign-up" && (
+							<Link
+								to="/sign-up"
+								className="h-9 px-4 text-sm font-medium rounded-sm bg-stone-800 text-white hover:bg-stone-700 transition-colors flex items-center"
+							>
+								Sign up
+							</Link>
+						)}
 					</>
 				)}
 			</div>

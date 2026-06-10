@@ -8,7 +8,13 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { SiteHeader } from "#/components/-site-header";
 import { formatTotalTime } from "#/lib/format";
-import { addNote, deleteNote, deleteRecipe, getRecipe } from "#/lib/recipes";
+import {
+	addNote,
+	deleteNote,
+	deleteRecipe,
+	getRecipe,
+	toggleLike,
+} from "#/lib/recipes";
 import { getSession } from "#/lib/session";
 
 export const Route = createFileRoute("/recipes/$recipeId/")({
@@ -46,6 +52,14 @@ function Detail({ recipe, isOwner }: { recipe: Recipe; isOwner: boolean }) {
 	const router = useRouter();
 	const [noteBody, setNoteBody] = useState("");
 	const [addingNote, setAddingNote] = useState(false);
+	const [likeCount, setLikeCount] = useState(recipe.likeCount);
+	const [viewerHasLiked, setViewerHasLiked] = useState(recipe.viewerHasLiked);
+
+	async function handleToggleLike() {
+		const liked = await toggleLike({ data: { recipeId: recipe.id } });
+		setViewerHasLiked(liked);
+		setLikeCount((c) => c + (liked ? 1 : -1));
+	}
 
 	async function handleAddNote(e: React.FormEvent) {
 		e.preventDefault();
@@ -124,6 +138,27 @@ function Detail({ recipe, isOwner }: { recipe: Recipe; isOwner: boolean }) {
 					</Link>
 				</p>
 			)}
+
+			<div className="flex items-center gap-2 mb-4">
+				{viewerHasLiked !== null && (
+					<button
+						type="button"
+						onClick={handleToggleLike}
+						className={`h-8 px-3 text-sm font-medium rounded-sm border transition-colors ${
+							viewerHasLiked
+								? "bg-amber-50 border-amber-300 text-amber-700 hover:border-amber-400"
+								: "border-stone-300 text-stone-600 hover:border-stone-500"
+						}`}
+					>
+						{viewerHasLiked ? "♥ Liked" : "♡ Like"}
+					</button>
+				)}
+				{likeCount > 0 && (
+					<span className="text-sm text-stone-400">
+						{likeCount} {likeCount === 1 ? "like" : "likes"}
+					</span>
+				)}
+			</div>
 
 			{recipe.tags.length > 0 && (
 				<div className="flex flex-wrap gap-1 mb-6">

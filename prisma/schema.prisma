@@ -21,6 +21,17 @@ model Recipe {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   notes       Note[]
   tags        RecipeTag[]
+  likes       Like[]
+}
+
+model Like {
+  userId    String
+  recipeId  String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@id([userId, recipeId])
 }
 
 model Note {
@@ -64,6 +75,7 @@ model User {
   accounts        Account[]
   recipes         Recipe[]
   tags            Tag[]
+  likes           Like[]
 }
 
 model Session {

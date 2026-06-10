@@ -36,8 +36,20 @@ _Avoid_: Photo, thumbnail, hero image
 The estimated duration to prepare and cook a Recipe from start to finish, stored as an integer number of minutes. Optional — a Recipe without a Total Time is valid. Displayed in compact format (e.g. "1h 30m", "45m"). Entered as separate hours and minutes fields.
 _Avoid_: Cook time, prep time, duration
 
+**Like**:
+An authenticated user's expression of appreciation for another user's Recipe. A user cannot like their own recipes. Liking is a toggle — a second action removes the Like. The Like record persists when a Recipe is made private; the Recipe simply disappears from the liker's Liked Recipes page until made public again. Deleted Recipes cascade-delete their Likes.
+_Avoid_: Favourite, bookmark, save, upvote
+
+**Like Count**:
+The total number of Likes on a Recipe. Visible to all users (authenticated or not) on the Recipe detail page and on Recipes Page cards.
+_Avoid_: Likes, popularity score
+
+**Liked Recipes**:
+An authenticated user's list of public Recipes they have Liked, accessible at `/liked-recipes`. Recipes that have been liked but are currently private are hidden. Supports the same Search and Filter capabilities as My Recipes and the Recipes Page. The Filter panel offers only Tags applied to the user's currently visible liked Recipes. Linked from the nav bar ("Liked Recipes"), visible only when authenticated.
+_Avoid_: Saved recipes, favourites, bookmarks
+
 **Filter**:
-A constraint applied to a Recipe list to narrow results. Filters are expressed as URL search params and evaluated server-side. Tag filters use AND logic (a recipe must match all selected Tags). The Total Time filter is a maximum threshold expressed as a preset bucket (≤15m, ≤30m, ≤1h, ≤2h); recipes with no Total Time are excluded when this filter is active. On My Recipes, only Tags applied to at least one of the user's own recipes are offered. On the Recipes Page, only Tags applied to at least one public recipe are offered, matched case-insensitively across all users.
+A constraint applied to a Recipe list to narrow results. Filters are expressed as URL search params and evaluated server-side. Tag filters use AND logic (a recipe must match all selected Tags). The Total Time filter is a maximum threshold expressed as a preset bucket (≤15m, ≤30m, ≤1h, ≤2h); recipes with no Total Time are excluded when this filter is active. On My Recipes, only Tags applied to at least one of the user's own recipes are offered. On the Recipes Page, only Tags applied to at least one public recipe are offered, matched case-insensitively across all users. On Liked Recipes, only Tags applied to at least one of the user's currently visible liked Recipes are offered.
 _Avoid_: Search, query
 
 **Search**:

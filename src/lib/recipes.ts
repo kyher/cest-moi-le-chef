@@ -39,12 +39,12 @@ export const getRecipes = createServerFn()
 export const getPublicRecipes = createServerFn()
 	.inputValidator((d: { tags?: string; maxTime?: number; q?: string }) => d)
 	.handler(async ({ data }) => {
+		const user = await optionalUser();
 		const tags = data.tags?.split(",").filter(Boolean);
-		return recipeService.listPublicRecipes({
-			tags,
-			maxTime: data.maxTime,
-			q: data.q,
-		});
+		return recipeService.listPublicRecipes(
+			{ tags, maxTime: data.maxTime, q: data.q },
+			user?.id ?? null,
+		);
 	});
 
 export const getTagsInUse = createServerFn().handler(async () => {
@@ -133,3 +133,27 @@ export const getProfile = createServerFn()
 	.handler(async ({ data }) => {
 		return recipeService.findProfile(data.username);
 	});
+
+export const toggleLike = createServerFn({ method: "POST" })
+	.inputValidator((d: { recipeId: string }) => d)
+	.handler(async ({ data }) => {
+		const user = await requireUser();
+		return recipeService.toggleLike(data.recipeId, user.id);
+	});
+
+export const getLikedRecipes = createServerFn()
+	.inputValidator((d: { tags?: string; maxTime?: number; q?: string }) => d)
+	.handler(async ({ data }) => {
+		const user = await requireUser();
+		const tags = data.tags?.split(",").filter(Boolean);
+		return recipeService.listLikedRecipes(user.id, {
+			tags,
+			maxTime: data.maxTime,
+			q: data.q,
+		});
+	});
+
+export const getLikedTagsInUse = createServerFn().handler(async () => {
+	const user = await requireUser();
+	return recipeService.listLikedTagsInUse(user.id);
+});

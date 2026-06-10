@@ -70,6 +70,7 @@ export function listRecipes(
 
 export function listPublicRecipes(
 	filters: { tags?: string[]; maxTime?: number; q?: string } = {},
+	viewerId?: string | null,
 ) {
 	const tagFilters =
 		filters.tags && filters.tags.length > 0
@@ -90,6 +91,10 @@ export function listPublicRecipes(
 		include: {
 			tags: { include: { tag: true } },
 			user: { select: { name: true, username: true } },
+			_count: { select: { likes: true } },
+			likes: viewerId
+				? { where: { userId: viewerId }, select: { userId: true } }
+				: false,
 		},
 		orderBy: { updatedAt: "desc" },
 	});
@@ -121,7 +126,7 @@ export async function listPublicTagsInUse() {
 }
 
 export async function findRecipe(recipeId: string, viewerId: string | null) {
-	// Owner: return full recipe with notes
+	// Owner: return full recipe with notes; owners cannot like their own recipe
 	if (viewerId) {
 		const owned = await prisma.recipe.findFirst({
 			where: { id: recipeId, userId: viewerId },
@@ -129,9 +134,17 @@ export async function findRecipe(recipeId: string, viewerId: string | null) {
 				tags: { include: { tag: true } },
 				notes: { orderBy: { createdAt: "desc" } },
 				user: { select: { name: true, username: true } },
+				_count: { select: { likes: true } },
 			},
 		});
-		if (owned) return { ...owned, isOwner: true as const };
+		if (owned) {
+			return {
+				...owned,
+				likeCount: owned._count.likes,
+				viewerHasLiked: null as null,
+				isOwner: true as const,
+			};
+		}
 	}
 
 	// Non-owner: only public recipes, notes never sent
@@ -140,10 +153,94 @@ export async function findRecipe(recipeId: string, viewerId: string | null) {
 		include: {
 			tags: { include: { tag: true } },
 			user: { select: { name: true, username: true } },
+			_count: { select: { likes: true } },
+			likes: viewerId
+				? { where: { userId: viewerId }, select: { userId: true } }
+				: false,
 		},
 	});
 	if (!recipe) return null;
-	return { ...recipe, notes: [] as const, isOwner: false as const };
+	return {
+		...recipe,
+		likeCount: recipe._count.likes,
+		viewerHasLiked: viewerId ? recipe.likes.length > 0 : null,
+		notes: [] as const,
+		isOwner: false as const,
+	};
+}
+
+export async function toggleLike(recipeId: string, userId: string) {
+	const recipe = await prisma.recipe.findUnique({
+		where: { id: recipeId },
+		select: { userId: true },
+	});
+	if (!recipe) throw new Error("Recipe not found");
+	if (recipe.userId === userId) throw new Error("Cannot like your own recipe");
+
+	const existing = await prisma.like.findUnique({
+		where: { userId_recipeId: { userId, recipeId } },
+	});
+	if (existing) {
+		await prisma.like.delete({
+			where: { userId_recipeId: { userId, recipeId } },
+		});
+		return false;
+	}
+	await prisma.like.create({ data: { userId, recipeId } });
+	return true;
+}
+
+export async function listLikedRecipes(
+	userId: string,
+	filters: { tags?: string[]; maxTime?: number; q?: string } = {},
+) {
+	const tagFilters =
+		filters.tags && filters.tags.length > 0
+			? filters.tags.map((name) => ({
+					tags: { some: { tag: { name: name.toLowerCase() } } },
+				}))
+			: undefined;
+
+	return prisma.recipe.findMany({
+		where: {
+			isPublic: true,
+			likes: { some: { userId } },
+			AND: tagFilters,
+			totalTime: filters.maxTime != null ? { lte: filters.maxTime } : undefined,
+			title: filters.q
+				? { contains: filters.q, mode: "insensitive" }
+				: undefined,
+		},
+		include: {
+			tags: { include: { tag: true } },
+			user: { select: { name: true, username: true } },
+			_count: { select: { likes: true } },
+		},
+		orderBy: { updatedAt: "desc" },
+	});
+}
+
+export async function listLikedTagsInUse(userId: string) {
+	const tags = await prisma.tag.findMany({
+		where: {
+			recipes: {
+				some: {
+					recipe: { isPublic: true, likes: { some: { userId } } },
+				},
+			},
+		},
+		select: { name: true },
+		orderBy: { name: "asc" },
+	});
+	const seen = new Set<string>();
+	const result: { name: string }[] = [];
+	for (const tag of tags) {
+		if (!seen.has(tag.name)) {
+			seen.add(tag.name);
+			result.push(tag);
+		}
+	}
+	return result;
 }
 
 export async function createRecipe(

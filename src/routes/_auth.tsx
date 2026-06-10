@@ -44,6 +44,12 @@ function AuthLayout() {
 					>
 						My Recipes
 					</Link>
+					<Link
+						to="/liked-recipes"
+						className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
+					>
+						Liked Recipes
+					</Link>
 					<button
 						type="button"
 						onClick={() => {

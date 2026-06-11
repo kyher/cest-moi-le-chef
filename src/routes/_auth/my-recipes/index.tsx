@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { RecipeFilterPanel } from "#/components/-recipe-filter-panel";
 import { useRecipeFilters, validateRecipeSearch } from "#/lib/recipe-filters";
-import { getRecipes, getTagsInUse } from "#/lib/recipes";
+import { getRecipes, getTagsInUse } from "#/lib/recipe-fns";
 import { RecipeList } from "./_components/-recipe-list";
 
 export const Route = createFileRoute("/_auth/my-recipes/")({

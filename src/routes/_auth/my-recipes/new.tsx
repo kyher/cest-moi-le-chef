@@ -2,7 +2,7 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ImageUpload } from "#/components/-image-upload";
-import { createRecipe } from "#/lib/recipes";
+import { createRecipe } from "#/lib/recipe-fns";
 
 export const Route = createFileRoute("/_auth/my-recipes/new")({
 	component: NewRecipe,

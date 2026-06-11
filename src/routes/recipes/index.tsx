@@ -8,7 +8,7 @@ import {
 	getPublicRecipes,
 	getPublicTagsInUse,
 	toggleLike,
-} from "#/lib/recipes";
+} from "#/lib/recipe-fns";
 import { getSession } from "#/lib/session";
 
 export const Route = createFileRoute("/recipes/")({

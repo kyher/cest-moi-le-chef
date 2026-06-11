@@ -2,6 +2,10 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { auth } from "#/lib/auth";
 import * as recipeService from "#/lib/recipe-service";
+import * as noteService from "#/lib/note-service";
+import * as tagService from "#/lib/tag-service";
+import * as likeService from "#/lib/like-service";
+import * as profileService from "#/lib/profile-service";
 
 async function requireUser() {
 	const request = getRequest();
@@ -49,11 +53,11 @@ export const getPublicRecipes = createServerFn()
 
 export const getTagsInUse = createServerFn().handler(async () => {
 	const user = await requireUser();
-	return recipeService.listTagsInUse(user.id);
+	return tagService.listTagsInUse(user.id);
 });
 
 export const getPublicTagsInUse = createServerFn().handler(async () => {
-	return recipeService.listPublicTagsInUse();
+	return tagService.listPublicTagsInUse();
 });
 
 export const getRecipe = createServerFn()
@@ -118,27 +122,27 @@ export const addNote = createServerFn({ method: "POST" })
 	.inputValidator((d: { recipeId: string; body: string }) => d)
 	.handler(async ({ data }) => {
 		const user = await requireUser();
-		return recipeService.addNote(data.recipeId, user.id, data.body);
+		return noteService.addNote(data.recipeId, user.id, data.body);
 	});
 
 export const deleteNote = createServerFn({ method: "POST" })
 	.inputValidator((d: { noteId: string }) => d)
 	.handler(async ({ data }) => {
 		const user = await requireUser();
-		await recipeService.removeNote(data.noteId, user.id);
+		await noteService.removeNote(data.noteId, user.id);
 	});
 
 export const getProfile = createServerFn()
 	.inputValidator((d: { username: string }) => d)
 	.handler(async ({ data }) => {
-		return recipeService.findProfile(data.username);
+		return profileService.findProfile(data.username);
 	});
 
 export const toggleLike = createServerFn({ method: "POST" })
 	.inputValidator((d: { recipeId: string }) => d)
 	.handler(async ({ data }) => {
 		const user = await requireUser();
-		return recipeService.toggleLike(data.recipeId, user.id);
+		return likeService.toggleLike(data.recipeId, user.id);
 	});
 
 export const getLikedRecipes = createServerFn()
@@ -146,7 +150,7 @@ export const getLikedRecipes = createServerFn()
 	.handler(async ({ data }) => {
 		const user = await requireUser();
 		const tags = data.tags?.split(",").filter(Boolean);
-		return recipeService.listLikedRecipes(user.id, {
+		return likeService.listLikedRecipes(user.id, {
 			tags,
 			maxTime: data.maxTime,
 			q: data.q,
@@ -155,5 +159,5 @@ export const getLikedRecipes = createServerFn()
 
 export const getLikedTagsInUse = createServerFn().handler(async () => {
 	const user = await requireUser();
-	return recipeService.listLikedTagsInUse(user.id);
+	return likeService.listLikedTagsInUse(user.id);
 });

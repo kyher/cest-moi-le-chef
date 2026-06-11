@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { RecipeFilterPanel } from "#/components/-recipe-filter-panel";
 import { formatTotalTime } from "#/lib/format";
 import { useRecipeFilters, validateRecipeSearch } from "#/lib/recipe-filters";
-import { getLikedRecipes, getLikedTagsInUse } from "#/lib/recipes";
+import { getLikedRecipes, getLikedTagsInUse } from "#/lib/recipe-fns";
 
 export const Route = createFileRoute("/_auth/liked-recipes/")({
 	validateSearch: validateRecipeSearch,

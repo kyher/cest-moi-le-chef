@@ -1,22 +1,6 @@
 import { prisma } from "#/db";
 import { deleteImageFile } from "#/lib/image-storage";
 
-export async function findProfile(username: string) {
-	const user = await prisma.user.findUnique({
-		where: { username },
-		select: {
-			name: true,
-			username: true,
-			recipes: {
-				where: { isPublic: true },
-				include: { tags: { include: { tag: true } } },
-				orderBy: { updatedAt: "desc" },
-			},
-		},
-	});
-	return user;
-}
-
 async function syncTags(recipeId: string, tagNames: string[], userId: string) {
 	await prisma.recipeTag.deleteMany({ where: { recipeId } });
 	for (const raw of tagNames) {
@@ -100,31 +84,6 @@ export function listPublicRecipes(
 	});
 }
 
-export function listTagsInUse(userId: string) {
-	return prisma.tag.findMany({
-		where: { userId, recipes: { some: {} } },
-		orderBy: { name: "asc" },
-	});
-}
-
-export async function listPublicTagsInUse() {
-	const tags = await prisma.tag.findMany({
-		where: { recipes: { some: { recipe: { isPublic: true } } } },
-		select: { name: true },
-		orderBy: { name: "asc" },
-	});
-	// Tags are already stored lowercase; deduplicate by name
-	const seen = new Set<string>();
-	const result: { name: string }[] = [];
-	for (const tag of tags) {
-		if (!seen.has(tag.name)) {
-			seen.add(tag.name);
-			result.push(tag);
-		}
-	}
-	return result;
-}
-
 export async function findRecipe(recipeId: string, viewerId: string | null) {
 	// Owner: return full recipe with notes; owners cannot like their own recipe
 	if (viewerId) {
@@ -167,80 +126,6 @@ export async function findRecipe(recipeId: string, viewerId: string | null) {
 		notes: [] as const,
 		isOwner: false as const,
 	};
-}
-
-export async function toggleLike(recipeId: string, userId: string) {
-	const recipe = await prisma.recipe.findUnique({
-		where: { id: recipeId },
-		select: { userId: true },
-	});
-	if (!recipe) throw new Error("Recipe not found");
-	if (recipe.userId === userId) throw new Error("Cannot like your own recipe");
-
-	const existing = await prisma.like.findUnique({
-		where: { userId_recipeId: { userId, recipeId } },
-	});
-	if (existing) {
-		await prisma.like.delete({
-			where: { userId_recipeId: { userId, recipeId } },
-		});
-		return false;
-	}
-	await prisma.like.create({ data: { userId, recipeId } });
-	return true;
-}
-
-export async function listLikedRecipes(
-	userId: string,
-	filters: { tags?: string[]; maxTime?: number; q?: string } = {},
-) {
-	const tagFilters =
-		filters.tags && filters.tags.length > 0
-			? filters.tags.map((name) => ({
-					tags: { some: { tag: { name: name.toLowerCase() } } },
-				}))
-			: undefined;
-
-	return prisma.recipe.findMany({
-		where: {
-			isPublic: true,
-			likes: { some: { userId } },
-			AND: tagFilters,
-			totalTime: filters.maxTime != null ? { lte: filters.maxTime } : undefined,
-			title: filters.q
-				? { contains: filters.q, mode: "insensitive" }
-				: undefined,
-		},
-		include: {
-			tags: { include: { tag: true } },
-			user: { select: { name: true, username: true } },
-			_count: { select: { likes: true } },
-		},
-		orderBy: { updatedAt: "desc" },
-	});
-}
-
-export async function listLikedTagsInUse(userId: string) {
-	const tags = await prisma.tag.findMany({
-		where: {
-			recipes: {
-				some: {
-					recipe: { isPublic: true, likes: { some: { userId } } },
-				},
-			},
-		},
-		select: { name: true },
-		orderBy: { name: "asc" },
-	});
-	const seen = new Set<string>();
-	const result: { name: string }[] = [];
-	for (const tag of tags) {
-		if (!seen.has(tag.name)) {
-			seen.add(tag.name);
-			result.push(tag);
-		}
-	}
-	return result;
 }
 
 export async function createRecipe(
@@ -323,20 +208,4 @@ export async function removeRecipeImage(recipeId: string, userId: string) {
 		where: { id: recipeId },
 		data: { imageUrl: null },
 	});
-}
-
-export async function addNote(recipeId: string, userId: string, body: string) {
-	const recipe = await prisma.recipe.findFirst({
-		where: { id: recipeId, userId },
-	});
-	if (!recipe) throw new Error("Recipe not found");
-	return prisma.note.create({ data: { body, recipeId } });
-}
-
-export async function removeNote(noteId: string, userId: string) {
-	const note = await prisma.note.findFirst({
-		where: { id: noteId, recipe: { userId } },
-	});
-	if (!note) throw new Error("Note not found");
-	await prisma.note.delete({ where: { id: noteId } });
 }

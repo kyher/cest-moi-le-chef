@@ -9,7 +9,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { ImageUpload } from "#/components/-image-upload";
 import { SiteHeader } from "#/components/-site-header";
-import { getRecipe, updateRecipe } from "#/lib/recipes";
+import { getRecipe, updateRecipe } from "#/lib/recipe-fns";
 import { getSession } from "#/lib/session";
 
 export const Route = createFileRoute("/recipes/$recipeId/edit")({

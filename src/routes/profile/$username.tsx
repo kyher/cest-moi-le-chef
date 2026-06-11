@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SiteHeader } from "#/components/-site-header";
 import { formatTotalTime } from "#/lib/format";
-import { getProfile } from "#/lib/recipes";
+import { getProfile } from "#/lib/recipe-fns";
 import { getSession } from "#/lib/session";
 
 export const Route = createFileRoute("/profile/$username")({

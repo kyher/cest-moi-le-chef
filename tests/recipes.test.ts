@@ -1,30 +1,23 @@
-import {
-	afterAll,
-	beforeAll,
-	beforeEach,
-	describe,
-	expect,
-	it,
-	vi,
-} from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { prisma } from "#/db";
+import { toggleLike } from "#/lib/like-service";
 import {
-	addNote,
 	createRecipe,
 	findRecipe,
-	listLikedRecipes,
-	listLikedTagsInUse,
 	listPublicRecipes,
-	listPublicTagsInUse,
 	listRecipes,
-	listTagsInUse,
-	removeNote,
 	removeRecipe,
 	removeRecipeImage,
 	setRecipeVisibility,
-	toggleLike,
 	updateRecipe,
 } from "#/lib/recipe-service";
+import {
+	cleanupOtherUser,
+	OTHER_USER_ID,
+	setupTestUser,
+	TEST_USER_ID,
+	upsertOtherUser,
+} from "./helpers";
 
 vi.mock("#/lib/image-storage", () => ({
 	deleteImageFile: vi.fn().mockResolvedValue(undefined),
@@ -32,56 +25,7 @@ vi.mock("#/lib/image-storage", () => ({
 
 const { deleteImageFile } = await import("#/lib/image-storage");
 
-const OTHER_USER_ID = "test-user-other";
-
-async function upsertOtherUser() {
-	await prisma.user.upsert({
-		where: { id: OTHER_USER_ID },
-		create: {
-			id: OTHER_USER_ID,
-			name: "Other Chef",
-			email: "other-chef@test.local",
-			emailVerified: false,
-			username: "other-chef",
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		},
-		update: {},
-	});
-}
-
-async function cleanupOtherUser() {
-	await prisma.user.deleteMany({ where: { id: OTHER_USER_ID } });
-}
-
-const TEST_USER_ID = "test-user-recipes";
-
-beforeAll(async () => {
-	await prisma.user.upsert({
-		where: { id: TEST_USER_ID },
-		create: {
-			id: TEST_USER_ID,
-			name: "Test User",
-			email: "test-recipes@test.local",
-			emailVerified: false,
-			username: "test-recipes-user",
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		},
-		update: {},
-	});
-});
-
-afterAll(async () => {
-	await prisma.user.delete({ where: { id: TEST_USER_ID } });
-	await prisma.$disconnect();
-});
-
-beforeEach(async () => {
-	await prisma.recipe.deleteMany({ where: { userId: TEST_USER_ID } });
-	await prisma.tag.deleteMany({ where: { userId: TEST_USER_ID } });
-	vi.clearAllMocks();
-});
+setupTestUser();
 
 describe("createRecipe", () => {
 	it("creates a recipe with a title only", async () => {
@@ -250,7 +194,7 @@ describe("removeRecipe", () => {
 			title: "Recipe",
 			tags: [],
 		});
-		await addNote(recipe.id, TEST_USER_ID, "A note");
+		await prisma.note.create({ data: { body: "A note", recipeId: recipe.id } });
 		await removeRecipe(recipe.id, TEST_USER_ID);
 		const notes = await prisma.note.findMany({
 			where: { recipeId: recipe.id },
@@ -342,49 +286,65 @@ describe("removeRecipeImage", () => {
 	});
 });
 
-describe("notes", () => {
-	it("adds a note to a recipe", async () => {
+describe("isPublic on createRecipe", () => {
+	it("defaults to false when isPublic is not specified", async () => {
 		const recipe = await createRecipe(TEST_USER_ID, {
-			title: "Recipe",
+			title: "Private by Default",
 			tags: [],
 		});
-		const note = await addNote(recipe.id, TEST_USER_ID, "Needed more salt");
-		expect(note.body).toBe("Needed more salt");
-		expect(note.recipeId).toBe(recipe.id);
+		expect(recipe.isPublic).toBe(false);
 	});
 
-	it("deletes a note", async () => {
+	it("can be set to true at creation", async () => {
+		const recipe = await createRecipe(TEST_USER_ID, {
+			title: "Public Recipe",
+			isPublic: true,
+			tags: [],
+		});
+		expect(recipe.isPublic).toBe(true);
+	});
+});
+
+describe("setRecipeVisibility", () => {
+	it("makes a private recipe public", async () => {
 		const recipe = await createRecipe(TEST_USER_ID, {
 			title: "Recipe",
 			tags: [],
 		});
-		const note = await addNote(recipe.id, TEST_USER_ID, "A note");
-		await removeNote(note.id, TEST_USER_ID);
-		const found = await prisma.note.findUnique({ where: { id: note.id } });
-		expect(found).toBeNull();
+		await setRecipeVisibility(recipe.id, TEST_USER_ID, true);
+		const updated = await prisma.recipe.findUnique({
+			where: { id: recipe.id },
+		});
+		expect(updated?.isPublic).toBe(true);
 	});
 
-	it("returns notes in reverse chronological order", async () => {
+	it("makes a public recipe private", async () => {
 		const recipe = await createRecipe(TEST_USER_ID, {
 			title: "Recipe",
+			isPublic: true,
 			tags: [],
 		});
-		const first = await addNote(recipe.id, TEST_USER_ID, "First note");
-		await new Promise((r) => setTimeout(r, 5));
-		const second = await addNote(recipe.id, TEST_USER_ID, "Second note");
-		const full = await findRecipe(recipe.id, TEST_USER_ID);
-		expect(full?.notes[0].id).toBe(second.id);
-		expect(full?.notes[1].id).toBe(first.id);
+		await setRecipeVisibility(recipe.id, TEST_USER_ID, false);
+		const updated = await prisma.recipe.findUnique({
+			where: { id: recipe.id },
+		});
+		expect(updated?.isPublic).toBe(false);
 	});
 
-	it("throws when adding a note to a recipe the user does not own", async () => {
-		const recipe = await createRecipe(TEST_USER_ID, {
-			title: "Recipe",
-			tags: [],
-		});
-		await expect(
-			addNote(recipe.id, "other-user-id", "Sneaky note"),
-		).rejects.toThrow("Recipe not found");
+	it("does not affect a recipe owned by another user", async () => {
+		await upsertOtherUser();
+		try {
+			const recipe = await createRecipe(OTHER_USER_ID, {
+				title: "Their Recipe",
+				isPublic: false,
+				tags: [],
+			});
+			await expect(
+				setRecipeVisibility(recipe.id, TEST_USER_ID, true),
+			).rejects.toThrow();
+		} finally {
+			await cleanupOtherUser();
+		}
 	});
 });
 
@@ -421,8 +381,8 @@ describe("listRecipes", () => {
 			title: "Recipe",
 			tags: ["main", "quick"],
 		});
-		await addNote(recipe.id, TEST_USER_ID, "Note 1");
-		await addNote(recipe.id, TEST_USER_ID, "Note 2");
+		await prisma.note.create({ data: { body: "Note 1", recipeId: recipe.id } });
+		await prisma.note.create({ data: { body: "Note 2", recipeId: recipe.id } });
 		const [listed] = await listRecipes(TEST_USER_ID);
 		expect(listed._count.notes).toBe(2);
 		expect(listed.tags).toHaveLength(2);
@@ -651,118 +611,6 @@ describe("listRecipes", () => {
 	});
 });
 
-describe("listTagsInUse", () => {
-	it("returns tags applied to at least one recipe", async () => {
-		await createRecipe(TEST_USER_ID, { title: "Recipe", tags: ["main"] });
-		const tags = await listTagsInUse(TEST_USER_ID);
-		expect(tags.map((t) => t.name)).toContain("main");
-	});
-
-	it("does not return tags with no recipes", async () => {
-		await prisma.tag.create({
-			data: { name: "orphan", userId: TEST_USER_ID },
-		});
-		const tags = await listTagsInUse(TEST_USER_ID);
-		expect(tags.map((t) => t.name)).not.toContain("orphan");
-	});
-
-	it("returns tags sorted by name", async () => {
-		await createRecipe(TEST_USER_ID, {
-			title: "Recipe",
-			tags: ["zucchini", "apple", "mango"],
-		});
-		const tags = await listTagsInUse(TEST_USER_ID);
-		const names = tags.map((t) => t.name);
-		expect(names).toEqual([...names].sort());
-	});
-
-	it("does not return tags belonging to another user", async () => {
-		const OTHER_ID = "test-user-tags-isolation";
-		await prisma.user.upsert({
-			where: { id: OTHER_ID },
-			create: {
-				id: OTHER_ID,
-				name: "Other",
-				email: "other-tags@test.local",
-				emailVerified: false,
-				username: "other-tags",
-				createdAt: new Date(),
-				updatedAt: new Date(),
-			},
-			update: {},
-		});
-		try {
-			await createRecipe(OTHER_ID, { title: "Their Recipe", tags: ["secret"] });
-			const tags = await listTagsInUse(TEST_USER_ID);
-			expect(tags.map((t) => t.name)).not.toContain("secret");
-		} finally {
-			await prisma.user.delete({ where: { id: OTHER_ID } });
-		}
-	});
-});
-
-describe("isPublic on createRecipe", () => {
-	it("defaults to false when isPublic is not specified", async () => {
-		const recipe = await createRecipe(TEST_USER_ID, {
-			title: "Private by Default",
-			tags: [],
-		});
-		expect(recipe.isPublic).toBe(false);
-	});
-
-	it("can be set to true at creation", async () => {
-		const recipe = await createRecipe(TEST_USER_ID, {
-			title: "Public Recipe",
-			isPublic: true,
-			tags: [],
-		});
-		expect(recipe.isPublic).toBe(true);
-	});
-});
-
-describe("setRecipeVisibility", () => {
-	it("makes a private recipe public", async () => {
-		const recipe = await createRecipe(TEST_USER_ID, {
-			title: "Recipe",
-			tags: [],
-		});
-		await setRecipeVisibility(recipe.id, TEST_USER_ID, true);
-		const updated = await prisma.recipe.findUnique({
-			where: { id: recipe.id },
-		});
-		expect(updated?.isPublic).toBe(true);
-	});
-
-	it("makes a public recipe private", async () => {
-		const recipe = await createRecipe(TEST_USER_ID, {
-			title: "Recipe",
-			isPublic: true,
-			tags: [],
-		});
-		await setRecipeVisibility(recipe.id, TEST_USER_ID, false);
-		const updated = await prisma.recipe.findUnique({
-			where: { id: recipe.id },
-		});
-		expect(updated?.isPublic).toBe(false);
-	});
-
-	it("does not affect a recipe owned by another user", async () => {
-		await upsertOtherUser();
-		try {
-			const recipe = await createRecipe(OTHER_USER_ID, {
-				title: "Their Recipe",
-				isPublic: false,
-				tags: [],
-			});
-			await expect(
-				setRecipeVisibility(recipe.id, TEST_USER_ID, true),
-			).rejects.toThrow();
-		} finally {
-			await cleanupOtherUser();
-		}
-	});
-});
-
 describe("findRecipe — visibility access control", () => {
 	it("owner can view their own private recipe", async () => {
 		const recipe = await createRecipe(TEST_USER_ID, {
@@ -798,7 +646,9 @@ describe("findRecipe — visibility access control", () => {
 			title: "Recipe",
 			tags: [],
 		});
-		await addNote(recipe.id, TEST_USER_ID, "My note");
+		await prisma.note.create({
+			data: { body: "My note", recipeId: recipe.id },
+		});
 		const result = await findRecipe(recipe.id, TEST_USER_ID);
 		expect(result?.notes).toHaveLength(1);
 	});
@@ -895,6 +745,89 @@ describe("findRecipe — visibility access control", () => {
 		});
 		const result = await findRecipe(recipe.id, null);
 		expect(result?.user.name).toBe("Test User");
+	});
+});
+
+describe("findRecipe — like fields", () => {
+	it("owner sees viewerHasLiked as null", async () => {
+		const recipe = await createRecipe(TEST_USER_ID, {
+			title: "Recipe",
+			tags: [],
+		});
+		const result = await findRecipe(recipe.id, TEST_USER_ID);
+		expect(result?.viewerHasLiked).toBeNull();
+	});
+
+	it("non-owner who has liked sees viewerHasLiked as true", async () => {
+		await upsertOtherUser();
+		try {
+			const recipe = await createRecipe(OTHER_USER_ID, {
+				title: "Public Recipe",
+				isPublic: true,
+				tags: [],
+			});
+			await toggleLike(recipe.id, TEST_USER_ID);
+			const result = await findRecipe(recipe.id, TEST_USER_ID);
+			expect(result?.viewerHasLiked).toBe(true);
+		} finally {
+			await cleanupOtherUser();
+		}
+	});
+
+	it("non-owner who has not liked sees viewerHasLiked as false", async () => {
+		await upsertOtherUser();
+		try {
+			const recipe = await createRecipe(OTHER_USER_ID, {
+				title: "Public Recipe",
+				isPublic: true,
+				tags: [],
+			});
+			const result = await findRecipe(recipe.id, TEST_USER_ID);
+			expect(result?.viewerHasLiked).toBe(false);
+		} finally {
+			await cleanupOtherUser();
+		}
+	});
+
+	it("unauthenticated viewer sees viewerHasLiked as null", async () => {
+		const recipe = await createRecipe(TEST_USER_ID, {
+			title: "Public",
+			isPublic: true,
+			tags: [],
+		});
+		const result = await findRecipe(recipe.id, null);
+		expect(result?.viewerHasLiked).toBeNull();
+	});
+
+	it("returns the correct likeCount", async () => {
+		await upsertOtherUser();
+		try {
+			const recipe = await createRecipe(OTHER_USER_ID, {
+				title: "Public Recipe",
+				isPublic: true,
+				tags: [],
+			});
+			await toggleLike(recipe.id, TEST_USER_ID);
+			const result = await findRecipe(recipe.id, TEST_USER_ID);
+			expect(result?.likeCount).toBe(1);
+		} finally {
+			await cleanupOtherUser();
+		}
+	});
+
+	it("likeCount is 0 when no one has liked", async () => {
+		await upsertOtherUser();
+		try {
+			const recipe = await createRecipe(OTHER_USER_ID, {
+				title: "Public Recipe",
+				isPublic: true,
+				tags: [],
+			});
+			const result = await findRecipe(recipe.id, TEST_USER_ID);
+			expect(result?.likeCount).toBe(0);
+		} finally {
+			await cleanupOtherUser();
+		}
 	});
 });
 
@@ -996,204 +929,6 @@ describe("listPublicRecipes", () => {
 	});
 });
 
-describe("listPublicTagsInUse", () => {
-	it("returns tag names from public recipes", async () => {
-		await createRecipe(TEST_USER_ID, {
-			title: "Recipe",
-			isPublic: true,
-			tags: ["italian"],
-		});
-		const tags = await listPublicTagsInUse();
-		expect(tags.map((t) => t.name)).toContain("italian");
-	});
-
-	it("does not return tags only applied to private recipes", async () => {
-		await createRecipe(TEST_USER_ID, {
-			title: "Private",
-			isPublic: false,
-			tags: ["secret"],
-		});
-		const tags = await listPublicTagsInUse();
-		expect(tags.map((t) => t.name)).not.toContain("secret");
-	});
-
-	it("deduplicates tag names across users", async () => {
-		await upsertOtherUser();
-		try {
-			await createRecipe(TEST_USER_ID, {
-				title: "My Recipe",
-				isPublic: true,
-				tags: ["italian"],
-			});
-			await createRecipe(OTHER_USER_ID, {
-				title: "Their Recipe",
-				isPublic: true,
-				tags: ["italian"],
-			});
-			const tags = await listPublicTagsInUse();
-			const italianTags = tags.filter((t) => t.name === "italian");
-			expect(italianTags).toHaveLength(1);
-		} finally {
-			await cleanupOtherUser();
-		}
-	});
-
-	it("returns tags sorted by name", async () => {
-		await createRecipe(TEST_USER_ID, {
-			title: "Recipe",
-			isPublic: true,
-			tags: ["zucchini", "apple", "mango"],
-		});
-		const tags = await listPublicTagsInUse();
-		const names = tags.map((t) => t.name);
-		expect(names).toEqual([...names].sort());
-	});
-});
-
-describe("toggleLike", () => {
-	it("creates a like and returns true", async () => {
-		await upsertOtherUser();
-		try {
-			const recipe = await createRecipe(OTHER_USER_ID, {
-				title: "Recipe",
-				isPublic: true,
-				tags: [],
-			});
-			const result = await toggleLike(recipe.id, TEST_USER_ID);
-			expect(result).toBe(true);
-			const like = await prisma.like.findUnique({
-				where: {
-					userId_recipeId: { userId: TEST_USER_ID, recipeId: recipe.id },
-				},
-			});
-			expect(like).not.toBeNull();
-		} finally {
-			await cleanupOtherUser();
-		}
-	});
-
-	it("removes an existing like and returns false", async () => {
-		await upsertOtherUser();
-		try {
-			const recipe = await createRecipe(OTHER_USER_ID, {
-				title: "Recipe",
-				isPublic: true,
-				tags: [],
-			});
-			await toggleLike(recipe.id, TEST_USER_ID);
-			const result = await toggleLike(recipe.id, TEST_USER_ID);
-			expect(result).toBe(false);
-			const like = await prisma.like.findUnique({
-				where: {
-					userId_recipeId: { userId: TEST_USER_ID, recipeId: recipe.id },
-				},
-			});
-			expect(like).toBeNull();
-		} finally {
-			await cleanupOtherUser();
-		}
-	});
-
-	it("throws when the user tries to like their own recipe", async () => {
-		const recipe = await createRecipe(TEST_USER_ID, {
-			title: "My Recipe",
-			tags: [],
-		});
-		await expect(toggleLike(recipe.id, TEST_USER_ID)).rejects.toThrow(
-			"Cannot like your own recipe",
-		);
-	});
-
-	it("throws when the recipe does not exist", async () => {
-		await expect(toggleLike("non-existent-id", TEST_USER_ID)).rejects.toThrow(
-			"Recipe not found",
-		);
-	});
-});
-
-describe("findRecipe — like fields", () => {
-	it("owner sees viewerHasLiked as null", async () => {
-		const recipe = await createRecipe(TEST_USER_ID, {
-			title: "Recipe",
-			tags: [],
-		});
-		const result = await findRecipe(recipe.id, TEST_USER_ID);
-		expect(result?.viewerHasLiked).toBeNull();
-	});
-
-	it("non-owner who has liked sees viewerHasLiked as true", async () => {
-		await upsertOtherUser();
-		try {
-			const recipe = await createRecipe(OTHER_USER_ID, {
-				title: "Public Recipe",
-				isPublic: true,
-				tags: [],
-			});
-			await toggleLike(recipe.id, TEST_USER_ID);
-			const result = await findRecipe(recipe.id, TEST_USER_ID);
-			expect(result?.viewerHasLiked).toBe(true);
-		} finally {
-			await cleanupOtherUser();
-		}
-	});
-
-	it("non-owner who has not liked sees viewerHasLiked as false", async () => {
-		await upsertOtherUser();
-		try {
-			const recipe = await createRecipe(OTHER_USER_ID, {
-				title: "Public Recipe",
-				isPublic: true,
-				tags: [],
-			});
-			const result = await findRecipe(recipe.id, TEST_USER_ID);
-			expect(result?.viewerHasLiked).toBe(false);
-		} finally {
-			await cleanupOtherUser();
-		}
-	});
-
-	it("unauthenticated viewer sees viewerHasLiked as null", async () => {
-		const recipe = await createRecipe(TEST_USER_ID, {
-			title: "Public",
-			isPublic: true,
-			tags: [],
-		});
-		const result = await findRecipe(recipe.id, null);
-		expect(result?.viewerHasLiked).toBeNull();
-	});
-
-	it("returns the correct likeCount", async () => {
-		await upsertOtherUser();
-		try {
-			const recipe = await createRecipe(OTHER_USER_ID, {
-				title: "Public Recipe",
-				isPublic: true,
-				tags: [],
-			});
-			await toggleLike(recipe.id, TEST_USER_ID);
-			const result = await findRecipe(recipe.id, TEST_USER_ID);
-			expect(result?.likeCount).toBe(1);
-		} finally {
-			await cleanupOtherUser();
-		}
-	});
-
-	it("likeCount is 0 when no one has liked", async () => {
-		await upsertOtherUser();
-		try {
-			const recipe = await createRecipe(OTHER_USER_ID, {
-				title: "Public Recipe",
-				isPublic: true,
-				tags: [],
-			});
-			const result = await findRecipe(recipe.id, TEST_USER_ID);
-			expect(result?.likeCount).toBe(0);
-		} finally {
-			await cleanupOtherUser();
-		}
-	});
-});
-
 describe("listPublicRecipes — like count", () => {
 	it("includes the like count on each recipe", async () => {
 		await upsertOtherUser();
@@ -1240,196 +975,6 @@ describe("listPublicRecipes — like count", () => {
 			const results = await listPublicRecipes({}, TEST_USER_ID);
 			const found = results.find((r) => r.id === recipe.id);
 			expect(found?.likes).toHaveLength(0);
-		} finally {
-			await cleanupOtherUser();
-		}
-	});
-});
-
-describe("listLikedRecipes", () => {
-	it("returns recipes the user has liked", async () => {
-		await upsertOtherUser();
-		try {
-			const recipe = await createRecipe(OTHER_USER_ID, {
-				title: "Liked Recipe",
-				isPublic: true,
-				tags: [],
-			});
-			await toggleLike(recipe.id, TEST_USER_ID);
-			const results = await listLikedRecipes(TEST_USER_ID);
-			expect(results.map((r) => r.title)).toContain("Liked Recipe");
-		} finally {
-			await cleanupOtherUser();
-		}
-	});
-
-	it("does not return recipes the user has not liked", async () => {
-		await upsertOtherUser();
-		try {
-			await createRecipe(OTHER_USER_ID, {
-				title: "Not Liked",
-				isPublic: true,
-				tags: [],
-			});
-			const results = await listLikedRecipes(TEST_USER_ID);
-			expect(results.map((r) => r.title)).not.toContain("Not Liked");
-		} finally {
-			await cleanupOtherUser();
-		}
-	});
-
-	it("excludes liked recipes that have become private", async () => {
-		await upsertOtherUser();
-		try {
-			const recipe = await createRecipe(OTHER_USER_ID, {
-				title: "Now Private",
-				isPublic: true,
-				tags: [],
-			});
-			await toggleLike(recipe.id, TEST_USER_ID);
-			await setRecipeVisibility(recipe.id, OTHER_USER_ID, false);
-			const results = await listLikedRecipes(TEST_USER_ID);
-			expect(results.map((r) => r.title)).not.toContain("Now Private");
-		} finally {
-			await cleanupOtherUser();
-		}
-	});
-
-	it("filters by tag", async () => {
-		await upsertOtherUser();
-		try {
-			const italian = await createRecipe(OTHER_USER_ID, {
-				title: "Italian",
-				isPublic: true,
-				tags: ["italian"],
-			});
-			const french = await createRecipe(OTHER_USER_ID, {
-				title: "French",
-				isPublic: true,
-				tags: ["french"],
-			});
-			await toggleLike(italian.id, TEST_USER_ID);
-			await toggleLike(french.id, TEST_USER_ID);
-			const results = await listLikedRecipes(TEST_USER_ID, {
-				tags: ["italian"],
-			});
-			expect(results.map((r) => r.title)).toContain("Italian");
-			expect(results.map((r) => r.title)).not.toContain("French");
-		} finally {
-			await cleanupOtherUser();
-		}
-	});
-
-	it("filters by maxTime", async () => {
-		await upsertOtherUser();
-		try {
-			const quick = await createRecipe(OTHER_USER_ID, {
-				title: "Quick",
-				isPublic: true,
-				totalTime: 15,
-				tags: [],
-			});
-			const slow = await createRecipe(OTHER_USER_ID, {
-				title: "Slow",
-				isPublic: true,
-				totalTime: 90,
-				tags: [],
-			});
-			await toggleLike(quick.id, TEST_USER_ID);
-			await toggleLike(slow.id, TEST_USER_ID);
-			const results = await listLikedRecipes(TEST_USER_ID, { maxTime: 30 });
-			expect(results.map((r) => r.title)).toContain("Quick");
-			expect(results.map((r) => r.title)).not.toContain("Slow");
-		} finally {
-			await cleanupOtherUser();
-		}
-	});
-
-	it("filters by search query", async () => {
-		await upsertOtherUser();
-		try {
-			const pasta = await createRecipe(OTHER_USER_ID, {
-				title: "Creamy Pasta",
-				isPublic: true,
-				tags: [],
-			});
-			const burger = await createRecipe(OTHER_USER_ID, {
-				title: "Burger",
-				isPublic: true,
-				tags: [],
-			});
-			await toggleLike(pasta.id, TEST_USER_ID);
-			await toggleLike(burger.id, TEST_USER_ID);
-			const results = await listLikedRecipes(TEST_USER_ID, { q: "pasta" });
-			expect(results.map((r) => r.title)).toContain("Creamy Pasta");
-			expect(results.map((r) => r.title)).not.toContain("Burger");
-		} finally {
-			await cleanupOtherUser();
-		}
-	});
-});
-
-describe("listLikedTagsInUse", () => {
-	it("returns tags from the user's visible liked recipes", async () => {
-		await upsertOtherUser();
-		try {
-			const recipe = await createRecipe(OTHER_USER_ID, {
-				title: "Tagged",
-				isPublic: true,
-				tags: ["italian"],
-			});
-			await toggleLike(recipe.id, TEST_USER_ID);
-			const tags = await listLikedTagsInUse(TEST_USER_ID);
-			expect(tags.map((t) => t.name)).toContain("italian");
-		} finally {
-			await cleanupOtherUser();
-		}
-	});
-
-	it("excludes tags from liked recipes that are currently private", async () => {
-		await upsertOtherUser();
-		try {
-			const recipe = await createRecipe(OTHER_USER_ID, {
-				title: "Now Private",
-				isPublic: true,
-				tags: ["secret"],
-			});
-			await toggleLike(recipe.id, TEST_USER_ID);
-			await setRecipeVisibility(recipe.id, OTHER_USER_ID, false);
-			const tags = await listLikedTagsInUse(TEST_USER_ID);
-			expect(tags.map((t) => t.name)).not.toContain("secret");
-		} finally {
-			await cleanupOtherUser();
-		}
-	});
-
-	it("does not include tags from recipes the user has not liked", async () => {
-		await upsertOtherUser();
-		try {
-			await createRecipe(OTHER_USER_ID, {
-				title: "Not Liked",
-				isPublic: true,
-				tags: ["french"],
-			});
-			const tags = await listLikedTagsInUse(TEST_USER_ID);
-			expect(tags.map((t) => t.name)).not.toContain("french");
-		} finally {
-			await cleanupOtherUser();
-		}
-	});
-
-	it("returns tags sorted by name", async () => {
-		await upsertOtherUser();
-		try {
-			const recipe = await createRecipe(OTHER_USER_ID, {
-				title: "Tagged",
-				isPublic: true,
-				tags: ["zucchini", "apple", "mango"],
-			});
-			await toggleLike(recipe.id, TEST_USER_ID);
-			const tags = await listLikedTagsInUse(TEST_USER_ID);
-			const names = tags.map((t) => t.name);
-			expect(names).toEqual([...names].sort());
 		} finally {
 			await cleanupOtherUser();
 		}

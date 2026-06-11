@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { formatTotalTime } from "#/lib/format";
-import type { getRecipes } from "#/lib/recipes";
+import type { getRecipes } from "#/lib/recipe-fns";
 
 type Recipe = Awaited<ReturnType<typeof getRecipes>>[number];
 

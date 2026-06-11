@@ -1,11 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { auth } from "#/lib/auth";
-import * as recipeService from "#/lib/recipe-service";
-import * as noteService from "#/lib/note-service";
-import * as tagService from "#/lib/tag-service";
 import * as likeService from "#/lib/like-service";
+import * as noteService from "#/lib/note-service";
 import * as profileService from "#/lib/profile-service";
+import * as recipeService from "#/lib/recipe-service";
+import * as tagService from "#/lib/tag-service";
 
 async function requireUser() {
 	const request = getRequest();

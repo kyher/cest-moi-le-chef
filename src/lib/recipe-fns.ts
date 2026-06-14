@@ -21,7 +21,7 @@ async function optionalUser() {
 }
 
 export const getRecipes = createServerFn()
-	.validator(
+	.inputValidator(
 		(d: {
 			tags?: string;
 			maxTime?: number;
@@ -41,7 +41,7 @@ export const getRecipes = createServerFn()
 	});
 
 export const getPublicRecipes = createServerFn()
-	.validator((d: { tags?: string; maxTime?: number; q?: string }) => d)
+	.inputValidator((d: { tags?: string; maxTime?: number; q?: string }) => d)
 	.handler(async ({ data }) => {
 		const user = await optionalUser();
 		const tags = data.tags?.split(",").filter(Boolean);
@@ -61,14 +61,14 @@ export const getPublicTagsInUse = createServerFn().handler(async () => {
 });
 
 export const getRecipe = createServerFn()
-	.validator((d: { recipeId: string }) => d)
+	.inputValidator((d: { recipeId: string }) => d)
 	.handler(async ({ data }) => {
 		const user = await optionalUser();
 		return recipeService.findRecipe(data.recipeId, user?.id ?? null);
 	});
 
 export const createRecipe = createServerFn({ method: "POST" })
-	.validator(
+	.inputValidator(
 		(d: {
 			title: string;
 			ingredients?: string;
@@ -84,7 +84,7 @@ export const createRecipe = createServerFn({ method: "POST" })
 	});
 
 export const updateRecipe = createServerFn({ method: "POST" })
-	.validator(
+	.inputValidator(
 		(d: {
 			recipeId: string;
 			title: string;
@@ -101,7 +101,7 @@ export const updateRecipe = createServerFn({ method: "POST" })
 	});
 
 export const setVisibility = createServerFn({ method: "POST" })
-	.validator((d: { recipeId: string; isPublic: boolean }) => d)
+	.inputValidator((d: { recipeId: string; isPublic: boolean }) => d)
 	.handler(async ({ data }) => {
 		const user = await requireUser();
 		return recipeService.setRecipeVisibility(
@@ -112,41 +112,41 @@ export const setVisibility = createServerFn({ method: "POST" })
 	});
 
 export const deleteRecipe = createServerFn({ method: "POST" })
-	.validator((d: { recipeId: string }) => d)
+	.inputValidator((d: { recipeId: string }) => d)
 	.handler(async ({ data }) => {
 		const user = await requireUser();
 		await recipeService.removeRecipe(data.recipeId, user.id);
 	});
 
 export const addNote = createServerFn({ method: "POST" })
-	.validator((d: { recipeId: string; body: string }) => d)
+	.inputValidator((d: { recipeId: string; body: string }) => d)
 	.handler(async ({ data }) => {
 		const user = await requireUser();
 		return noteService.addNote(data.recipeId, user.id, data.body);
 	});
 
 export const deleteNote = createServerFn({ method: "POST" })
-	.validator((d: { noteId: string }) => d)
+	.inputValidator((d: { noteId: string }) => d)
 	.handler(async ({ data }) => {
 		const user = await requireUser();
 		await noteService.removeNote(data.noteId, user.id);
 	});
 
 export const getProfile = createServerFn()
-	.validator((d: { username: string }) => d)
+	.inputValidator((d: { username: string }) => d)
 	.handler(async ({ data }) => {
 		return profileService.findProfile(data.username);
 	});
 
 export const toggleLike = createServerFn({ method: "POST" })
-	.validator((d: { recipeId: string }) => d)
+	.inputValidator((d: { recipeId: string }) => d)
 	.handler(async ({ data }) => {
 		const user = await requireUser();
 		return likeService.toggleLike(data.recipeId, user.id);
 	});
 
 export const getLikedRecipes = createServerFn()
-	.validator((d: { tags?: string; maxTime?: number; q?: string }) => d)
+	.inputValidator((d: { tags?: string; maxTime?: number; q?: string }) => d)
 	.handler(async ({ data }) => {
 		const user = await requireUser();
 		const tags = data.tags?.split(",").filter(Boolean);

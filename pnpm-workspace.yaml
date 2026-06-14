@@ -2,10 +2,8 @@ packages:
   - "."
 
 allowBuilds:
-  "@parcel/watcher": false
   "@prisma/engines": true
   esbuild: true
   prisma: true
-  sharp: false
 
 minimumReleaseAge: 4320

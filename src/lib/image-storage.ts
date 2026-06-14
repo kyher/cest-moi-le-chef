@@ -1,9 +1,10 @@
 import { randomUUID } from "node:crypto";
-import {
-	DeleteObjectCommand,
-	PutObjectCommand,
-	S3Client,
-} from "@aws-sdk/client-s3";
+import { mkdir, unlink, writeFile } from "node:fs/promises";
+import { join } from "node:path";
+
+function uploadsDir() {
+	return process.env.UPLOADS_DIR ?? "./public/uploads";
+}
 
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const MAX_BYTES = 5 * 1024 * 1024;
@@ -23,38 +24,18 @@ export function validateImageFile(file: File) {
 	}
 }
 
-function r2Client() {
-	return new S3Client({
-		region: "auto",
-		endpoint: `https://${process.env.R2_ACCOUNT_ID ?? ""}.r2.cloudflarestorage.com`,
-		credentials: {
-			accessKeyId: process.env.R2_ACCESS_KEY_ID ?? "",
-			secretAccessKey: process.env.R2_SECRET_ACCESS_KEY ?? "",
-		},
-	});
-}
-
 export async function writeImageFile(file: File): Promise<string> {
 	validateImageFile(file);
+	const dir = uploadsDir();
+	await mkdir(dir, { recursive: true });
 	const ext = EXT_MAP[file.type];
-	const key = `${randomUUID()}${ext}`;
-	await r2Client().send(
-		new PutObjectCommand({
-			Bucket: process.env.R2_BUCKET_NAME ?? "",
-			Key: key,
-			Body: Buffer.from(await file.arrayBuffer()),
-			ContentType: file.type,
-		}),
-	);
-	return `${process.env.R2_PUBLIC_URL ?? ""}/${key}`;
+	const filename = `${randomUUID()}${ext}`;
+	const buffer = Buffer.from(await file.arrayBuffer());
+	await writeFile(join(dir, filename), buffer);
+	return `/uploads/${filename}`;
 }
 
 export async function deleteImageFile(imageUrl: string): Promise<void> {
-	const key = imageUrl.replace(`${process.env.R2_PUBLIC_URL ?? ""}/`, "");
-	await r2Client().send(
-		new DeleteObjectCommand({
-			Bucket: process.env.R2_BUCKET_NAME ?? "",
-			Key: key,
-		}),
-	);
+	const filename = imageUrl.replace(/^\/uploads\//, "");
+	await unlink(join(uploadsDir(), filename)).catch(() => {});
 }

@@ -1,12 +1,42 @@
-import { mkdtemp, readdir, rm, stat } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
-import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeAll,
+	describe,
+	expect,
+	it,
+	vi,
+} from "vitest";
 import {
 	deleteImageFile,
 	validateImageFile,
 	writeImageFile,
 } from "#/lib/image-storage";
+
+const mockSend = vi.hoisted(() => vi.fn().mockResolvedValue({}));
+
+vi.mock("@aws-sdk/client-s3", () => {
+	class MockS3Client {
+		send = mockSend;
+	}
+	class MockPutObjectCommand {
+		[key: string]: unknown;
+		constructor(input: Record<string, unknown>) {
+			Object.assign(this, input);
+		}
+	}
+	class MockDeleteObjectCommand {
+		[key: string]: unknown;
+		constructor(input: Record<string, unknown>) {
+			Object.assign(this, input);
+		}
+	}
+	return {
+		S3Client: MockS3Client,
+		PutObjectCommand: MockPutObjectCommand,
+		DeleteObjectCommand: MockDeleteObjectCommand,
+	};
+});
 
 function makeFile(type: string, sizeBytes: number): File {
 	const blob = new Blob([new Uint8Array(sizeBytes)], { type });
@@ -55,27 +85,33 @@ describe("validateImageFile", () => {
 });
 
 describe("writeImageFile and deleteImageFile", () => {
-	let tmpDir: string;
-
-	beforeAll(async () => {
-		tmpDir = await mkdtemp(join(tmpdir(), "uploads-test-"));
-		vi.stubEnv("UPLOADS_DIR", tmpDir);
+	beforeAll(() => {
+		vi.stubEnv("R2_ACCOUNT_ID", "test-account");
+		vi.stubEnv("R2_ACCESS_KEY_ID", "test-key-id");
+		vi.stubEnv("R2_SECRET_ACCESS_KEY", "test-secret");
+		vi.stubEnv("R2_BUCKET_NAME", "test-bucket");
+		vi.stubEnv("R2_PUBLIC_URL", "https://pub-test.r2.dev");
 	});
 
-	afterAll(async () => {
+	afterAll(() => {
 		vi.unstubAllEnvs();
-		await rm(tmpDir, { recursive: true, force: true });
 	});
 
-	it("writes the file to disk and returns an /uploads/ URL", async () => {
-		const file = makeFile(PNG, 100);
-		const url = await writeImageFile(file);
+	afterEach(() => {
+		mockSend.mockClear();
+	});
 
-		expect(url).toMatch(/^\/uploads\/[a-f0-9-]+\.png$/);
+	it("uploads to R2 and returns a public URL", async () => {
+		const url = await writeImageFile(makeFile(PNG, 100));
 
-		const filename = url.replace("/uploads/", "");
-		const fileStat = await stat(join(tmpDir, filename));
-		expect(fileStat.isFile()).toBe(true);
+		expect(url).toMatch(/^https:\/\/pub-test\.r2\.dev\/[a-f0-9-]+\.png$/);
+		expect(mockSend).toHaveBeenCalledOnce();
+		expect(mockSend).toHaveBeenCalledWith(
+			expect.objectContaining({
+				Bucket: "test-bucket",
+				ContentType: "image/png",
+			}),
+		);
 	});
 
 	it("uses .jpg extension for JPEG", async () => {
@@ -94,18 +130,20 @@ describe("writeImageFile and deleteImageFile", () => {
 		expect(url1).not.toBe(url2);
 	});
 
-	it("deleteImageFile removes the file from disk", async () => {
-		const url = await writeImageFile(makeFile(PNG, 100));
-		await deleteImageFile(url);
+	it("deleteImageFile sends DeleteObjectCommand with the filename as key", async () => {
+		await deleteImageFile("https://pub-test.r2.dev/some-uuid.png");
 
-		const filename = url.replace("/uploads/", "");
-		const files = await readdir(tmpDir);
-		expect(files).not.toContain(filename);
+		expect(mockSend).toHaveBeenCalledOnce();
+		expect(mockSend).toHaveBeenCalledWith({
+			Bucket: "test-bucket",
+			Key: "some-uuid.png",
+		});
 	});
 
-	it("deleteImageFile does not throw when the file does not exist", async () => {
+	it("deleteImageFile does not throw when R2 returns an error", async () => {
+		mockSend.mockRejectedValueOnce(new Error("R2 error"));
 		await expect(
-			deleteImageFile("/uploads/nonexistent-uuid.png"),
+			deleteImageFile("https://pub-test.r2.dev/nonexistent-uuid.png"),
 		).resolves.not.toThrow();
 	});
 });

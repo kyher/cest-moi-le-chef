@@ -1,11 +1,5 @@
-import {
-	createFileRoute,
-	Link,
-	Outlet,
-	redirect,
-	useRouter,
-} from "@tanstack/react-router";
-import { authClient } from "#/lib/auth-client";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { SiteHeader } from "#/components/-site-header";
 import { getSession } from "#/lib/session";
 
 export const Route = createFileRoute("/_auth")({
@@ -20,51 +14,11 @@ export const Route = createFileRoute("/_auth")({
 });
 
 function AuthLayout() {
-	const router = useRouter();
+	const { session } = Route.useRouteContext();
 
 	return (
 		<div className="min-h-screen flex flex-col">
-			<header className="border-b border-stone-200 bg-stone-100 px-4 h-16 flex items-center justify-between">
-				<Link
-					to="/"
-					className="font-serif italic text-lg text-stone-900 hover:text-stone-600 transition-colors"
-				>
-					c'est moi le chef
-				</Link>
-				<div className="flex items-center gap-3">
-					<Link
-						to="/recipes"
-						className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
-					>
-						Recipes
-					</Link>
-					<Link
-						to="/my-recipes"
-						className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
-					>
-						My Recipes
-					</Link>
-					<Link
-						to="/liked-recipes"
-						className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
-					>
-						Liked Recipes
-					</Link>
-					<button
-						type="button"
-						onClick={() => {
-							void authClient.signOut({
-								fetchOptions: {
-									onSuccess: () => router.navigate({ to: "/" }),
-								},
-							});
-						}}
-						className="h-9 px-4 text-sm font-medium rounded-sm bg-white text-stone-900 border border-stone-300 hover:bg-stone-50 transition-colors"
-					>
-						Sign out
-					</button>
-				</div>
-			</header>
+			<SiteHeader user={session.user} />
 			<div className="w-3/4 mx-auto">
 				<Outlet />
 			</div>

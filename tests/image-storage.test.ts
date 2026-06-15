@@ -19,10 +19,22 @@ vi.mock("@aws-sdk/client-s3", () => {
 	class MockS3Client {
 		send = mockSend;
 	}
+	class MockPutObjectCommand {
+		[key: string]: unknown;
+		constructor(input: Record<string, unknown>) {
+			Object.assign(this, input);
+		}
+	}
+	class MockDeleteObjectCommand {
+		[key: string]: unknown;
+		constructor(input: Record<string, unknown>) {
+			Object.assign(this, input);
+		}
+	}
 	return {
 		S3Client: MockS3Client,
-		PutObjectCommand: (input: unknown) => input,
-		DeleteObjectCommand: (input: unknown) => input,
+		PutObjectCommand: MockPutObjectCommand,
+		DeleteObjectCommand: MockDeleteObjectCommand,
 	};
 });
 

@@ -1,4 +1,12 @@
-import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import {
+	afterAll,
+	afterEach,
+	beforeAll,
+	describe,
+	expect,
+	it,
+	vi,
+} from "vitest";
 import {
 	deleteImageFile,
 	validateImageFile,
@@ -13,12 +21,8 @@ vi.mock("@aws-sdk/client-s3", () => {
 	}
 	return {
 		S3Client: MockS3Client,
-		PutObjectCommand: function (input: unknown) {
-			return input;
-		},
-		DeleteObjectCommand: function (input: unknown) {
-			return input;
-		},
+		PutObjectCommand: (input: unknown) => input,
+		DeleteObjectCommand: (input: unknown) => input,
 	};
 });
 

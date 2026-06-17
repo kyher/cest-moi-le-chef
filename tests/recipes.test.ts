@@ -194,7 +194,9 @@ describe("removeRecipe", () => {
 			title: "Recipe",
 			tags: [],
 		});
-		await prisma.note.create({ data: { body: "A note", recipeId: recipe.id } });
+		await prisma.note.create({
+			data: { body: "A note", recipeId: recipe.id, userId: TEST_USER_ID },
+		});
 		await removeRecipe(recipe.id, TEST_USER_ID);
 		const notes = await prisma.note.findMany({
 			where: { recipeId: recipe.id },
@@ -381,8 +383,12 @@ describe("listRecipes", () => {
 			title: "Recipe",
 			tags: ["main", "quick"],
 		});
-		await prisma.note.create({ data: { body: "Note 1", recipeId: recipe.id } });
-		await prisma.note.create({ data: { body: "Note 2", recipeId: recipe.id } });
+		await prisma.note.create({
+			data: { body: "Note 1", recipeId: recipe.id, userId: TEST_USER_ID },
+		});
+		await prisma.note.create({
+			data: { body: "Note 2", recipeId: recipe.id, userId: TEST_USER_ID },
+		});
 		const [listed] = await listRecipes(TEST_USER_ID);
 		expect(listed._count.notes).toBe(2);
 		expect(listed.tags).toHaveLength(2);
@@ -647,7 +653,7 @@ describe("findRecipe — visibility access control", () => {
 			tags: [],
 		});
 		await prisma.note.create({
-			data: { body: "My note", recipeId: recipe.id },
+			data: { body: "My note", recipeId: recipe.id, userId: TEST_USER_ID },
 		});
 		const result = await findRecipe(recipe.id, TEST_USER_ID);
 		expect(result?.notes).toHaveLength(1);
@@ -693,7 +699,11 @@ describe("findRecipe — visibility access control", () => {
 				tags: [],
 			});
 			await prisma.note.create({
-				data: { body: "Secret note", recipeId: recipe.id },
+				data: {
+					body: "Secret note",
+					recipeId: recipe.id,
+					userId: OTHER_USER_ID,
+				},
 			});
 			const result = await findRecipe(recipe.id, TEST_USER_ID);
 			expect(result?.notes).toHaveLength(0);

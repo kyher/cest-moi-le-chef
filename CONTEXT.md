@@ -9,7 +9,7 @@ A dish the user wants to remember how to make. Has a title (required), optional 
 _Avoid_: Dish, meal
 
 **Note**:
-A timestamped free-form observation attached to a single Recipe — e.g. "needed more salt", "cooked for 45 min instead of 30". Many notes belong to one recipe. Notes are always private to the owner, regardless of the Recipe's visibility.
+A timestamped free-form observation written by an authenticated User about a Recipe — e.g. "needed more salt", "cooked for 45 min instead of 30". Any authenticated User may add Notes to any public Recipe; a User may also add Notes to their own private Recipes. Notes are always private to their author and never visible to any other User, including the Recipe owner. Notes persist when a Recipe is made private, becoming inaccessible until the Recipe is public again (mirroring Like behaviour). Many Notes may exist on one Recipe across multiple authors.
 _Avoid_: Comment, tip, annotation
 
 **Tag**:
@@ -70,7 +70,7 @@ _Avoid_: User page, public profile, account page
 > — Filter by the Tag "starter".
 
 > "I tried this last week and the sauce split — where do I record that?"
-> — Add a Note to the Recipe.
+> — Add a Note to the Recipe. Notes are personal and only visible to you, whether it's your recipe or someone else's.
 
 > "I want to group recipes by cuisine too."
 > — Create Tags like "italian", "thai" and apply them alongside course tags.

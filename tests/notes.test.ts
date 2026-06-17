@@ -2,7 +2,13 @@ import { describe, expect, it } from "vitest";
 import { prisma } from "#/db";
 import { addNote, removeNote } from "#/lib/note-service";
 import { createRecipe, findRecipe } from "#/lib/recipe-service";
-import { setupTestUser, TEST_USER_ID } from "./helpers";
+import {
+	cleanupOtherUser,
+	OTHER_USER_ID,
+	setupTestUser,
+	TEST_USER_ID,
+	upsertOtherUser,
+} from "./helpers";
 
 setupTestUser();
 
@@ -41,7 +47,7 @@ describe("notes", () => {
 		expect(full?.notes[1].id).toBe(first.id);
 	});
 
-	it("throws when adding a note to a recipe the user does not own", async () => {
+	it("throws when adding a note to a private recipe the user does not own", async () => {
 		const recipe = await createRecipe(TEST_USER_ID, {
 			title: "Recipe",
 			tags: [],
@@ -49,5 +55,59 @@ describe("notes", () => {
 		await expect(
 			addNote(recipe.id, "other-user-id", "Sneaky note"),
 		).rejects.toThrow("Recipe not found");
+	});
+
+	it("adds a note to another user's public recipe", async () => {
+		await upsertOtherUser();
+		try {
+			const recipe = await createRecipe(OTHER_USER_ID, {
+				title: "Public Recipe",
+				isPublic: true,
+				tags: [],
+			});
+			const note = await addNote(
+				recipe.id,
+				TEST_USER_ID,
+				"Tried this last night",
+			);
+			expect(note.recipeId).toBe(recipe.id);
+			expect(note.userId).toBe(TEST_USER_ID);
+		} finally {
+			await cleanupOtherUser();
+		}
+	});
+
+	it("cannot delete another user's note", async () => {
+		await upsertOtherUser();
+		try {
+			const recipe = await createRecipe(OTHER_USER_ID, {
+				title: "Public Recipe",
+				isPublic: true,
+				tags: [],
+			});
+			const note = await addNote(recipe.id, TEST_USER_ID, "My note");
+			await expect(removeNote(note.id, OTHER_USER_ID)).rejects.toThrow(
+				"Note not found",
+			);
+		} finally {
+			await cleanupOtherUser();
+		}
+	});
+
+	it("findRecipe returns the viewer's own notes on another user's recipe", async () => {
+		await upsertOtherUser();
+		try {
+			const recipe = await createRecipe(OTHER_USER_ID, {
+				title: "Public Recipe",
+				isPublic: true,
+				tags: [],
+			});
+			await addNote(recipe.id, TEST_USER_ID, "My personal note");
+			const result = await findRecipe(recipe.id, TEST_USER_ID);
+			expect(result?.notes).toHaveLength(1);
+			expect(result?.notes[0].body).toBe("My personal note");
+		} finally {
+			await cleanupOtherUser();
+		}
 	});
 });

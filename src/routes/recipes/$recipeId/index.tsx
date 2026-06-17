@@ -4,6 +4,7 @@ import {
 	notFound,
 	useRouter,
 } from "@tanstack/react-router";
+import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { SiteHeader } from "#/components/-site-header";
@@ -201,14 +202,19 @@ function Detail({ recipe, isOwner }: { recipe: Recipe; isOwner: boolean }) {
 				</section>
 			)}
 
-			{isOwner && (
+			{(isOwner || recipe.viewerHasLiked !== null) && (
 				<section>
-					<h2 className="text-xs font-semibold uppercase tracking-wide text-stone-400 mb-4">
-						Notes
-						{"notes" in recipe && recipe.notes.length > 0
-							? ` (${recipe.notes.length})`
-							: ""}
-					</h2>
+					<div className="flex items-baseline gap-2 mb-4">
+						<h2 className="text-xs font-semibold uppercase tracking-wide text-stone-400">
+							Notes
+							{recipe.notes.length > 0 ? ` (${recipe.notes.length})` : ""}
+						</h2>
+						{!isOwner && (
+							<span className="text-xs text-stone-400">
+								· only visible to you
+							</span>
+						)}
+					</div>
 
 					<form onSubmit={handleAddNote} className="flex flex-col gap-2 mb-6">
 						<textarea
@@ -227,36 +233,37 @@ function Detail({ recipe, isOwner }: { recipe: Recipe; isOwner: boolean }) {
 						</button>
 					</form>
 
-					{"notes" in recipe && recipe.notes.length === 0 ? (
+					{recipe.notes.length === 0 ? (
 						<p className="text-sm text-stone-400">No notes yet.</p>
 					) : (
-						"notes" in recipe && (
-							<div className="space-y-3">
-								{recipe.notes.map((note) => (
-									<div key={note.id} className="flex gap-3 group">
-										<div className="flex-1 p-3 bg-amber-50 border border-amber-100">
-											<p className="text-xs text-stone-400 mb-1">
-												{new Date(note.createdAt).toLocaleDateString("en-GB", {
-													day: "numeric",
-													month: "short",
-													year: "numeric",
-												})}
-											</p>
-											<p className="text-sm text-stone-800 whitespace-pre-wrap">
-												{note.body}
-											</p>
-										</div>
-										<button
-											type="button"
-											onClick={() => handleDeleteNote(note.id)}
-											className="text-xs text-stone-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity self-start pt-3"
-										>
-											delete
-										</button>
+						<div className="space-y-3">
+							{recipe.notes.map((note) => (
+								<div
+									key={note.id}
+									className="flex items-center gap-3 group p-3 bg-amber-50 border border-amber-100"
+								>
+									<div className="flex-1">
+										<p className="text-xs text-stone-400 mb-1">
+											{new Date(note.createdAt).toLocaleDateString("en-GB", {
+												day: "numeric",
+												month: "short",
+												year: "numeric",
+											})}
+										</p>
+										<p className="text-sm text-stone-800 whitespace-pre-wrap">
+											{note.body}
+										</p>
 									</div>
-								))}
-							</div>
-						)
+									<button
+										type="button"
+										onClick={() => handleDeleteNote(note.id)}
+										className="text-stone-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+									>
+										<Trash2 size={14} />
+									</button>
+								</div>
+							))}
+						</div>
 					)}
 				</section>
 			)}

@@ -91,7 +91,7 @@ export async function findRecipe(recipeId: string, viewerId: string | null) {
 			where: { id: recipeId, userId: viewerId },
 			include: {
 				tags: { include: { tag: true } },
-				notes: { orderBy: { createdAt: "desc" } },
+				notes: { where: { userId: viewerId }, orderBy: { createdAt: "desc" } },
 				user: { select: { name: true, username: true } },
 				_count: { select: { likes: true } },
 			},
@@ -106,7 +106,7 @@ export async function findRecipe(recipeId: string, viewerId: string | null) {
 		}
 	}
 
-	// Non-owner: only public recipes, notes never sent
+	// Non-owner: only public recipes, fetch the viewer's own notes
 	const recipe = await prisma.recipe.findFirst({
 		where: { id: recipeId, isPublic: true },
 		include: {
@@ -116,6 +116,9 @@ export async function findRecipe(recipeId: string, viewerId: string | null) {
 			likes: viewerId
 				? { where: { userId: viewerId }, select: { userId: true } }
 				: false,
+			notes: viewerId
+				? { where: { userId: viewerId }, orderBy: { createdAt: "desc" } }
+				: false,
 		},
 	});
 	if (!recipe) return null;
@@ -123,7 +126,7 @@ export async function findRecipe(recipeId: string, viewerId: string | null) {
 		...recipe,
 		likeCount: recipe._count.likes,
 		viewerHasLiked: viewerId ? recipe.likes.length > 0 : null,
-		notes: [] as const,
+		notes: viewerId ? recipe.notes : ([] as const),
 		isOwner: false as const,
 	};
 }

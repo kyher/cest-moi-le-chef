@@ -39,7 +39,9 @@ model Note {
   body      String
   createdAt DateTime @default(now())
   recipeId  String
+  userId    String
   recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Tag {
@@ -76,6 +78,7 @@ model User {
   recipes         Recipe[]
   tags            Tag[]
   likes           Like[]
+  notes           Note[]
 }
 
 model Session {

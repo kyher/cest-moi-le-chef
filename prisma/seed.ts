@@ -285,7 +285,7 @@ async function seedRecipe(userId: string, recipe: (typeof RECIPES)[number]) {
 			isPublic: recipe.isPublic ?? false,
 			tags: { create: tags.map((tag) => ({ tagId: tag.id })) },
 			notes: recipe.notes
-				? { create: recipe.notes.map((body) => ({ body })) }
+				? { create: recipe.notes.map((body) => ({ body, userId })) }
 				: undefined,
 		},
 	});

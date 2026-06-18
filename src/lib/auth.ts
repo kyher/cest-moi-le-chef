@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { username } from "better-auth/plugins";
+import { admin, username } from "better-auth/plugins";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { prisma } from "#/db";
 
@@ -16,5 +16,6 @@ export const auth = betterAuth({
 		username({
 			usernameValidator: (u) => /^[a-z0-9_-]+$/.test(u),
 		}),
+		admin(),
 	],
 });

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { authClient } from "#/lib/auth-client";
 
 interface Props {
-	user: { name: string } | null;
+	user: { name: string; role?: string | null } | null;
 }
 
 export function SiteHeader({ user }: Props) {
@@ -57,6 +57,14 @@ export function SiteHeader({ user }: Props) {
 							>
 								Liked Recipes
 							</Link>
+							{user?.role === "admin" && (
+								<Link
+									to="/admin/recipes"
+									className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
+								>
+									Admin
+								</Link>
+							)}
 							<button
 								type="button"
 								onClick={signOut}
@@ -158,6 +166,15 @@ export function SiteHeader({ user }: Props) {
 							>
 								Liked Recipes
 							</Link>
+							{user?.role === "admin" && (
+								<Link
+									to="/admin/recipes"
+									onClick={close}
+									className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
+								>
+									Admin
+								</Link>
+							)}
 							<button
 								type="button"
 								onClick={signOut}

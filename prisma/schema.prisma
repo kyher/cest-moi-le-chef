@@ -73,6 +73,10 @@ model User {
   displayUsername String?
   createdAt       DateTime
   updatedAt       DateTime
+  role            String    @default("user")
+  banned          Boolean   @default(false)
+  banReason       String?
+  banExpires      DateTime?
   sessions        Session[]
   accounts        Account[]
   recipes         Recipe[]

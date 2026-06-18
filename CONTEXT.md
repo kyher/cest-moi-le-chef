@@ -64,6 +64,22 @@ _Avoid_: Handle, display name, user ID
 A public page at `/profile/:username` showing a User's `name`, `username`, and all of their public Recipes as an unfiltered list. Accessible to authenticated and unauthenticated users alike. Reached by clicking the username attribution on a public Recipe — both on the Home Page and on the Recipe detail page.
 _Avoid_: User page, public profile, account page
 
+**Role**:
+A classification on a User that determines their privileges. Two values: `user` (default) and `admin`. A User's Role is assigned at the database level on bootstrap and cannot be changed through the app UI.
+_Avoid_: Permission, access level, tier
+
+**Admin**:
+A User with Role `admin`. Has exclusive access to the Admin Panel and all moderation actions. There is no in-app way to grant or revoke admin status — it is managed directly in the database.
+_Avoid_: Moderator, superuser, staff
+
+**Admin Panel**:
+A dedicated area of the application, accessible only to Admins, for content moderation. Located at `/admin`. Contains two sections: a Recipe list and a User list. Not linked from the main navigation for non-admin users.
+_Avoid_: Dashboard, control panel, back-office
+
+**Ban**:
+An admin action that permanently blocks a User from signing in and hard-deletes all of their Recipes (including private ones) and all associated data. A banned User's sessions are invalidated immediately. Irreversible through the app — only a database intervention can restore a banned User.
+_Avoid_: Suspend, deactivate, disable
+
 ## Example dialogue
 
 > "I want to find all my starter recipes."

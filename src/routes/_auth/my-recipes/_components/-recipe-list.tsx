@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { UtensilsCrossed } from "lucide-react";
 import { formatTotalTime } from "#/lib/format";
 import type { getRecipes } from "#/lib/recipe-fns";
 
@@ -37,63 +38,65 @@ export function RecipeList({ recipes, hasConstraints, onReset }: Props) {
 	}
 
 	return (
-		<div className="space-y-2">
+		<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 			{recipes.map((recipe) => (
-				<div
+				<Link
 					key={recipe.id}
-					className="flex items-start justify-between gap-4 p-5 bg-stone-50 border border-stone-200 border-l-2 border-l-amber-300 hover:border-l-amber-500 transition-colors"
+					to="/recipes/$recipeId"
+					params={{ recipeId: recipe.id }}
+					className="flex flex-col bg-stone-50 border border-stone-200 border-l-2 border-l-amber-300 hover:border-l-amber-500 transition-colors"
 				>
-					<Link
-						to="/recipes/$recipeId"
-						params={{ recipeId: recipe.id }}
-						className="flex items-start gap-4 flex-1 min-w-0"
-					>
-						{recipe.imageUrl && (
-							<img
-								src={recipe.imageUrl}
-								alt=""
-								className="w-16 h-16 object-cover rounded-sm shrink-0 border border-stone-200"
-							/>
-						)}
-						<div className="min-w-0">
-							<h2 className="font-semibold font-serif text-stone-900">
-								{recipe.title}
-							</h2>
-							{recipe.tags.length > 0 && (
-								<div className="flex flex-wrap gap-1 mt-2">
-									{recipe.tags.map(({ tag }) => (
-										<span
-											key={tag.id}
-											className="px-2 py-0.5 text-xs bg-amber-50 text-stone-600 border border-amber-200"
-										>
-											{tag.name}
-										</span>
-									))}
-								</div>
-							)}
+					{recipe.imageUrl ? (
+						<img
+							src={recipe.imageUrl}
+							alt=""
+							className="h-32 w-full object-cover border-b border-stone-200"
+						/>
+					) : (
+						<div className="h-32 w-full bg-stone-100 border-b border-stone-200 flex items-center justify-center">
+							<UtensilsCrossed className="text-stone-300" size={32} />
 						</div>
-					</Link>
-					<div className="flex flex-col items-end gap-2 shrink-0 mt-0.5">
-						{recipe.totalTime != null && (
-							<span className="text-xs text-stone-500">
-								{formatTotalTime(recipe.totalTime)}
-							</span>
+					)}
+					<div className="flex flex-col flex-1 p-3 gap-2">
+						<h2 className="font-semibold font-serif text-stone-900">
+							{recipe.title}
+						</h2>
+						{recipe.tags.length > 0 && (
+							<div className="flex flex-wrap gap-1">
+								{recipe.tags.map(({ tag }) => (
+									<span
+										key={tag.id}
+										className="px-2 py-0.5 text-xs bg-amber-50 text-stone-600 border border-amber-200"
+									>
+										{tag.name}
+									</span>
+								))}
+							</div>
 						)}
-						<span className="text-xs text-stone-400 whitespace-nowrap">
-							{recipe._count.notes}{" "}
-							{recipe._count.notes === 1 ? "note" : "notes"}
-						</span>
-						<span
-							className={
-								recipe.isPublic
-									? "px-2 py-0.5 text-xs bg-amber-50 text-amber-700 border border-amber-300"
-									: "px-2 py-0.5 text-xs text-stone-400 bg-white border border-stone-200"
-							}
-						>
-							{recipe.isPublic ? "Public" : "Private"}
-						</span>
+						<div className="flex items-center justify-between mt-auto pt-2">
+							<div className="flex items-center gap-2 text-xs text-stone-400">
+								{recipe.totalTime != null && (
+									<span className="text-stone-500">
+										{formatTotalTime(recipe.totalTime)}
+									</span>
+								)}
+								<span>
+									{recipe._count.notes}{" "}
+									{recipe._count.notes === 1 ? "note" : "notes"}
+								</span>
+							</div>
+							<span
+								className={
+									recipe.isPublic
+										? "px-2 py-0.5 text-xs bg-amber-50 text-amber-700 border border-amber-300"
+										: "px-2 py-0.5 text-xs text-stone-400 bg-white border border-stone-200"
+								}
+							>
+								{recipe.isPublic ? "Public" : "Private"}
+							</span>
+						</div>
 					</div>
-				</div>
+				</Link>
 			))}
 		</div>
 	);

@@ -12,10 +12,10 @@ export const auth = betterAuth({
 		enabled: true,
 	},
 	plugins: [
-		tanstackStartCookies(),
 		username({
 			usernameValidator: (u) => /^[a-z0-9_-]+$/.test(u),
 		}),
 		admin(),
+		tanstackStartCookies(),
 	],
 });

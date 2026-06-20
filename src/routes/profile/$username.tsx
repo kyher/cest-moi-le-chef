@@ -13,6 +13,24 @@ export const Route = createFileRoute("/profile/$username")({
 		if (!profile) throw notFound();
 		return { session, profile };
 	},
+	head: ({ loaderData }) => {
+		const profile = loaderData?.profile;
+		if (!profile) return {};
+		const count = profile.recipes.length;
+		const description = `${count} public ${count === 1 ? "recipe" : "recipes"} on C'est Moi Le Chef`;
+		return {
+			meta: [
+				{ title: `${profile.name} — C'est Moi Le Chef` },
+				{ name: "description", content: description },
+				{ property: "og:title", content: profile.name },
+				{ property: "og:description", content: description },
+				{ property: "og:type", content: "profile" },
+				{ name: "twitter:card", content: "summary" },
+				{ name: "twitter:title", content: profile.name },
+				{ name: "twitter:description", content: description },
+			],
+		};
+	},
 	notFoundComponent: () => (
 		<div className="min-h-screen flex flex-col">
 			<div className="p-8 text-stone-500">Profile not found.</div>

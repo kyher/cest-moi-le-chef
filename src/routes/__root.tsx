@@ -1,11 +1,17 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
-import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import {
+	createRootRoute,
+	HeadContent,
+	Link,
+	Scripts,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { Toaster } from "sonner";
 
 import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
+	notFoundComponent: NotFound,
 	head: () => ({
 		meta: [
 			{
@@ -40,6 +46,23 @@ export const Route = createRootRoute({
 	}),
 	shellComponent: RootDocument,
 });
+
+function NotFound() {
+	return (
+		<div className="min-h-screen flex flex-col items-center justify-center px-4">
+			<div className="text-center space-y-4">
+				<h1 className="text-5xl font-bold font-serif text-stone-900">404</h1>
+				<p className="text-lg text-stone-600">Page not found</p>
+				<Link
+					to="/"
+					className="inline-flex h-11 px-6 text-sm font-medium rounded-sm border border-stone-300 text-stone-700 hover:bg-stone-50 transition-colors items-center justify-center"
+				>
+					Go home
+				</Link>
+			</div>
+		</div>
+	);
+}
 
 function RootDocument({ children }: { children: React.ReactNode }) {
 	return (

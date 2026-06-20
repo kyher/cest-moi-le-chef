@@ -27,6 +27,31 @@ export const Route = createFileRoute("/recipes/$recipeId/")({
 		if (!recipe) throw notFound();
 		return { session, recipe };
 	},
+	head: ({ loaderData }) => {
+		const recipe = loaderData?.recipe;
+		if (!recipe) return {};
+		const description = recipe.ingredients
+			? recipe.ingredients.slice(0, 160).trimEnd()
+			: `A recipe by ${recipe.user.name}`;
+		return {
+			meta: [
+				{ title: `${recipe.title} — C'est Moi Le Chef` },
+				{ name: "description", content: description },
+				{ property: "og:title", content: recipe.title },
+				{ property: "og:description", content: description },
+				{ property: "og:type", content: "article" },
+				...(recipe.imageUrl
+					? [
+							{ property: "og:image", content: recipe.imageUrl },
+							{ name: "twitter:card", content: "summary_large_image" },
+							{ name: "twitter:image", content: recipe.imageUrl },
+						]
+					: [{ name: "twitter:card", content: "summary" }]),
+				{ name: "twitter:title", content: recipe.title },
+				{ name: "twitter:description", content: description },
+			],
+		};
+	},
 	notFoundComponent: () => (
 		<div className="min-h-screen flex flex-col">
 			<div className="p-8 text-stone-500">Recipe not found.</div>

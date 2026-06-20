@@ -184,6 +184,18 @@ function Detail({ recipe, isOwner }: { recipe: Recipe; isOwner: boolean }) {
 						{likeCount} {likeCount === 1 ? "like" : "likes"}
 					</span>
 				)}
+				{recipe.isPublic && (
+					<button
+						type="button"
+						onClick={() => {
+							navigator.clipboard.writeText(window.location.href);
+							toast("Link copied!");
+						}}
+						className="h-8 px-3 text-sm font-medium rounded-sm border border-stone-300 text-stone-600 hover:border-stone-500 transition-colors"
+					>
+						Copy link
+					</button>
+				)}
 			</div>
 
 			{recipe.tags.length > 0 && (

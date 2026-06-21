@@ -211,10 +211,17 @@ function Detail({ recipe, isOwner }: { recipe: Recipe; isOwner: boolean }) {
 				</div>
 			)}
 
-			{recipe.totalTime != null && (
-				<p className="text-sm text-stone-500 mb-6">
-					{formatTotalTime(recipe.totalTime)}
-				</p>
+			{(recipe.totalTime != null || recipe.servings != null) && (
+				<div className="flex items-center gap-4 mb-6">
+					{recipe.totalTime != null && (
+						<p className="text-sm text-stone-500">
+							{formatTotalTime(recipe.totalTime)}
+						</p>
+					)}
+					{recipe.servings != null && (
+						<p className="text-sm text-stone-500">Serves {recipe.servings}</p>
+					)}
+				</div>
 			)}
 
 			{recipe.ingredients && (

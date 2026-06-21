@@ -74,6 +74,7 @@ export const createRecipe = createServerFn({ method: "POST" })
 			ingredients?: string;
 			method?: string;
 			totalTime?: number;
+			servings?: number;
 			isPublic?: boolean;
 			tags: string[];
 		}) => d,
@@ -91,6 +92,7 @@ export const updateRecipe = createServerFn({ method: "POST" })
 			ingredients?: string;
 			method?: string;
 			totalTime?: number;
+			servings?: number;
 			isPublic?: boolean;
 			tags: string[];
 		}) => d,

@@ -138,6 +138,7 @@ export async function createRecipe(
 		ingredients?: string;
 		method?: string;
 		totalTime?: number;
+		servings?: number;
 		isPublic?: boolean;
 		tags: string[];
 	},
@@ -148,6 +149,7 @@ export async function createRecipe(
 			ingredients: data.ingredients || null,
 			method: data.method || null,
 			totalTime: data.totalTime ?? null,
+			servings: data.servings ?? null,
 			isPublic: data.isPublic ?? false,
 			userId,
 		},
@@ -164,6 +166,7 @@ export async function updateRecipe(
 		ingredients?: string;
 		method?: string;
 		totalTime?: number;
+		servings?: number;
 		isPublic?: boolean;
 		tags: string[];
 	},
@@ -175,6 +178,7 @@ export async function updateRecipe(
 			ingredients: data.ingredients || null,
 			method: data.method || null,
 			totalTime: data.totalTime ?? null,
+			servings: data.servings ?? null,
 			...(data.isPublic !== undefined && { isPublic: data.isPublic }),
 		},
 	});

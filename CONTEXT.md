@@ -36,6 +36,10 @@ _Avoid_: Photo, thumbnail, hero image
 The estimated duration to prepare and cook a Recipe from start to finish, stored as an integer number of minutes. Optional — a Recipe without a Total Time is valid. Displayed in compact format (e.g. "1h 30m", "45m"). Entered as separate hours and minutes fields.
 _Avoid_: Cook time, prep time, duration
 
+**Servings**:
+The number of people a Recipe is intended to feed, stored as an optional integer. Displayed on the Recipe detail page alongside Total Time. Not filterable. Optional — a Recipe without Servings is valid.
+_Avoid_: Portions, yield, serves
+
 **Like**:
 An authenticated user's expression of appreciation for another user's Recipe. A user cannot like their own recipes. Liking is a toggle — a second action removes the Like. The Like record persists when a Recipe is made private; the Recipe simply disappears from the liker's Liked Recipes page until made public again. Deleted Recipes cascade-delete their Likes.
 _Avoid_: Favourite, bookmark, save, upvote

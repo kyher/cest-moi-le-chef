@@ -1,7 +1,6 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { useState } from "react";
 import { toast } from "sonner";
-import { ImageUpload } from "#/components/-image-upload";
+import { RecipeForm } from "#/components/-recipe-form";
 import { createRecipe } from "#/lib/recipe-fns";
 
 export const Route = createFileRoute("/_auth/my-recipes/new")({
@@ -10,60 +9,6 @@ export const Route = createFileRoute("/_auth/my-recipes/new")({
 
 function NewRecipe() {
 	const router = useRouter();
-	const [title, setTitle] = useState("");
-	const [ingredients, setIngredients] = useState("");
-	const [method, setMethod] = useState("");
-	const [hours, setHours] = useState("");
-	const [minutes, setMinutes] = useState("");
-	const [tags, setTags] = useState<string[]>([]);
-	const [tagInput, setTagInput] = useState("");
-	const [isPublic, setIsPublic] = useState(false);
-	const [imageFile, setImageFile] = useState<File | null>(null);
-	const [imagePreview, setImagePreview] = useState<string | null>(null);
-	const [pending, setPending] = useState(false);
-	const [error, setError] = useState("");
-
-	function addTag(value: string) {
-		const name = value.toLowerCase().trim();
-		if (name && !tags.includes(name)) setTags([...tags, name]);
-		setTagInput("");
-	}
-
-	async function handleSubmit(e: React.FormEvent) {
-		e.preventDefault();
-		if (!title.trim()) return;
-		setPending(true);
-		setError("");
-		try {
-			const h = parseInt(hours, 10) || 0;
-			const m = parseInt(minutes, 10) || 0;
-			const totalTime = h * 60 + m || undefined;
-			const recipe = await createRecipe({
-				data: {
-					title: title.trim(),
-					ingredients: ingredients || undefined,
-					method: method || undefined,
-					totalTime,
-					isPublic,
-					tags,
-				},
-			});
-			if (imageFile) {
-				const fd = new FormData();
-				fd.append("recipeId", recipe.id);
-				fd.append("image", imageFile);
-				await fetch("/api/recipe-image", { method: "POST", body: fd });
-			}
-			toast("Recipe saved");
-			await router.navigate({
-				to: "/recipes/$recipeId",
-				params: { recipeId: recipe.id },
-			});
-		} catch {
-			setError("Failed to save recipe.");
-			setPending(false);
-		}
-	}
 
 	return (
 		<div className="py-10">
@@ -77,173 +22,24 @@ function NewRecipe() {
 			<h1 className="text-3xl font-bold font-serif text-stone-900 mb-8">
 				New Recipe
 			</h1>
-
-			<form onSubmit={handleSubmit} className="space-y-6">
-				{error && <p className="text-sm text-red-600">{error}</p>}
-
-				<div className="space-y-1">
-					<label htmlFor="title" className="text-sm font-medium text-stone-700">
-						Title <span className="text-red-500">*</span>
-					</label>
-					<input
-						id="title"
-						type="text"
-						required
-						value={title}
-						onChange={(e) => setTitle(e.target.value)}
-						className="w-full h-9 px-3 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
-					/>
-				</div>
-
-				<div className="space-y-1">
-					<label
-						htmlFor="tag-input"
-						className="text-sm font-medium text-stone-700"
-					>
-						Tags
-					</label>
-					{tags.length > 0 && (
-						<div className="flex flex-wrap gap-1 mb-2">
-							{tags.map((tag) => (
-								<span
-									key={tag}
-									className="flex items-center gap-1 px-2 py-0.5 text-xs rounded-sm bg-amber-50 text-stone-700 border border-amber-200"
-								>
-									{tag}
-									<button
-										type="button"
-										onClick={() => setTags(tags.filter((t) => t !== tag))}
-										className="text-stone-400 hover:text-stone-700 leading-none"
-									>
-										×
-									</button>
-								</span>
-							))}
-						</div>
-					)}
-					<input
-						type="text"
-						value={tagInput}
-						onChange={(e) => setTagInput(e.target.value)}
-						onKeyDown={(e) => {
-							if (e.key === "Enter" || e.key === ",") {
-								e.preventDefault();
-								addTag(tagInput);
-							}
-						}}
-						onBlur={() => tagInput && addTag(tagInput)}
-						id="tag-input"
-						placeholder="Type a tag and press Enter"
-						className="w-full h-9 px-3 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
-					/>
-				</div>
-
-				<div className="space-y-1">
-					<label
-						htmlFor="total-time-hours"
-						className="text-sm font-medium text-stone-700"
-					>
-						Total Time
-					</label>
-					<div className="flex items-center gap-2">
-						<input
-							id="total-time-hours"
-							type="number"
-							min="0"
-							value={hours}
-							onChange={(e) => setHours(e.target.value)}
-							placeholder="0"
-							className="w-20 h-9 px-3 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
-						/>
-						<span className="text-sm text-stone-500">hr</span>
-						<input
-							type="number"
-							min="0"
-							max="59"
-							value={minutes}
-							onChange={(e) => setMinutes(e.target.value)}
-							placeholder="0"
-							className="w-20 h-9 px-3 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
-						/>
-						<span className="text-sm text-stone-500">min</span>
-					</div>
-				</div>
-
-				<div className="space-y-1">
-					<label
-						htmlFor="ingredients"
-						className="text-sm font-medium text-stone-700"
-					>
-						Ingredients
-					</label>
-					<textarea
-						id="ingredients"
-						value={ingredients}
-						onChange={(e) => setIngredients(e.target.value)}
-						rows={6}
-						className="w-full px-3 py-2 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400 resize-y"
-					/>
-				</div>
-
-				<div className="space-y-1">
-					<label
-						htmlFor="method"
-						className="text-sm font-medium text-stone-700"
-					>
-						Method
-					</label>
-					<textarea
-						id="method"
-						value={method}
-						onChange={(e) => setMethod(e.target.value)}
-						rows={8}
-						className="w-full px-3 py-2 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400 resize-y"
-					/>
-				</div>
-
-				<ImageUpload
-					previewUrl={imagePreview}
-					onChange={(file, url) => {
-						setImageFile(file);
-						setImagePreview(url);
-					}}
-					onRemove={() => {
-						setImageFile(null);
-						setImagePreview(null);
-					}}
-				/>
-
-				<div className="flex items-center gap-3">
-					<button
-						type="button"
-						role="switch"
-						aria-checked={isPublic}
-						onClick={() => setIsPublic(!isPublic)}
-						className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${
-							isPublic ? "bg-amber-500" : "bg-stone-300"
-						}`}
-					>
-						<span
-							className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
-								isPublic ? "translate-x-4.5" : "translate-x-0.5"
-							}`}
-						/>
-					</button>
-					<span className="text-sm text-stone-700">
-						{isPublic
-							? "Public — visible to everyone"
-							: "Private — only visible to you"}
-					</span>
-				</div>
-
-				<button
-					type="submit"
-					disabled={pending}
-					className="h-9 px-6 text-sm font-medium rounded-sm bg-stone-800 text-white hover:bg-stone-700 disabled:opacity-50 transition-colors"
-				>
-					{pending ? "Saving…" : "Save Recipe"}
-				</button>
-			</form>
+			<RecipeForm
+				onSubmit={async (data, { file }) => {
+					const recipe = await createRecipe({ data });
+					if (file) {
+						const fd = new FormData();
+						fd.append("recipeId", recipe.id);
+						fd.append("image", file);
+						await fetch("/api/recipe-image", { method: "POST", body: fd });
+					}
+					toast("Recipe saved");
+					await router.navigate({
+						to: "/recipes/$recipeId",
+						params: { recipeId: recipe.id },
+					});
+				}}
+				submitLabel="Save Recipe"
+				pendingLabel="Saving…"
+			/>
 		</div>
 	);
 }

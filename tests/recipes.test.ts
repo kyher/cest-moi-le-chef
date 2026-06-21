@@ -73,6 +73,23 @@ describe("createRecipe", () => {
 		expect(recipe.totalTime).toBeNull();
 	});
 
+	it("creates a recipe with servings", async () => {
+		const recipe = await createRecipe(TEST_USER_ID, {
+			title: "Soup",
+			servings: 4,
+			tags: [],
+		});
+		expect(recipe.servings).toBe(4);
+	});
+
+	it("stores servings as null when omitted", async () => {
+		const recipe = await createRecipe(TEST_USER_ID, {
+			title: "Soup",
+			tags: [],
+		});
+		expect(recipe.servings).toBeNull();
+	});
+
 	it("normalises tags to lowercase", async () => {
 		const recipe = await createRecipe(TEST_USER_ID, {
 			title: "Recipe",
@@ -160,6 +177,32 @@ describe("updateRecipe", () => {
 		await updateRecipe(recipe.id, TEST_USER_ID, { title: "Recipe", tags: [] });
 		const updated = await findRecipe(recipe.id, TEST_USER_ID);
 		expect(updated?.totalTime).toBeNull();
+	});
+
+	it("updates servings", async () => {
+		const recipe = await createRecipe(TEST_USER_ID, {
+			title: "Recipe",
+			servings: 2,
+			tags: [],
+		});
+		await updateRecipe(recipe.id, TEST_USER_ID, {
+			title: "Recipe",
+			servings: 6,
+			tags: [],
+		});
+		const updated = await findRecipe(recipe.id, TEST_USER_ID);
+		expect(updated?.servings).toBe(6);
+	});
+
+	it("clears servings when omitted", async () => {
+		const recipe = await createRecipe(TEST_USER_ID, {
+			title: "Recipe",
+			servings: 4,
+			tags: [],
+		});
+		await updateRecipe(recipe.id, TEST_USER_ID, { title: "Recipe", tags: [] });
+		const updated = await findRecipe(recipe.id, TEST_USER_ID);
+		expect(updated?.servings).toBeNull();
 	});
 
 	it("clears an optional field when passed an empty string", async () => {

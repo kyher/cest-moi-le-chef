@@ -13,6 +13,7 @@ model Recipe {
   ingredients String?
   method      String?
   totalTime   Int?
+  servings    Int?
   isPublic    Boolean  @default(false)
   imageUrl    String?
   createdAt   DateTime @default(now())

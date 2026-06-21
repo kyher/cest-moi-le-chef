@@ -42,7 +42,9 @@ R2 is only needed if you're working on Cover Image upload functionality. The res
 | `pnpm dev` | Start the dev server on port 3000 |
 | `pnpm build` | Build for production (generates Prisma client, runs migrations, then builds) |
 | `pnpm start` | Serve the production build |
-| `pnpm test` | Run tests (requires `.env.test.local`) |
+| `pnpm test` | Start local Postgres via Docker, migrate, and run tests |
+| `pnpm db:test:up` | Start the local test Postgres container |
+| `pnpm db:test:down` | Stop and remove the local test Postgres container |
 | `pnpm lint` | Lint and auto-fix with Biome |
 | `pnpm db:migrate` | Run pending migrations against the local database |
 | `pnpm db:studio` | Open Prisma Studio for the local database |
@@ -50,12 +52,14 @@ R2 is only needed if you're working on Cover Image upload functionality. The res
 
 ## Tests
 
-Tests require a separate database. Copy `.env.example` to `.env.test.local` and point `DATABASE_URL` at a different Neon branch or database, then:
+The repo ships a `compose.yml` that starts a local Postgres instance matching the credentials in `.env.test.local`. With Docker running:
 
 ```bash
-pnpm db:migrate:test   # apply migrations to the test database
-pnpm test
+pnpm test         # starts Postgres, migrates, runs tests
+pnpm db:test:down # stop and remove the container when done
 ```
+
+To run against a remote database instead (e.g. a Neon branch), point `DATABASE_URL` in `.env.test.local` at it and run `pnpm db:migrate:test && dotenv -e .env.test.local -- vitest run`.
 
 ---
 

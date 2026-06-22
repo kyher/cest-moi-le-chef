@@ -64,7 +64,7 @@ function AdminUsersPage() {
 
 function UserRow({ user, onBan }: { user: User; onBan: () => void }) {
 	return (
-		<div className="flex items-center justify-between gap-4 p-4 rounded-sm border border-stone-200 bg-white">
+		<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 p-4 rounded-sm border border-stone-200 bg-white">
 			<div className="min-w-0">
 				<div className="flex items-center gap-2">
 					<p className="text-sm font-medium text-stone-900">{user.name}</p>

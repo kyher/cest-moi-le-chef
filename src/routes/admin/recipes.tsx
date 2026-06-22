@@ -96,7 +96,7 @@ function RecipeRow({
 	const [confirmDelete, setConfirmDelete] = useState(false);
 
 	return (
-		<div className="flex items-start justify-between gap-4 p-4 rounded-sm border border-stone-200 bg-white">
+		<div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4 p-4 rounded-sm border border-stone-200 bg-white">
 			<div className="flex items-start gap-3 min-w-0">
 				{recipe.imageUrl && (
 					<img
@@ -116,7 +116,7 @@ function RecipeRow({
 				</div>
 			</div>
 
-			<div className="flex items-center gap-2 flex-shrink-0">
+			<div className="flex items-center gap-2 flex-wrap flex-shrink-0">
 				{recipe.imageUrl && (
 					<button
 						type="button"

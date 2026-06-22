@@ -13,9 +13,9 @@ function MarketingPage() {
 	return (
 		<div className="min-h-screen flex flex-col">
 			<SiteHeader user={session?.user ?? null} />
-			<main className="flex-1 flex flex-col items-center justify-center px-4 py-10 sm:py-20">
+			<main className="flex-1 flex flex-col items-center justify-start pt-10 pb-10 sm:justify-center sm:py-20 px-4">
 				<div className="max-w-xl text-center space-y-6">
-					<h1 className="text-5xl font-bold font-serif text-stone-900">
+					<h1 className="text-4xl sm:text-5xl font-bold font-serif text-stone-900">
 						c'est moi le chef
 					</h1>
 					<p className="text-lg text-stone-600">

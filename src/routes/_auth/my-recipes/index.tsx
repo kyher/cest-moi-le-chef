@@ -31,7 +31,7 @@ function MyRecipesPage() {
 					to="/my-recipes/new"
 					className="h-9 px-4 text-sm font-medium rounded-sm bg-stone-800 text-white hover:bg-stone-700 transition-colors flex items-center self-start sm:self-auto"
 				>
-					+ New Recipe
+					Add Recipe
 				</Link>
 			</div>
 

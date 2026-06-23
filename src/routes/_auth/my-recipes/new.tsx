@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { RecipeForm } from "#/components/-recipe-form";
 import { createRecipe } from "#/lib/recipe-fns";
@@ -12,15 +12,8 @@ function NewRecipe() {
 
 	return (
 		<div className="py-10">
-			<Link
-				to="/my-recipes"
-				search={{}}
-				className="text-sm text-stone-500 hover:text-stone-800 mb-6 inline-block"
-			>
-				← My Recipes
-			</Link>
 			<h1 className="text-3xl font-bold font-serif text-stone-900 mb-8">
-				New Recipe
+				Add Recipe
 			</h1>
 			<RecipeForm
 				onSubmit={async (data, { file }) => {

@@ -65,6 +65,12 @@ export function SiteHeader({ user }: Props) {
 									Admin
 								</Link>
 							)}
+							<Link
+								to="/my-recipes/new"
+								className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
+							>
+								Add Recipe
+							</Link>
 							<button
 								type="button"
 								onClick={signOut}
@@ -175,6 +181,13 @@ export function SiteHeader({ user }: Props) {
 									Admin
 								</Link>
 							)}
+							<Link
+								to="/my-recipes/new"
+								onClick={close}
+								className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
+							>
+								Add Recipe
+							</Link>
 							<button
 								type="button"
 								onClick={signOut}

@@ -4,7 +4,7 @@ import {
 	notFound,
 	useRouter,
 } from "@tanstack/react-router";
-import { Trash2 } from "lucide-react";
+import { ForkKnife, Link2, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { SiteHeader } from "#/components/-site-header";
@@ -13,6 +13,7 @@ import {
 	addNote,
 	deleteNote,
 	deleteRecipe,
+	forkRecipe,
 	getRecipe,
 	toggleLike,
 } from "#/lib/recipe-fns";
@@ -66,7 +67,11 @@ function RecipeDetail() {
 		<div className="min-h-screen flex flex-col">
 			<SiteHeader user={session?.user ?? null} />
 			<div className="w-3/4 mx-auto">
-				<Detail recipe={recipe} isOwner={recipe.isOwner} />
+				<Detail
+					recipe={recipe}
+					isOwner={recipe.isOwner}
+					isAuthenticated={!!session}
+				/>
 			</div>
 		</div>
 	);
@@ -74,7 +79,15 @@ function RecipeDetail() {
 
 type Recipe = NonNullable<Awaited<ReturnType<typeof getRecipe>>>;
 
-function Detail({ recipe, isOwner }: { recipe: Recipe; isOwner: boolean }) {
+function Detail({
+	recipe,
+	isOwner,
+	isAuthenticated,
+}: {
+	recipe: Recipe;
+	isOwner: boolean;
+	isAuthenticated: boolean;
+}) {
 	const router = useRouter();
 	const [noteBody, setNoteBody] = useState("");
 	const [addingNote, setAddingNote] = useState(false);
@@ -104,6 +117,15 @@ function Detail({ recipe, isOwner }: { recipe: Recipe; isOwner: boolean }) {
 		await router.invalidate();
 	}
 
+	async function handleFork() {
+		const fork = await forkRecipe({ data: { recipeId: recipe.id } });
+		toast("Recipe forked — editing your copy");
+		await router.navigate({
+			to: "/recipes/$recipeId/edit",
+			params: { recipeId: fork.id },
+		});
+	}
+
 	async function handleDeleteRecipe() {
 		if (!confirm("Delete this recipe? This cannot be undone.")) return;
 		await deleteRecipe({ data: { recipeId: recipe.id } });
@@ -130,6 +152,17 @@ function Detail({ recipe, isOwner }: { recipe: Recipe; isOwner: boolean }) {
 						>
 							Edit
 						</Link>
+						<button
+							type="button"
+							onClick={handleFork}
+							className="relative group h-8 px-3 text-sm font-medium rounded-sm border border-stone-300 text-stone-700 hover:border-stone-500 transition-colors flex items-center gap-1.5"
+						>
+							<ForkKnife size={14} />
+							Fork
+							<span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 whitespace-nowrap rounded-sm bg-stone-800 px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100">
+								Create your own editable copy
+							</span>
+						</button>
 						<button
 							type="button"
 							onClick={handleDeleteRecipe}
@@ -164,6 +197,18 @@ function Detail({ recipe, isOwner }: { recipe: Recipe; isOwner: boolean }) {
 					</Link>
 				</p>
 			)}
+			{recipe.forkedFrom?.isPublic && (
+				<p className="text-sm text-stone-400 mb-3">
+					🍴 forked from{" "}
+					<Link
+						to="/recipes/$recipeId"
+						params={{ recipeId: recipe.forkedFrom.id }}
+						className="hover:text-stone-600 hover:underline underline-offset-2"
+					>
+						{recipe.forkedFrom.title}
+					</Link>
+				</p>
+			)}
 
 			<div className="flex items-center gap-2 mb-4">
 				{viewerHasLiked !== null && (
@@ -184,6 +229,19 @@ function Detail({ recipe, isOwner }: { recipe: Recipe; isOwner: boolean }) {
 						{likeCount} {likeCount === 1 ? "like" : "likes"}
 					</span>
 				)}
+				{!isOwner && isAuthenticated && (
+					<button
+						type="button"
+						onClick={handleFork}
+						className="relative group h-8 px-3 text-sm font-medium rounded-sm border border-stone-300 text-stone-600 hover:border-stone-500 transition-colors flex items-center gap-1.5"
+					>
+						<ForkKnife size={14} />
+						Fork
+						<span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 whitespace-nowrap rounded-sm bg-stone-800 px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100">
+							Create your own editable copy
+						</span>
+					</button>
+				)}
 				{recipe.isPublic && (
 					<button
 						type="button"
@@ -191,8 +249,9 @@ function Detail({ recipe, isOwner }: { recipe: Recipe; isOwner: boolean }) {
 							navigator.clipboard.writeText(window.location.href);
 							toast("Link copied!");
 						}}
-						className="h-8 px-3 text-sm font-medium rounded-sm border border-stone-300 text-stone-600 hover:border-stone-500 transition-colors"
+						className="h-8 px-3 text-sm font-medium rounded-sm border border-stone-300 text-stone-600 hover:border-stone-500 transition-colors flex items-center gap-1.5"
 					>
+						<Link2 size={14} />
 						Copy link
 					</button>
 				)}

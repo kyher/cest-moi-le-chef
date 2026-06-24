@@ -8,21 +8,24 @@ datasource db {
 }
 
 model Recipe {
-  id          String   @id @default(cuid())
-  title       String
-  ingredients String?
-  method      String?
-  totalTime   Int?
-  servings    Int?
-  isPublic    Boolean  @default(false)
-  imageUrl    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  notes       Note[]
-  tags        RecipeTag[]
-  likes       Like[]
+  id           String   @id @default(cuid())
+  title        String
+  ingredients  String?
+  method       String?
+  totalTime    Int?
+  servings     Int?
+  isPublic     Boolean  @default(false)
+  imageUrl     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  userId       String
+  forkedFromId String?
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  forkedFrom   Recipe?    @relation("RecipeForks", fields: [forkedFromId], references: [id], onDelete: SetNull)
+  forks        Recipe[]   @relation("RecipeForks")
+  notes        Note[]
+  tags         RecipeTag[]
+  likes        Like[]
 }
 
 model Like {

@@ -163,3 +163,10 @@ export const getLikedTagsInUse = createServerFn().handler(async () => {
 	const user = await requireUser();
 	return likeService.listLikedTagsInUse(user.id);
 });
+
+export const forkRecipe = createServerFn({ method: "POST" })
+	.validator((d: { recipeId: string }) => d)
+	.handler(async ({ data }) => {
+		const user = await requireUser();
+		return recipeService.forkRecipe(data.recipeId, user.id);
+	});

@@ -4,6 +4,7 @@ import { toggleLike } from "#/lib/like-service";
 import {
 	createRecipe,
 	findRecipe,
+	forkRecipe,
 	listPublicRecipes,
 	listRecipes,
 	removeRecipe,
@@ -1028,6 +1029,227 @@ describe("listPublicRecipes — like count", () => {
 			const results = await listPublicRecipes({}, TEST_USER_ID);
 			const found = results.find((r) => r.id === recipe.id);
 			expect(found?.likes).toHaveLength(0);
+		} finally {
+			await cleanupOtherUser();
+		}
+	});
+});
+
+describe("forkRecipe", () => {
+	it("creates a new recipe owned by the forking user", async () => {
+		await upsertOtherUser();
+		try {
+			const source = await createRecipe(OTHER_USER_ID, {
+				title: "Bolognese",
+				isPublic: true,
+				tags: [],
+			});
+			const fork = await forkRecipe(source.id, TEST_USER_ID);
+			expect(fork.userId).toBe(TEST_USER_ID);
+		} finally {
+			await cleanupOtherUser();
+		}
+	});
+
+	it("copies title, ingredients, method, totalTime, and servings", async () => {
+		await upsertOtherUser();
+		try {
+			const source = await createRecipe(OTHER_USER_ID, {
+				title: "Bolognese",
+				ingredients: "500g mince\n1 onion",
+				method: "Brown the mince",
+				totalTime: 90,
+				servings: 4,
+				isPublic: true,
+				tags: [],
+			});
+			const fork = await forkRecipe(source.id, TEST_USER_ID);
+			expect(fork.title).toBe("Bolognese");
+			expect(fork.ingredients).toBe("500g mince\n1 onion");
+			expect(fork.method).toBe("Brown the mince");
+			expect(fork.totalTime).toBe(90);
+			expect(fork.servings).toBe(4);
+		} finally {
+			await cleanupOtherUser();
+		}
+	});
+
+	it("does not copy the cover image", async () => {
+		await upsertOtherUser();
+		try {
+			const source = await prisma.recipe.create({
+				data: {
+					title: "With Image",
+					isPublic: true,
+					userId: OTHER_USER_ID,
+					imageUrl: "https://cdn.example.com/photo.jpg",
+				},
+			});
+			const fork = await forkRecipe(source.id, TEST_USER_ID);
+			expect(fork.imageUrl).toBeNull();
+		} finally {
+			await cleanupOtherUser();
+		}
+	});
+
+	it("defaults to private", async () => {
+		await upsertOtherUser();
+		try {
+			const source = await createRecipe(OTHER_USER_ID, {
+				title: "Public Source",
+				isPublic: true,
+				tags: [],
+			});
+			const fork = await forkRecipe(source.id, TEST_USER_ID);
+			expect(fork.isPublic).toBe(false);
+		} finally {
+			await cleanupOtherUser();
+		}
+	});
+
+	it("sets forkedFromId to the source recipe's id", async () => {
+		await upsertOtherUser();
+		try {
+			const source = await createRecipe(OTHER_USER_ID, {
+				title: "Original",
+				isPublic: true,
+				tags: [],
+			});
+			const fork = await forkRecipe(source.id, TEST_USER_ID);
+			expect(fork.forkedFromId).toBe(source.id);
+		} finally {
+			await cleanupOtherUser();
+		}
+	});
+
+	it("copies tags by name into the forking user's account", async () => {
+		await upsertOtherUser();
+		try {
+			const source = await createRecipe(OTHER_USER_ID, {
+				title: "Tagged",
+				isPublic: true,
+				tags: ["italian", "pasta"],
+			});
+			const fork = await forkRecipe(source.id, TEST_USER_ID);
+			const full = await findRecipe(fork.id, TEST_USER_ID);
+			expect(full?.tags.map(({ tag }) => tag.name).sort()).toEqual([
+				"italian",
+				"pasta",
+			]);
+			const tagOwners = await prisma.tag.findMany({
+				where: { name: { in: ["italian", "pasta"] }, userId: TEST_USER_ID },
+			});
+			expect(tagOwners).toHaveLength(2);
+		} finally {
+			await cleanupOtherUser();
+		}
+	});
+
+	it("reuses an existing tag when the forking user already has one with the same name", async () => {
+		await upsertOtherUser();
+		try {
+			await createRecipe(TEST_USER_ID, {
+				title: "My Italian",
+				tags: ["italian"],
+			});
+			const source = await createRecipe(OTHER_USER_ID, {
+				title: "Their Italian",
+				isPublic: true,
+				tags: ["italian"],
+			});
+			await forkRecipe(source.id, TEST_USER_ID);
+			const tags = await prisma.tag.findMany({
+				where: { name: "italian", userId: TEST_USER_ID },
+			});
+			expect(tags).toHaveLength(1);
+		} finally {
+			await cleanupOtherUser();
+		}
+	});
+
+	it("allows forking your own private recipe", async () => {
+		const source = await createRecipe(TEST_USER_ID, {
+			title: "Private Draft",
+			isPublic: false,
+			tags: ["quick"],
+		});
+		const fork = await forkRecipe(source.id, TEST_USER_ID);
+		expect(fork.userId).toBe(TEST_USER_ID);
+		expect(fork.forkedFromId).toBe(source.id);
+	});
+
+	it("throws when the source recipe is another user's private recipe", async () => {
+		await upsertOtherUser();
+		try {
+			const source = await createRecipe(OTHER_USER_ID, {
+				title: "Private",
+				isPublic: false,
+				tags: [],
+			});
+			await expect(forkRecipe(source.id, TEST_USER_ID)).rejects.toThrow(
+				"Recipe not found",
+			);
+		} finally {
+			await cleanupOtherUser();
+		}
+	});
+
+	it("throws when the source recipe does not exist", async () => {
+		await expect(forkRecipe("non-existent-id", TEST_USER_ID)).rejects.toThrow(
+			"Recipe not found",
+		);
+	});
+});
+
+describe("findRecipe — forkedFrom", () => {
+	it("includes forkedFrom when the source is public", async () => {
+		await upsertOtherUser();
+		try {
+			const source = await createRecipe(OTHER_USER_ID, {
+				title: "Original",
+				isPublic: true,
+				tags: [],
+			});
+			const fork = await forkRecipe(source.id, TEST_USER_ID);
+			const result = await findRecipe(fork.id, TEST_USER_ID);
+			expect(result?.forkedFrom).not.toBeNull();
+			expect(result?.forkedFrom?.id).toBe(source.id);
+			expect(result?.forkedFrom?.title).toBe("Original");
+		} finally {
+			await cleanupOtherUser();
+		}
+	});
+
+	it("returns forkedFrom as null when the source recipe is deleted", async () => {
+		await upsertOtherUser();
+		try {
+			const source = await createRecipe(OTHER_USER_ID, {
+				title: "Soon Gone",
+				isPublic: true,
+				tags: [],
+			});
+			const fork = await forkRecipe(source.id, TEST_USER_ID);
+			await prisma.recipe.delete({ where: { id: source.id } });
+			const result = await findRecipe(fork.id, TEST_USER_ID);
+			expect(result?.forkedFromId).toBeNull();
+			expect(result?.forkedFrom).toBeNull();
+		} finally {
+			await cleanupOtherUser();
+		}
+	});
+
+	it("returns forkedFrom with isPublic: false when the source is made private", async () => {
+		await upsertOtherUser();
+		try {
+			const source = await createRecipe(OTHER_USER_ID, {
+				title: "Now Private",
+				isPublic: true,
+				tags: [],
+			});
+			const fork = await forkRecipe(source.id, TEST_USER_ID);
+			await setRecipeVisibility(source.id, OTHER_USER_ID, false);
+			const result = await findRecipe(fork.id, TEST_USER_ID);
+			expect(result?.forkedFrom?.isPublic).toBe(false);
 		} finally {
 			await cleanupOtherUser();
 		}

@@ -84,6 +84,10 @@ _Avoid_: Dashboard, control panel, back-office
 An admin action that permanently blocks a User from signing in and hard-deletes all of their Recipes (including private ones) and all associated data. A banned User's sessions are invalidated immediately. Irreversible through the app — only a database intervention can restore a banned User.
 _Avoid_: Suspend, deactivate, disable
 
+**Fork**:
+A copy of a Recipe — either your own or another user's public Recipe — that becomes an independent Recipe in your account. A Fork copies the title, ingredients, method, Total Time, Servings, and Tags (by name, creating new Tag records under the forking user's account as needed) but not the Cover Image. A Fork defaults to private on creation, consistent with all new Recipes. The Fork holds a `forkedFrom` reference to the original Recipe; if the original is deleted, made private, or its author is banned, the reference is silently dropped and no attribution is shown. The forking user is redirected to the edit page immediately after the Fork is created. The Fork's title starts identical to the original's; attribution ("forked from [original]") is displayed in the UI on the Recipe detail and edit pages rather than encoded in the title. You may Fork your own Recipes, including private ones — useful for creating variations.
+_Avoid_: Clone, copy, remix, duplicate
+
 ## Example dialogue
 
 > "I want to find all my starter recipes."

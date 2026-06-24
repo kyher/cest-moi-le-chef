@@ -46,9 +46,22 @@ function EditRecipe() {
 					>
 						← {recipe.title}
 					</Link>
-					<h1 className="text-3xl font-bold font-serif text-stone-900 mb-8">
+					<h1 className="text-3xl font-bold font-serif text-stone-900 mb-2">
 						Edit Recipe
 					</h1>
+					{recipe.forkedFrom?.isPublic && (
+						<p className="text-sm text-stone-400 mb-8">
+							🍴 forked from{" "}
+							<Link
+								to="/recipes/$recipeId"
+								params={{ recipeId: recipe.forkedFrom.id }}
+								className="hover:text-stone-600 hover:underline underline-offset-2"
+							>
+								{recipe.forkedFrom.title}
+							</Link>
+						</p>
+					)}
+					{!recipe.forkedFrom?.isPublic && <div className="mb-8" />}
 					<RecipeForm
 						initialValues={{
 							title: recipe.title,

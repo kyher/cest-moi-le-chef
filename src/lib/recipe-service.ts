@@ -84,6 +84,10 @@ export function listPublicRecipes(
 	});
 }
 
+const forkedFromSelect = {
+	select: { id: true, title: true, isPublic: true },
+} as const;
+
 export async function findRecipe(recipeId: string, viewerId: string | null) {
 	// Owner: return full recipe with notes; owners cannot like their own recipe
 	if (viewerId) {
@@ -94,6 +98,7 @@ export async function findRecipe(recipeId: string, viewerId: string | null) {
 				notes: { where: { userId: viewerId }, orderBy: { createdAt: "desc" } },
 				user: { select: { name: true, username: true } },
 				_count: { select: { likes: true } },
+				forkedFrom: forkedFromSelect,
 			},
 		});
 		if (owned) {
@@ -119,6 +124,7 @@ export async function findRecipe(recipeId: string, viewerId: string | null) {
 			notes: viewerId
 				? { where: { userId: viewerId }, orderBy: { createdAt: "desc" } }
 				: false,
+			forkedFrom: forkedFromSelect,
 		},
 	});
 	if (!recipe) return null;
@@ -129,6 +135,34 @@ export async function findRecipe(recipeId: string, viewerId: string | null) {
 		notes: viewerId ? recipe.notes : ([] as const),
 		isOwner: false as const,
 	};
+}
+
+export async function forkRecipe(recipeId: string, userId: string) {
+	const source = await prisma.recipe.findFirst({
+		where: { id: recipeId, OR: [{ isPublic: true }, { userId }] },
+		include: { tags: { include: { tag: true } } },
+	});
+	if (!source) throw new Error("Recipe not found");
+
+	const fork = await prisma.recipe.create({
+		data: {
+			title: source.title,
+			ingredients: source.ingredients,
+			method: source.method,
+			totalTime: source.totalTime,
+			servings: source.servings,
+			isPublic: false,
+			userId,
+			forkedFromId: recipeId,
+		},
+	});
+
+	await syncTags(
+		fork.id,
+		source.tags.map(({ tag }) => tag.name),
+		userId,
+	);
+	return fork;
 }
 
 export async function createRecipe(

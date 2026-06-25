@@ -88,6 +88,14 @@ _Avoid_: Suspend, deactivate, disable
 A copy of a Recipe — either your own or another user's public Recipe — that becomes an independent Recipe in your account. A Fork copies the title, ingredients, method, Total Time, Servings, and Tags (by name, creating new Tag records under the forking user's account as needed) but not the Cover Image. A Fork defaults to private on creation, consistent with all new Recipes. The Fork holds a `forkedFrom` reference to the original Recipe; if the original is deleted, made private, or its author is banned, the reference is silently dropped and no attribution is shown. The forking user is redirected to the edit page immediately after the Fork is created. The Fork's title starts identical to the original's; attribution ("forked from [original]") is displayed in the UI on the Recipe detail and edit pages rather than encoded in the title. You may Fork your own Recipes, including private ones — useful for creating variations.
 _Avoid_: Clone, copy, remix, duplicate
 
+**Weekly Plan**:
+A single, persistent, reusable planning template per authenticated User, accessible at `/weekly-plan`. Assigns Recipes to the seven named days of the week (Monday through Sunday). Not tied to any specific calendar date — the user updates it in place week to week. A User has exactly one Weekly Plan; there is no concept of multiple named plans. Recipes eligible to be added are the user's own Recipes (public or private) and any public Recipe they have Liked. Plan Entries on a liked Recipe that becomes private are silently hidden until the Recipe is public again, mirroring Like behaviour. Plan Entries on a deleted Recipe are cascade-deleted. The entire Weekly Plan can be cleared in one action, or individual Plan Entries can be removed.
+_Avoid_: Meal plan, week planner, schedule, planner
+
+**Plan Entry**:
+A single Recipe assigned to a specific day within a User's Weekly Plan. Multiple Plan Entries per day are allowed. Plan Entries within a day are ordered; that order is maintained and can be changed by the user. Dragging a Plan Entry from one day to another moves it (not copies it). Reordering within a day uses the same drag-and-drop interaction.
+_Avoid_: Meal, slot, assignment, item
+
 ## Example dialogue
 
 > "I want to find all my starter recipes."

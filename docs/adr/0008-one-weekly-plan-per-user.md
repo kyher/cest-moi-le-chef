@@ -1,0 +1,3 @@
+# One Weekly Plan per user
+
+Each user has exactly one Weekly Plan — a single mutable template they update in place. We explicitly considered allowing multiple named plans (e.g. "Summer rotation", "High-protein week") but rejected it: the management layer required (create, rename, delete, select active) adds meaningful UI and data model complexity with no clear payoff for a personal recipe manager. A single plan covers the primary use case ("what am I cooking this week?") directly. If multi-plan support is added later, it requires a new UI surface and a data migration to add a plan-selection concept.

@@ -5,7 +5,7 @@ import {
 } from "@dnd-kit/sortable";
 import { SortableEntryCard } from "#/components/-weekly-plan-entry-card";
 import type { Entry } from "#/components/-weekly-plan-types";
-import { DAY_LABELS } from "#/components/-weekly-plan-types";
+import { formatDay } from "#/components/-weekly-plan-types";
 import type { Day } from "#/generated/prisma/enums";
 
 function DroppableColumn({
@@ -65,7 +65,7 @@ export function DayColumn({
 		<div>
 			<div className="flex items-center justify-between mb-2 pb-2 border-b border-stone-200">
 				<span className="text-sm font-semibold text-stone-700">
-					{DAY_LABELS[day]}
+					{formatDay(day)}
 				</span>
 				<button
 					type="button"

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { formatDay } from "#/components/-weekly-plan-types";
 import type { Day } from "#/generated/prisma/enums";
 import { formatTotalTime } from "#/lib/format";
 
@@ -16,16 +17,6 @@ interface Props {
 	onAdd: (recipeId: string) => void;
 	onClose: () => void;
 }
-
-const DAY_LABELS: Record<Day, string> = {
-	MONDAY: "Monday",
-	TUESDAY: "Tuesday",
-	WEDNESDAY: "Wednesday",
-	THURSDAY: "Thursday",
-	FRIDAY: "Friday",
-	SATURDAY: "Saturday",
-	SUNDAY: "Sunday",
-};
 
 export function RecipePicker({
 	day,
@@ -73,7 +64,7 @@ export function RecipePicker({
 			>
 				<div className="px-4 pt-4 pb-3 border-b border-stone-200 shrink-0">
 					<h2 className="font-semibold font-serif text-stone-900 mb-3">
-						Add to {DAY_LABELS[day]}
+						Add to {formatDay(day)}
 					</h2>
 					<input
 						ref={inputRef}

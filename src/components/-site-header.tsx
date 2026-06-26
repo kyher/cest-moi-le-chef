@@ -57,6 +57,12 @@ export function SiteHeader({ user }: Props) {
 							>
 								Liked Recipes
 							</Link>
+							<Link
+								to="/weekly-plan"
+								className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
+							>
+								Weekly Plan
+							</Link>
 							{user?.role === "admin" && (
 								<Link
 									to="/admin/recipes"
@@ -171,6 +177,13 @@ export function SiteHeader({ user }: Props) {
 								className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
 							>
 								Liked Recipes
+							</Link>
+							<Link
+								to="/weekly-plan"
+								onClick={close}
+								className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
+							>
+								Weekly Plan
 							</Link>
 							{user?.role === "admin" && (
 								<Link

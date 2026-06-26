@@ -21,6 +21,7 @@ import { Route as ApiRecipeImageRouteImport } from './routes/api/recipe-image'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminRecipesRouteImport } from './routes/admin/recipes'
 import { Route as RecipesRecipeIdIndexRouteImport } from './routes/recipes/$recipeId/index'
+import { Route as AuthWeeklyPlanIndexRouteImport } from './routes/_auth/weekly-plan/index'
 import { Route as AuthMyRecipesIndexRouteImport } from './routes/_auth/my-recipes/index'
 import { Route as AuthLikedRecipesIndexRouteImport } from './routes/_auth/liked-recipes/index'
 import { Route as RecipesRecipeIdEditRouteImport } from './routes/recipes/$recipeId/edit'
@@ -86,6 +87,11 @@ const RecipesRecipeIdIndexRoute = RecipesRecipeIdIndexRouteImport.update({
   path: '/recipes/$recipeId/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthWeeklyPlanIndexRoute = AuthWeeklyPlanIndexRouteImport.update({
+  id: '/weekly-plan/',
+  path: '/weekly-plan/',
+  getParentRoute: () => AuthRoute,
+} as any)
 const AuthMyRecipesIndexRoute = AuthMyRecipesIndexRouteImport.update({
   id: '/my-recipes/',
   path: '/my-recipes/',
@@ -128,6 +134,7 @@ export interface FileRoutesByFullPath {
   '/recipes/$recipeId/edit': typeof RecipesRecipeIdEditRoute
   '/liked-recipes/': typeof AuthLikedRecipesIndexRoute
   '/my-recipes/': typeof AuthMyRecipesIndexRoute
+  '/weekly-plan/': typeof AuthWeeklyPlanIndexRoute
   '/recipes/$recipeId/': typeof RecipesRecipeIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -145,6 +152,7 @@ export interface FileRoutesByTo {
   '/recipes/$recipeId/edit': typeof RecipesRecipeIdEditRoute
   '/liked-recipes': typeof AuthLikedRecipesIndexRoute
   '/my-recipes': typeof AuthMyRecipesIndexRoute
+  '/weekly-plan': typeof AuthWeeklyPlanIndexRoute
   '/recipes/$recipeId': typeof RecipesRecipeIdIndexRoute
 }
 export interface FileRoutesById {
@@ -165,6 +173,7 @@ export interface FileRoutesById {
   '/recipes/$recipeId/edit': typeof RecipesRecipeIdEditRoute
   '/_auth/liked-recipes/': typeof AuthLikedRecipesIndexRoute
   '/_auth/my-recipes/': typeof AuthMyRecipesIndexRoute
+  '/_auth/weekly-plan/': typeof AuthWeeklyPlanIndexRoute
   '/recipes/$recipeId/': typeof RecipesRecipeIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -185,6 +194,7 @@ export interface FileRouteTypes {
     | '/recipes/$recipeId/edit'
     | '/liked-recipes/'
     | '/my-recipes/'
+    | '/weekly-plan/'
     | '/recipes/$recipeId/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -202,6 +212,7 @@ export interface FileRouteTypes {
     | '/recipes/$recipeId/edit'
     | '/liked-recipes'
     | '/my-recipes'
+    | '/weekly-plan'
     | '/recipes/$recipeId'
   id:
     | '__root__'
@@ -221,6 +232,7 @@ export interface FileRouteTypes {
     | '/recipes/$recipeId/edit'
     | '/_auth/liked-recipes/'
     | '/_auth/my-recipes/'
+    | '/_auth/weekly-plan/'
     | '/recipes/$recipeId/'
   fileRoutesById: FileRoutesById
 }
@@ -324,6 +336,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RecipesRecipeIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_auth/weekly-plan/': {
+      id: '/_auth/weekly-plan/'
+      path: '/weekly-plan'
+      fullPath: '/weekly-plan/'
+      preLoaderRoute: typeof AuthWeeklyPlanIndexRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/_auth/my-recipes/': {
       id: '/_auth/my-recipes/'
       path: '/my-recipes'
@@ -366,12 +385,14 @@ interface AuthRouteChildren {
   AuthMyRecipesNewRoute: typeof AuthMyRecipesNewRoute
   AuthLikedRecipesIndexRoute: typeof AuthLikedRecipesIndexRoute
   AuthMyRecipesIndexRoute: typeof AuthMyRecipesIndexRoute
+  AuthWeeklyPlanIndexRoute: typeof AuthWeeklyPlanIndexRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthMyRecipesNewRoute: AuthMyRecipesNewRoute,
   AuthLikedRecipesIndexRoute: AuthLikedRecipesIndexRoute,
   AuthMyRecipesIndexRoute: AuthMyRecipesIndexRoute,
+  AuthWeeklyPlanIndexRoute: AuthWeeklyPlanIndexRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)

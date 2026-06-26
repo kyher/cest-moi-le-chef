@@ -51,21 +51,21 @@ export function EntryCard({
 }) {
 	return (
 		<div
-			className={`w-52 bg-stone-50 border border-stone-200 border-l-2 border-l-amber-300 group ${isDragging ? "shadow-lg" : ""}`}
+			className={`w-72 bg-stone-50 border border-stone-200 border-l-2 border-l-amber-300 group ${isDragging ? "shadow-lg" : ""}`}
 		>
 			{entry.recipe.imageUrl && (
 				<img
 					src={entry.recipe.imageUrl}
 					alt=""
-					className="w-full h-20 object-cover border-b border-stone-200"
+					className="w-full h-32 object-cover border-b border-stone-200"
 				/>
 			)}
-			<div className="flex items-start gap-1 p-2">
+			<div className="flex items-start gap-2 p-3">
 				<div
 					{...dragHandleProps}
-					className="shrink-0 self-stretch touch-none flex items-center pr-1 text-stone-300 hover:text-stone-500 cursor-grab active:cursor-grabbing"
+					className="shrink-0 self-stretch touch-none flex items-center px-1 text-stone-300 hover:text-stone-500 cursor-grab active:cursor-grabbing"
 				>
-					<GripVertical size={14} />
+					<GripVertical size={16} />
 				</div>
 				<div className="flex-1 min-w-0">
 					<Link
@@ -76,7 +76,7 @@ export function EntryCard({
 						{entry.recipe.title}
 					</Link>
 					{entry.recipe.totalTime != null && (
-						<span className="text-xs text-stone-400 mt-0.5 block">
+						<span className="text-xs text-stone-400 mt-1 block">
 							{formatTotalTime(entry.recipe.totalTime)}
 						</span>
 					)}

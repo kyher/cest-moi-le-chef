@@ -25,7 +25,7 @@ function DroppableColumn({
 	return (
 		<div
 			ref={setNodeRef}
-			className={`min-h-20 min-w-52 rounded-sm ${
+			className={`min-h-20 min-w-72 rounded-sm ${
 				isEmpty
 					? `flex items-center justify-center border-2 border-dashed ${isOver ? "border-amber-400 bg-amber-100" : "border-stone-300 bg-stone-50"}`
 					: `flex flex-row flex-wrap gap-2${isOver ? " bg-stone-100" : ""}`

@@ -84,7 +84,7 @@ export function EntryCard({
 				<button
 					type="button"
 					onClick={() => onRemove(entry.id)}
-					className="shrink-0 mt-0.5 text-stone-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+					className="shrink-0 mt-0.5 text-stone-300 hover:text-red-500 opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity"
 					aria-label="Remove"
 				>
 					<span className="text-sm leading-none">×</span>

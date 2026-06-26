@@ -7,6 +7,7 @@ import {
 	type DragStartEvent,
 	PointerSensor,
 	pointerWithin,
+	TouchSensor,
 	useSensor,
 	useSensors,
 } from "@dnd-kit/core";
@@ -50,6 +51,9 @@ function WeeklyPlanPage() {
 
 	const sensors = useSensors(
 		useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+		useSensor(TouchSensor, {
+			activationConstraint: { delay: 250, tolerance: 5 },
+		}),
 	);
 
 	const totalEntries = DAYS.reduce((n, d) => n + dayMap[d].length, 0);

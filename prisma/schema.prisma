@@ -7,6 +7,16 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Day {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
 model Recipe {
   id           String   @id @default(cuid())
   title        String
@@ -26,6 +36,7 @@ model Recipe {
   notes        Note[]
   tags         RecipeTag[]
   likes        Like[]
+  planEntries  PlanEntry[]
 }
 
 model Like {
@@ -87,6 +98,26 @@ model User {
   tags            Tag[]
   likes           Like[]
   notes           Note[]
+  weeklyPlan      WeeklyPlan?
+}
+
+model WeeklyPlan {
+  id        String      @id @default(cuid())
+  userId    String      @unique
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entries   PlanEntry[]
+  createdAt DateTime    @default(now())
+}
+
+model PlanEntry {
+  id           String     @id @default(cuid())
+  weeklyPlanId String
+  weeklyPlan   WeeklyPlan @relation(fields: [weeklyPlanId], references: [id], onDelete: Cascade)
+  recipeId     String
+  recipe       Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  day          Day
+  order        Int
+  createdAt    DateTime   @default(now())
 }
 
 model Session {

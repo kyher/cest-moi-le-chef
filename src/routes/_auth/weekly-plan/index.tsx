@@ -5,7 +5,7 @@ import {
 	type DragOverEvent,
 	DragOverlay,
 	type DragStartEvent,
-	PointerSensor,
+	MouseSensor,
 	pointerWithin,
 	TouchSensor,
 	useSensor,
@@ -50,7 +50,7 @@ function WeeklyPlanPage() {
 	const [activeId, setActiveId] = useState<string | null>(null);
 
 	const sensors = useSensors(
-		useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+		useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
 		useSensor(TouchSensor, {
 			activationConstraint: { delay: 250, tolerance: 5 },
 		}),

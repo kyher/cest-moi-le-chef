@@ -63,7 +63,7 @@ export function EntryCard({
 			<div className="flex items-start gap-1 p-2">
 				<div
 					{...dragHandleProps}
-					className="shrink-0 mt-0.5 text-stone-300 hover:text-stone-500 cursor-grab active:cursor-grabbing"
+					className="shrink-0 self-stretch touch-none flex items-center pr-1 text-stone-300 hover:text-stone-500 cursor-grab active:cursor-grabbing"
 				>
 					<GripVertical size={14} />
 				</div>

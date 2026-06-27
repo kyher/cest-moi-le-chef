@@ -37,6 +37,9 @@ model Recipe {
   tags         RecipeTag[]
   likes        Like[]
   planEntries  PlanEntry[]
+
+  @@index([userId])
+  @@index([forkedFromId])
 }
 
 model Like {
@@ -47,6 +50,7 @@ model Like {
   recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 
   @@id([userId, recipeId])
+  @@index([recipeId])
 }
 
 model Note {
@@ -57,6 +61,9 @@ model Note {
   userId    String
   recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([recipeId])
+  @@index([userId])
 }
 
 model Tag {
@@ -67,6 +74,7 @@ model Tag {
   recipes RecipeTag[]
 
   @@unique([name, userId])
+  @@index([userId])
 }
 
 model RecipeTag {
@@ -76,6 +84,7 @@ model RecipeTag {
   tag      Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([recipeId, tagId])
+  @@index([tagId])
 }
 
 model User {
@@ -118,6 +127,9 @@ model PlanEntry {
   day          Day
   order        Int
   createdAt    DateTime   @default(now())
+
+  @@index([weeklyPlanId])
+  @@index([recipeId])
 }
 
 model Session {
@@ -130,6 +142,8 @@ model Session {
   userAgent String?
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Account {
@@ -147,6 +161,8 @@ model Account {
   password              String?
   createdAt             DateTime
   updatedAt             DateTime
+
+  @@index([userId])
 }
 
 model Verification {

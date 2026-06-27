@@ -1,22 +1,8 @@
-import {
-	closestCenter,
-	DndContext,
-	type DragEndEvent,
-	type DragOverEvent,
-	DragOverlay,
-	type DragStartEvent,
-	MouseSensor,
-	pointerWithin,
-	TouchSensor,
-	useSensor,
-	useSensors,
-} from "@dnd-kit/core";
-import { arrayMove } from "@dnd-kit/sortable";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { MoveDayPicker } from "#/components/-move-day-picker";
 import { RecipePicker } from "#/components/-recipe-picker";
 import { DayColumn } from "#/components/-weekly-plan-day-column";
-import { EntryCard } from "#/components/-weekly-plan-entry-card";
 import {
 	DAYS,
 	type DayMap,
@@ -46,90 +32,10 @@ function WeeklyPlanPage() {
 	const { entries: loaderEntries, options } = Route.useLoaderData();
 	const [dayMap, setDayMap] = useState<DayMap>(() => toDayMap(loaderEntries));
 	const [pickerDay, setPickerDay] = useState<Day | null>(null);
+	const [movingEntryId, setMovingEntryId] = useState<string | null>(null);
 	const [confirming, setConfirming] = useState(false);
-	const [activeId, setActiveId] = useState<string | null>(null);
-
-	const sensors = useSensors(
-		useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
-		useSensor(TouchSensor, {
-			activationConstraint: { delay: 250, tolerance: 5 },
-		}),
-	);
 
 	const totalEntries = DAYS.reduce((n, d) => n + dayMap[d].length, 0);
-	const activeEntry = activeId
-		? DAYS.flatMap((d) => dayMap[d]).find((e) => e.id === activeId)
-		: null;
-	const dragOverDay = activeId
-		? (DAYS.find((d) => dayMap[d].some((e) => e.id === activeId)) ?? null)
-		: null;
-
-	function handleDragStart({ active }: DragStartEvent) {
-		setActiveId(String(active.id));
-	}
-
-	function handleDragOver({ active, over }: DragOverEvent) {
-		if (!over) return;
-		const activeId = String(active.id);
-		const overId = String(over.id);
-
-		setDayMap((prev) => {
-			const activeContainer = findContainer(activeId, prev);
-			const overContainer = findContainer(overId, prev);
-			if (
-				!activeContainer ||
-				!overContainer ||
-				activeContainer === overContainer
-			)
-				return prev;
-
-			const activeItems = [...prev[activeContainer]];
-			const overItems = [...prev[overContainer]];
-			const activeIndex = activeItems.findIndex((e) => e.id === activeId);
-			const overIndex = overItems.findIndex((e) => e.id === overId);
-
-			const [item] = activeItems.splice(activeIndex, 1);
-			const insertAt = overIndex >= 0 ? overIndex : overItems.length;
-			overItems.splice(insertAt, 0, { ...item, day: overContainer });
-
-			return {
-				...prev,
-				[activeContainer]: activeItems,
-				[overContainer]: overItems,
-			};
-		});
-	}
-
-	function handleDragEnd({ active, over }: DragEndEvent) {
-		setActiveId(null);
-		if (!over) return;
-
-		const activeId = String(active.id);
-		const overId = String(over.id);
-
-		setDayMap((prev) => {
-			const activeContainer = findContainer(activeId, prev);
-			const overContainer = findContainer(overId, prev);
-			if (!activeContainer || !overContainer) return prev;
-
-			let next = prev;
-
-			if (activeContainer === overContainer) {
-				const items = prev[activeContainer];
-				const activeIndex = items.findIndex((e) => e.id === activeId);
-				const overIndex = items.findIndex((e) => e.id === overId);
-				if (activeIndex !== overIndex) {
-					next = {
-						...prev,
-						[activeContainer]: arrayMove(items, activeIndex, overIndex),
-					};
-				}
-			}
-
-			void updatePlanEntries({ data: { updates: toFlat(next) } });
-			return next;
-		});
-	}
 
 	async function handleAdd(recipeId: string) {
 		if (!pickerDay) return;
@@ -149,6 +55,25 @@ function WeeklyPlanPage() {
 			return { ...prev, [day]: prev[day].filter((e) => e.id !== entryId) };
 		});
 		await removePlanEntry({ data: { entryId } });
+	}
+
+	function handleMove(targetDay: Day) {
+		if (!movingEntryId) return;
+		const entryId = movingEntryId;
+		setMovingEntryId(null);
+		setDayMap((prev) => {
+			const sourceDay = findContainer(entryId, prev);
+			if (!sourceDay || sourceDay === targetDay) return prev;
+			const entry = prev[sourceDay].find((e) => e.id === entryId);
+			if (!entry) return prev;
+			const next = {
+				...prev,
+				[sourceDay]: prev[sourceDay].filter((e) => e.id !== entryId),
+				[targetDay]: [...prev[targetDay], { ...entry, day: targetDay }],
+			};
+			void updatePlanEntries({ data: { updates: toFlat(next) } });
+			return next;
+		});
 	}
 
 	async function handleClear() {
@@ -198,36 +123,18 @@ function WeeklyPlanPage() {
 				)}
 			</div>
 
-			<DndContext
-				sensors={sensors}
-				collisionDetection={(args) =>
-					pointerWithin(args).length > 0
-						? pointerWithin(args)
-						: closestCenter(args)
-				}
-				onDragStart={handleDragStart}
-				onDragOver={handleDragOver}
-				onDragEnd={handleDragEnd}
-			>
-				<div className="flex flex-col gap-6">
-					{DAYS.map((day) => (
-						<DayColumn
-							key={day}
-							day={day}
-							entries={dayMap[day]}
-							isOver={dragOverDay === day}
-							onAdd={() => setPickerDay(day)}
-							onRemove={handleRemove}
-						/>
-					))}
-				</div>
-
-				<DragOverlay>
-					{activeEntry ? (
-						<EntryCard entry={activeEntry} onRemove={() => {}} isDragging />
-					) : null}
-				</DragOverlay>
-			</DndContext>
+			<div className="flex flex-col gap-6">
+				{DAYS.map((day) => (
+					<DayColumn
+						key={day}
+						day={day}
+						entries={dayMap[day]}
+						onAdd={() => setPickerDay(day)}
+						onRemove={handleRemove}
+						onMove={setMovingEntryId}
+					/>
+				))}
+			</div>
 
 			{pickerDay && (
 				<RecipePicker
@@ -236,6 +143,13 @@ function WeeklyPlanPage() {
 					likedRecipes={options.likedRecipes}
 					onAdd={handleAdd}
 					onClose={() => setPickerDay(null)}
+				/>
+			)}
+			{movingEntryId && (
+				<MoveDayPicker
+					currentDay={findContainer(movingEntryId, dayMap) ?? "MONDAY"}
+					onMove={handleMove}
+					onClose={() => setMovingEntryId(null)}
 				/>
 			)}
 		</div>

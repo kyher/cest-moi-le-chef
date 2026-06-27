@@ -49,7 +49,7 @@ export function RecipePicker({
 	);
 
 	return (
-		<div className="fixed inset-0 z-50 flex items-center justify-center">
+		<div className="fixed inset-0 z-50 flex items-start justify-center pt-4 sm:items-center sm:pt-0">
 			<button
 				type="button"
 				onClick={onClose}

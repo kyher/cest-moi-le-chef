@@ -1,58 +1,19 @@
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import { Link } from "@tanstack/react-router";
-import { GripVertical } from "lucide-react";
+import { ArrowRightLeft, Trash2 } from "lucide-react";
 import type { Entry } from "#/components/-weekly-plan-types";
 import { formatTotalTime } from "#/lib/format";
-
-export function SortableEntryCard({
-	entry,
-	onRemove,
-}: {
-	entry: Entry;
-	onRemove: (id: string) => void;
-}) {
-	const {
-		attributes,
-		listeners,
-		setNodeRef,
-		transform,
-		transition,
-		isDragging,
-	} = useSortable({ id: entry.id });
-
-	const style = {
-		transform: CSS.Transform.toString(transform),
-		transition,
-		opacity: isDragging ? 0.4 : 1,
-	};
-
-	return (
-		<div ref={setNodeRef} style={style}>
-			<EntryCard
-				entry={entry}
-				onRemove={onRemove}
-				dragHandleProps={{ ...attributes, ...listeners }}
-			/>
-		</div>
-	);
-}
 
 export function EntryCard({
 	entry,
 	onRemove,
-	dragHandleProps,
-	isDragging,
+	onMove,
 }: {
 	entry: Entry;
 	onRemove: (id: string) => void;
-	dragHandleProps?: Record<string, unknown>;
-	isDragging?: boolean;
+	onMove?: () => void;
 }) {
 	return (
-		<div
-			className={`w-72 bg-stone-50 border border-stone-200 border-l-2 border-l-amber-300 group ${isDragging ? "shadow-lg" : ""}`}
-		>
+		<div className="w-72 bg-stone-50 border border-stone-200 border-l-2 border-l-amber-300 group">
 			{entry.recipe.imageUrl && (
 				<img
 					src={entry.recipe.imageUrl}
@@ -61,12 +22,16 @@ export function EntryCard({
 				/>
 			)}
 			<div className="flex items-start gap-2 p-3">
-				<div
-					{...dragHandleProps}
-					className="shrink-0 self-stretch touch-none flex items-center px-1 text-stone-300 hover:text-stone-500 cursor-grab active:cursor-grabbing"
-				>
-					<GripVertical size={16} />
-				</div>
+				{onMove && (
+					<button
+						type="button"
+						onClick={onMove}
+						className="shrink-0 self-stretch flex items-center px-1 text-stone-300 hover:text-stone-500 active:text-stone-600"
+						aria-label="Move to another day"
+					>
+						<ArrowRightLeft size={15} />
+					</button>
+				)}
 				<div className="flex-1 min-w-0">
 					<Link
 						to="/recipes/$recipeId"
@@ -84,10 +49,10 @@ export function EntryCard({
 				<button
 					type="button"
 					onClick={() => onRemove(entry.id)}
-					className="shrink-0 mt-0.5 text-stone-300 hover:text-red-500 opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity"
+					className="shrink-0 -mr-1 flex items-center justify-center w-8 h-8 text-stone-400 hover:text-red-500 opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity"
 					aria-label="Remove"
 				>
-					<span className="text-sm leading-none">×</span>
+					<Trash2 size={14} />
 				</button>
 			</div>
 		</div>

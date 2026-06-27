@@ -51,8 +51,8 @@ export async function listLikedRecipes(
 	});
 }
 
-export async function listLikedTagsInUse(userId: string) {
-	const tags = await prisma.tag.findMany({
+export function listLikedTagsInUse(userId: string) {
+	return prisma.tag.findMany({
 		where: {
 			recipes: {
 				some: {
@@ -61,15 +61,7 @@ export async function listLikedTagsInUse(userId: string) {
 			},
 		},
 		select: { name: true },
+		distinct: ["name"],
 		orderBy: { name: "asc" },
 	});
-	const seen = new Set<string>();
-	const result: { name: string }[] = [];
-	for (const tag of tags) {
-		if (!seen.has(tag.name)) {
-			seen.add(tag.name);
-			result.push(tag);
-		}
-	}
-	return result;
 }

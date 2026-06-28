@@ -5,6 +5,7 @@ import {
 	useRouter,
 } from "@tanstack/react-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { SiteHeader } from "#/components/-site-header";
 import { authClient } from "#/lib/auth-client";
 import { getSession } from "#/lib/session";
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/sign-in")({
 
 function SignIn() {
 	const router = useRouter();
+	const { t } = useTranslation();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
@@ -31,7 +33,7 @@ function SignIn() {
 		const { error } = await authClient.signIn.email({ email, password });
 		setPending(false);
 		if (error) {
-			setError(error.message ?? "Sign in failed");
+			setError(error.message ?? t("signIn.error"));
 			return;
 		}
 		await router.navigate({ to: "/" });
@@ -43,7 +45,7 @@ function SignIn() {
 			<div className="flex-1 flex items-center justify-center bg-stone-100">
 				<div className="w-full max-w-sm p-8 bg-white border border-stone-200 shadow-sm">
 					<h1 className="text-2xl font-bold font-serif text-stone-900 mb-6">
-						Sign in
+						{t("signIn.title")}
 					</h1>
 					<form onSubmit={handleSubmit} className="space-y-4">
 						{error && <p className="text-sm text-red-600">{error}</p>}
@@ -52,7 +54,7 @@ function SignIn() {
 								className="text-sm font-medium text-stone-700"
 								htmlFor="email"
 							>
-								Email
+								{t("signIn.email")}
 							</label>
 							<input
 								id="email"
@@ -68,7 +70,7 @@ function SignIn() {
 								className="text-sm font-medium text-stone-700"
 								htmlFor="password"
 							>
-								Password
+								{t("signIn.password")}
 							</label>
 							<input
 								id="password"
@@ -84,16 +86,16 @@ function SignIn() {
 							disabled={pending}
 							className="w-full h-9 px-4 text-sm font-medium rounded-sm bg-stone-800 text-white hover:bg-stone-700 disabled:opacity-50 transition-colors"
 						>
-							{pending ? "Signing in…" : "Sign in"}
+							{pending ? t("signIn.submitting") : t("signIn.submit")}
 						</button>
 					</form>
 					<p className="mt-4 text-sm text-stone-500">
-						No account?{" "}
+						{t("signIn.noAccount")}{" "}
 						<Link
 							to="/sign-up"
 							className="text-stone-800 underline underline-offset-2"
 						>
-							Sign up
+							{t("signIn.signUpLink")}
 						</Link>
 					</p>
 				</div>

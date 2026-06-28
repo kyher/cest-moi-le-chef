@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { RecipeFilterPanel } from "#/components/-recipe-filter-panel";
 import { formatTotalTime } from "#/lib/format";
 import { useRecipeFilters, validateRecipeSearch } from "#/lib/recipe-filters";
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/_auth/liked-recipes/")({
 
 function LikedRecipesPage() {
 	const { recipes, tagsInUse } = Route.useLoaderData();
+	const { t } = useTranslation();
 	const search = Route.useSearch();
 	const navigate = useNavigate({ from: Route.fullPath });
 	const filters = useRecipeFilters(search, navigate);
@@ -24,7 +26,7 @@ function LikedRecipesPage() {
 	return (
 		<div className="py-10">
 			<h1 className="text-3xl font-bold font-serif text-stone-900 mb-8">
-				Liked Recipes
+				{t("likedRecipes.title")}
 			</h1>
 
 			<RecipeFilterPanel
@@ -44,23 +46,23 @@ function LikedRecipesPage() {
 				<p className="text-stone-500">
 					{filters.hasConstraints ? (
 						<>
-							No recipes match your filters.{" "}
+							{t("likedRecipes.noMatch")}{" "}
 							<button
 								type="button"
 								onClick={filters.reset}
 								className="text-stone-800 underline underline-offset-2 cursor-pointer"
 							>
-								Reset
+								{t("common.reset")}
 							</button>
 						</>
 					) : (
 						<>
-							No liked recipes yet.{" "}
+							{t("likedRecipes.empty")}{" "}
 							<Link
 								to="/recipes"
 								className="text-stone-800 underline underline-offset-2"
 							>
-								Browse recipes to find some.
+								{t("likedRecipes.browse")}
 							</Link>
 						</>
 					)}
@@ -95,7 +97,7 @@ function LikedRecipesPage() {
 										params={{ username: recipe.user.username }}
 										className="text-xs text-stone-400 mt-0.5 hover:text-stone-600 hover:underline underline-offset-2"
 									>
-										by {recipe.user.name}
+										{t("common.by", { name: recipe.user.name })}
 									</Link>
 									{recipe.tags.length > 0 && (
 										<div className="flex flex-wrap gap-1 mt-2">

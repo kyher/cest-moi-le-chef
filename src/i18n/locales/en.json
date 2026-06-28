@@ -1,0 +1,219 @@
+{
+	"common": {
+		"cancel": "Cancel",
+		"reset": "Reset",
+		"by": "by {{name}}",
+		"byPrefix": "by"
+	},
+	"nav": {
+		"recipes": "Recipes",
+		"myRecipes": "My Recipes",
+		"likedRecipes": "Liked Recipes",
+		"weeklyPlan": "Weekly Plan",
+		"admin": "Admin",
+		"addRecipe": "Add Recipe",
+		"signOut": "Sign out",
+		"signIn": "Sign in",
+		"signUp": "Sign up",
+		"toggleMenu": "Toggle menu"
+	},
+	"marketing": {
+		"tagline": "Your personal recipe book — private by default, shareable when you're ready.",
+		"body": "Store your recipes exactly how you make them. Add notes after each cook. Share your best ones with anyone, or keep them to yourself.",
+		"signUp": "Sign up — it's free",
+		"browse": "Browse recipes"
+	},
+	"notFound": {
+		"title": "Page not found",
+		"goHome": "Go home"
+	},
+	"signIn": {
+		"title": "Sign in",
+		"email": "Email",
+		"password": "Password",
+		"submit": "Sign in",
+		"submitting": "Signing in…",
+		"noAccount": "No account?",
+		"signUpLink": "Sign up",
+		"error": "Sign in failed"
+	},
+	"signUp": {
+		"title": "Create account",
+		"name": "Name",
+		"username": "Username",
+		"usernameHint": "Letters, numbers, hyphens, underscores. Cannot be changed.",
+		"email": "Email",
+		"password": "Password",
+		"submit": "Create account",
+		"submitting": "Creating account…",
+		"haveAccount": "Already have an account?",
+		"signInLink": "Sign in",
+		"error": "Sign up failed"
+	},
+	"recipes": {
+		"title": "Recipes",
+		"empty": "No public recipes yet.",
+		"noMatch": "No recipes match your filters."
+	},
+	"recipe": {
+		"backToMyRecipes": "← My Recipes",
+		"backToRecipes": "← Recipes",
+		"edit": "Edit",
+		"fork": "Fork",
+		"forkTooltip": "Create your own editable copy",
+		"delete": "Delete",
+		"deleteConfirm": "Delete this recipe? This cannot be undone.",
+		"serves": "Serves {{n}}",
+		"ingredients": "Ingredients",
+		"method": "Method",
+		"notes": "Notes",
+		"notesWithCount": "Notes ({{count}})",
+		"notesPrivate": "· only visible to you",
+		"addNotePlaceholder": "Add a note…",
+		"addNote": "Add",
+		"noNotes": "No notes yet.",
+		"like": "♡ Like",
+		"liked": "♥ Liked",
+		"likes_one": "{{count}} like",
+		"likes_other": "{{count}} likes",
+		"copyLink": "Copy link",
+		"forkedFrom": "forked from",
+		"notFound": "Recipe not found."
+	},
+	"recipeToast": {
+		"noteAdded": "Note added",
+		"noteDeleted": "Note deleted",
+		"forked": "Recipe forked — editing your copy",
+		"deleted": "Recipe deleted",
+		"saved": "Recipe saved",
+		"linkCopied": "Link copied!"
+	},
+	"editRecipe": {
+		"title": "Edit Recipe",
+		"save": "Save Changes",
+		"saving": "Saving…"
+	},
+	"myRecipes": {
+		"title": "My Recipes",
+		"addRecipe": "Add Recipe",
+		"empty": "No recipes yet.",
+		"addFirst": "Add your first one.",
+		"noMatch": "No recipes match your filters.",
+		"note_one": "{{count}} note",
+		"note_other": "{{count}} notes",
+		"public": "Public",
+		"private": "Private"
+	},
+	"newRecipe": {
+		"title": "Add Recipe",
+		"save": "Save Recipe",
+		"saving": "Saving…"
+	},
+	"recipeForm": {
+		"title": "Title",
+		"tags": "Tags",
+		"tagsPlaceholder": "Type a tag and press Enter",
+		"totalTime": "Total Time",
+		"hr": "hr",
+		"min": "min",
+		"servings": "Servings",
+		"ingredients": "Ingredients",
+		"method": "Method",
+		"coverImage": "Cover Image",
+		"replace": "Replace",
+		"remove": "Remove",
+		"addImage": "Add cover image",
+		"fileTooLarge": "File too large. Maximum size is 5 MB.",
+		"public": "Public — visible to everyone",
+		"private": "Private — only visible to you",
+		"saveFailed": "Failed to save."
+	},
+	"filter": {
+		"search": "Search recipes…",
+		"clearSearch": "Clear search",
+		"tags": "Tags",
+		"cookingTime": "Cooking Time",
+		"visibility": "Visibility"
+	},
+	"likedRecipes": {
+		"title": "Liked Recipes",
+		"empty": "No liked recipes yet.",
+		"browse": "Browse recipes to find some.",
+		"noMatch": "No recipes match your filters."
+	},
+	"weeklyPlan": {
+		"title": "Weekly Plan",
+		"shoppingList": "Shopping list",
+		"clearPlan": "Clear plan",
+		"clearTitle": "Clear plan?",
+		"clearBody": "All recipes will be removed from your weekly plan.",
+		"add": "+ Add",
+		"addRecipe": "+ Add a recipe",
+		"days": {
+			"MONDAY": "Monday",
+			"TUESDAY": "Tuesday",
+			"WEDNESDAY": "Wednesday",
+			"THURSDAY": "Thursday",
+			"FRIDAY": "Friday",
+			"SATURDAY": "Saturday",
+			"SUNDAY": "Sunday"
+		}
+	},
+	"recipePicker": {
+		"addTo": "Add to {{day}}",
+		"search": "Search recipes…",
+		"noResults": "No recipes found.",
+		"yourRecipes": "Your Recipes",
+		"likedRecipes": "Liked Recipes"
+	},
+	"moveDayPicker": {
+		"title": "Move to…",
+		"current": "current"
+	},
+	"shoppingList": {
+		"title": "Shopping List",
+		"noIngredients": "No ingredients listed"
+	},
+	"profile": {
+		"noRecipes": "No public recipes yet."
+	},
+	"admin": {
+		"title": "Admin",
+		"recipes": "Recipes",
+		"users": "Users"
+	},
+	"adminRecipes": {
+		"empty": "No public recipes.",
+		"count_one": "{{count}} public recipe",
+		"count_other": "{{count}} public recipes",
+		"removeImage": "Remove image",
+		"forcePrivate": "Force private",
+		"confirmDelete": "Confirm delete",
+		"delete": "Delete",
+		"setPrivate": "Recipe set to private.",
+		"deleted": "Recipe deleted.",
+		"imageRemoved": "Image removed.",
+		"failed": "Action failed."
+	},
+	"adminUsers": {
+		"empty": "No users.",
+		"count_one": "{{count}} user",
+		"count_other": "{{count}} users",
+		"banned": "Banned",
+		"admin": "Admin",
+		"ban": "Ban",
+		"banTitle": "Ban {{name}}",
+		"banBody": "This will permanently delete all of their recipes and block them from signing in.",
+		"banReason": "Reason",
+		"banReasonOptional": "(optional)",
+		"banExpires": "Ban expires",
+		"banExpiresOptional": "(optional — leave blank for permanent)",
+		"banning": "Banning…",
+		"banUser": "Ban user",
+		"banToast": "User banned and recipes deleted.",
+		"failed": "Action failed.",
+		"joined": "joined",
+		"recipe_one": "{{count}} recipe",
+		"recipe_other": "{{count}} recipes"
+	}
+}

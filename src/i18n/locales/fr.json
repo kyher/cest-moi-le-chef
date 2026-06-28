@@ -1,0 +1,219 @@
+{
+	"common": {
+		"cancel": "Annuler",
+		"reset": "Réinitialiser",
+		"by": "par {{name}}",
+		"byPrefix": "par"
+	},
+	"nav": {
+		"recipes": "Recettes",
+		"myRecipes": "Mes recettes",
+		"likedRecipes": "Recettes aimées",
+		"weeklyPlan": "Plan de la semaine",
+		"admin": "Admin",
+		"addRecipe": "Ajouter une recette",
+		"signOut": "Se déconnecter",
+		"signIn": "Se connecter",
+		"signUp": "S'inscrire",
+		"toggleMenu": "Basculer le menu"
+	},
+	"marketing": {
+		"tagline": "Votre livre de recettes personnel — privé par défaut, partageable quand vous êtes prêt.",
+		"body": "Enregistrez vos recettes exactement comme vous les faites. Ajoutez des notes après chaque cuisson. Partagez vos meilleures avec tout le monde, ou gardez-les pour vous.",
+		"signUp": "S'inscrire — c'est gratuit",
+		"browse": "Parcourir les recettes"
+	},
+	"notFound": {
+		"title": "Page introuvable",
+		"goHome": "Retour à l'accueil"
+	},
+	"signIn": {
+		"title": "Se connecter",
+		"email": "E-mail",
+		"password": "Mot de passe",
+		"submit": "Se connecter",
+		"submitting": "Connexion en cours…",
+		"noAccount": "Pas de compte ?",
+		"signUpLink": "S'inscrire",
+		"error": "Échec de la connexion"
+	},
+	"signUp": {
+		"title": "Créer un compte",
+		"name": "Nom",
+		"username": "Nom d'utilisateur",
+		"usernameHint": "Lettres, chiffres, tirets, underscores. Ne peut pas être modifié.",
+		"email": "E-mail",
+		"password": "Mot de passe",
+		"submit": "Créer un compte",
+		"submitting": "Création en cours…",
+		"haveAccount": "Déjà un compte ?",
+		"signInLink": "Se connecter",
+		"error": "Échec de l'inscription"
+	},
+	"recipes": {
+		"title": "Recettes",
+		"empty": "Aucune recette publique pour l'instant.",
+		"noMatch": "Aucune recette ne correspond à vos filtres."
+	},
+	"recipe": {
+		"backToMyRecipes": "← Mes recettes",
+		"backToRecipes": "← Recettes",
+		"edit": "Modifier",
+		"fork": "Dupliquer",
+		"forkTooltip": "Créer votre propre copie modifiable",
+		"delete": "Supprimer",
+		"deleteConfirm": "Supprimer cette recette ? Cette action est irréversible.",
+		"serves": "Pour {{n}} personnes",
+		"ingredients": "Ingrédients",
+		"method": "Préparation",
+		"notes": "Notes",
+		"notesWithCount": "Notes ({{count}})",
+		"notesPrivate": "· visible uniquement par vous",
+		"addNotePlaceholder": "Ajouter une note…",
+		"addNote": "Ajouter",
+		"noNotes": "Aucune note pour l'instant.",
+		"like": "♡ J'aime",
+		"liked": "♥ Aimé",
+		"likes_one": "{{count}} j'aime",
+		"likes_other": "{{count}} j'aime",
+		"copyLink": "Copier le lien",
+		"forkedFrom": "dupliqué depuis",
+		"notFound": "Recette introuvable."
+	},
+	"recipeToast": {
+		"noteAdded": "Note ajoutée",
+		"noteDeleted": "Note supprimée",
+		"forked": "Recette dupliquée — modification de votre copie",
+		"deleted": "Recette supprimée",
+		"saved": "Recette enregistrée",
+		"linkCopied": "Lien copié !"
+	},
+	"editRecipe": {
+		"title": "Modifier la recette",
+		"save": "Enregistrer",
+		"saving": "Enregistrement…"
+	},
+	"myRecipes": {
+		"title": "Mes recettes",
+		"addRecipe": "Ajouter une recette",
+		"empty": "Aucune recette pour l'instant.",
+		"addFirst": "Ajoutez votre première recette.",
+		"noMatch": "Aucune recette ne correspond à vos filtres.",
+		"note_one": "{{count}} note",
+		"note_other": "{{count}} notes",
+		"public": "Publique",
+		"private": "Privée"
+	},
+	"newRecipe": {
+		"title": "Ajouter une recette",
+		"save": "Enregistrer la recette",
+		"saving": "Enregistrement…"
+	},
+	"recipeForm": {
+		"title": "Titre",
+		"tags": "Tags",
+		"tagsPlaceholder": "Saisissez un tag et appuyez sur Entrée",
+		"totalTime": "Temps total",
+		"hr": "h",
+		"min": "min",
+		"servings": "Portions",
+		"ingredients": "Ingrédients",
+		"method": "Préparation",
+		"coverImage": "Image de couverture",
+		"replace": "Remplacer",
+		"remove": "Supprimer",
+		"addImage": "Ajouter une image de couverture",
+		"fileTooLarge": "Fichier trop volumineux. La taille maximale est de 5 Mo.",
+		"public": "Publique — visible par tous",
+		"private": "Privée — visible uniquement par vous",
+		"saveFailed": "Échec de l'enregistrement."
+	},
+	"filter": {
+		"search": "Rechercher des recettes…",
+		"clearSearch": "Effacer la recherche",
+		"tags": "Tags",
+		"cookingTime": "Temps de cuisson",
+		"visibility": "Visibilité"
+	},
+	"likedRecipes": {
+		"title": "Recettes aimées",
+		"empty": "Aucune recette aimée pour l'instant.",
+		"browse": "Parcourez les recettes pour en trouver.",
+		"noMatch": "Aucune recette ne correspond à vos filtres."
+	},
+	"weeklyPlan": {
+		"title": "Plan de la semaine",
+		"shoppingList": "Liste de courses",
+		"clearPlan": "Effacer le plan",
+		"clearTitle": "Effacer le plan ?",
+		"clearBody": "Toutes les recettes seront retirées de votre plan de la semaine.",
+		"add": "+ Ajouter",
+		"addRecipe": "+ Ajouter une recette",
+		"days": {
+			"MONDAY": "Lundi",
+			"TUESDAY": "Mardi",
+			"WEDNESDAY": "Mercredi",
+			"THURSDAY": "Jeudi",
+			"FRIDAY": "Vendredi",
+			"SATURDAY": "Samedi",
+			"SUNDAY": "Dimanche"
+		}
+	},
+	"recipePicker": {
+		"addTo": "Ajouter à {{day}}",
+		"search": "Rechercher des recettes…",
+		"noResults": "Aucune recette trouvée.",
+		"yourRecipes": "Vos recettes",
+		"likedRecipes": "Recettes aimées"
+	},
+	"moveDayPicker": {
+		"title": "Déplacer vers…",
+		"current": "actuel"
+	},
+	"shoppingList": {
+		"title": "Liste de courses",
+		"noIngredients": "Aucun ingrédient indiqué"
+	},
+	"profile": {
+		"noRecipes": "Aucune recette publique pour l'instant."
+	},
+	"admin": {
+		"title": "Admin",
+		"recipes": "Recettes",
+		"users": "Utilisateurs"
+	},
+	"adminRecipes": {
+		"empty": "Aucune recette publique.",
+		"count_one": "{{count}} recette publique",
+		"count_other": "{{count}} recettes publiques",
+		"removeImage": "Supprimer l'image",
+		"forcePrivate": "Rendre privée",
+		"confirmDelete": "Confirmer la suppression",
+		"delete": "Supprimer",
+		"setPrivate": "Recette rendue privée.",
+		"deleted": "Recette supprimée.",
+		"imageRemoved": "Image supprimée.",
+		"failed": "Action échouée."
+	},
+	"adminUsers": {
+		"empty": "Aucun utilisateur.",
+		"count_one": "{{count}} utilisateur",
+		"count_other": "{{count}} utilisateurs",
+		"banned": "Banni",
+		"admin": "Admin",
+		"ban": "Bannir",
+		"banTitle": "Bannir {{name}}",
+		"banBody": "Cela supprimera définitivement toutes leurs recettes et les empêchera de se connecter.",
+		"banReason": "Raison",
+		"banReasonOptional": "(facultatif)",
+		"banExpires": "Expiration du bannissement",
+		"banExpiresOptional": "(facultatif — laisser vide pour un bannissement permanent)",
+		"banning": "Bannissement…",
+		"banUser": "Bannir l'utilisateur",
+		"banToast": "Utilisateur banni et recettes supprimées.",
+		"failed": "Action échouée.",
+		"joined": "inscrit",
+		"recipe_one": "{{count}} recette",
+		"recipe_other": "{{count}} recettes"
+	}
+}

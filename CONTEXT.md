@@ -96,6 +96,10 @@ _Avoid_: Meal plan, week planner, schedule, planner
 A single Recipe assigned to a specific day within a User's Weekly Plan. Multiple Plan Entries per day are allowed. Plan Entries within a day are ordered; that order is maintained and can be changed by the user. Dragging a Plan Entry from one day to another moves it (not copies it). Reordering within a day uses the same drag-and-drop interaction.
 _Avoid_: Meal, slot, assignment, item
 
+**Shopping List**:
+A read-only panel on the Weekly Plan page that aggregates the `ingredients` field from every Plan Entry in the user's Weekly Plan, to help the user prepare a physical shopping list. Grouped by Recipe, with each section headed by the Recipe title and the day it is planned for (e.g. "Pasta Bolognese · Monday"). If the same Recipe appears on multiple days, it appears once per Plan Entry — not deduplicated. Recipes with no ingredients show a placeholder rather than being silently omitted. The Shopping List trigger is hidden when the Weekly Plan is empty, consistent with the "Clear plan" button.
+_Avoid_: Ingredient list, grocery list, meal list
+
 ## Example dialogue
 
 > "I want to find all my starter recipes."

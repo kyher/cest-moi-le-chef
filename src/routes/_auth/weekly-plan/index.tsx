@@ -3,6 +3,7 @@ import { useState } from "react";
 import { MoveDayPicker } from "#/components/-move-day-picker";
 import { RecipePicker } from "#/components/-recipe-picker";
 import { DayColumn } from "#/components/-weekly-plan-day-column";
+import { ShoppingList } from "#/components/-weekly-plan-shopping-list";
 import {
 	DAYS,
 	type DayMap,
@@ -34,6 +35,7 @@ function WeeklyPlanPage() {
 	const [pickerDay, setPickerDay] = useState<Day | null>(null);
 	const [movingEntryId, setMovingEntryId] = useState<string | null>(null);
 	const [confirming, setConfirming] = useState(false);
+	const [showShoppingList, setShowShoppingList] = useState(false);
 
 	const totalEntries = DAYS.reduce((n, d) => n + dayMap[d].length, 0);
 
@@ -86,12 +88,19 @@ function WeeklyPlanPage() {
 
 	return (
 		<div className="py-10">
-			<div className="flex items-center justify-between mb-8">
+			<div className="flex flex-col gap-3 mb-8 sm:flex-row sm:items-center sm:justify-between">
 				<h1 className="text-3xl font-bold font-serif text-stone-900">
 					Weekly Plan
 				</h1>
 				{totalEntries > 0 && (
 					<div className="flex items-center gap-2">
+						<button
+							type="button"
+							onClick={() => setShowShoppingList(true)}
+							className="h-8 px-3 text-sm text-stone-500 hover:text-stone-800 border border-stone-300 hover:border-stone-400 transition-colors rounded-sm"
+						>
+							Shopping list
+						</button>
 						{confirming ? (
 							<>
 								<span className="text-sm text-stone-600">Clear all?</span>
@@ -150,6 +159,12 @@ function WeeklyPlanPage() {
 					currentDay={findContainer(movingEntryId, dayMap) ?? "MONDAY"}
 					onMove={handleMove}
 					onClose={() => setMovingEntryId(null)}
+				/>
+			)}
+			{showShoppingList && (
+				<ShoppingList
+					dayMap={dayMap}
+					onClose={() => setShowShoppingList(false)}
 				/>
 			)}
 		</div>

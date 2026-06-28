@@ -101,33 +101,13 @@ function WeeklyPlanPage() {
 						>
 							Shopping list
 						</button>
-						{confirming ? (
-							<>
-								<span className="text-sm text-stone-600">Clear all?</span>
-								<button
-									type="button"
-									onClick={handleClear}
-									className="h-8 px-3 text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-colors rounded-sm"
-								>
-									Yes, clear
-								</button>
-								<button
-									type="button"
-									onClick={() => setConfirming(false)}
-									className="h-8 px-3 text-sm text-stone-600 hover:text-stone-900 transition-colors"
-								>
-									Cancel
-								</button>
-							</>
-						) : (
-							<button
-								type="button"
-								onClick={() => setConfirming(true)}
-								className="h-8 px-3 text-sm text-stone-500 hover:text-stone-800 border border-stone-300 hover:border-stone-400 transition-colors rounded-sm"
-							>
-								Clear plan
-							</button>
-						)}
+						<button
+							type="button"
+							onClick={() => setConfirming(true)}
+							className="h-8 px-3 text-sm text-stone-500 hover:text-stone-800 border border-stone-300 hover:border-stone-400 transition-colors rounded-sm"
+						>
+							Clear plan
+						</button>
 					</div>
 				)}
 			</div>
@@ -166,6 +146,45 @@ function WeeklyPlanPage() {
 					dayMap={dayMap}
 					onClose={() => setShowShoppingList(false)}
 				/>
+			)}
+			{confirming && (
+				<div className="fixed inset-0 z-50 flex items-center justify-center">
+					<button
+						type="button"
+						onClick={() => setConfirming(false)}
+						className="absolute inset-0 bg-black/40"
+						aria-label="Close"
+						tabIndex={-1}
+					/>
+					<div
+						role="dialog"
+						aria-modal="true"
+						className="relative z-10 bg-white w-full max-w-sm shadow-lg p-6"
+					>
+						<h2 className="font-semibold font-serif text-stone-900 mb-2">
+							Clear plan?
+						</h2>
+						<p className="text-sm text-stone-600 mb-6">
+							All recipes will be removed from your weekly plan.
+						</p>
+						<div className="flex justify-end gap-2">
+							<button
+								type="button"
+								onClick={() => setConfirming(false)}
+								className="h-9 px-4 text-sm text-stone-600 hover:text-stone-900 transition-colors"
+							>
+								Cancel
+							</button>
+							<button
+								type="button"
+								onClick={handleClear}
+								className="h-9 px-4 text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-colors rounded-sm"
+							>
+								Clear plan
+							</button>
+						</div>
+					</div>
+				</div>
 			)}
 		</div>
 	);

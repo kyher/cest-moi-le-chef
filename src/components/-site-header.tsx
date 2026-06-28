@@ -1,12 +1,74 @@
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
-import { useState } from "react";
+import { Globe2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { authClient } from "#/lib/auth-client";
 
 interface Props {
 	user: { name: string; role?: string | null } | null;
 }
 
+const LANGUAGES = [
+	{ code: "en", label: "English" },
+	{ code: "fr", label: "Français" },
+] as const;
+
+function LanguageDropdown() {
+	const { i18n } = useTranslation();
+	const [open, setOpen] = useState(false);
+	const ref = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		if (!open) return;
+		function handleClick(e: MouseEvent) {
+			if (ref.current && !ref.current.contains(e.target as Node)) {
+				setOpen(false);
+			}
+		}
+		document.addEventListener("mousedown", handleClick);
+		return () => document.removeEventListener("mousedown", handleClick);
+	}, [open]);
+
+	const current = i18n.resolvedLanguage ?? "en";
+
+	return (
+		<div ref={ref} className="relative">
+			<button
+				type="button"
+				onClick={() => setOpen((o) => !o)}
+				aria-label="Select language"
+				aria-expanded={open}
+				className="flex items-center text-stone-500 hover:text-stone-900 transition-colors"
+			>
+				<Globe2 size={16} />
+			</button>
+			{open && (
+				<div className="absolute right-0 top-full mt-1 bg-white border border-stone-200 shadow-sm py-1 z-20 min-w-[8rem]">
+					{LANGUAGES.map(({ code, label }) => (
+						<button
+							key={code}
+							type="button"
+							onClick={() => {
+								void i18n.changeLanguage(code);
+								setOpen(false);
+							}}
+							className={`w-full text-left px-3 py-1.5 text-sm transition-colors hover:bg-stone-50 ${
+								current === code
+									? "text-stone-900 font-medium"
+									: "text-stone-600"
+							}`}
+						>
+							{label}
+						</button>
+					))}
+				</div>
+			)}
+		</div>
+	);
+}
+
 export function SiteHeader({ user }: Props) {
+	const { t } = useTranslation();
 	const router = useRouter();
 	const pathname = useRouterState({ select: (s) => s.location.pathname });
 	const [mobileOpen, setMobileOpen] = useState(false);
@@ -41,7 +103,7 @@ export function SiteHeader({ user }: Props) {
 						to="/recipes"
 						className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
 					>
-						Recipes
+						{t("nav.recipes")}
 					</Link>
 					{user ? (
 						<>
@@ -49,40 +111,40 @@ export function SiteHeader({ user }: Props) {
 								to="/my-recipes"
 								className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
 							>
-								My Recipes
+								{t("nav.myRecipes")}
 							</Link>
 							<Link
 								to="/liked-recipes"
 								className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
 							>
-								Liked Recipes
+								{t("nav.likedRecipes")}
 							</Link>
 							<Link
 								to="/weekly-plan"
 								className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
 							>
-								Weekly Plan
+								{t("nav.weeklyPlan")}
 							</Link>
 							{user?.role === "admin" && (
 								<Link
 									to="/admin/recipes"
 									className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
 								>
-									Admin
+									{t("nav.admin")}
 								</Link>
 							)}
 							<Link
 								to="/my-recipes/new"
 								className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
 							>
-								Add Recipe
+								{t("nav.addRecipe")}
 							</Link>
 							<button
 								type="button"
 								onClick={signOut}
 								className="h-9 px-4 text-sm font-medium rounded-sm bg-white text-stone-900 border border-stone-300 hover:bg-stone-50 transition-colors"
 							>
-								Sign out
+								{t("nav.signOut")}
 							</button>
 						</>
 					) : (
@@ -92,7 +154,7 @@ export function SiteHeader({ user }: Props) {
 									to="/sign-in"
 									className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
 								>
-									Sign in
+									{t("nav.signIn")}
 								</Link>
 							)}
 							{pathname !== "/sign-up" && (
@@ -100,18 +162,19 @@ export function SiteHeader({ user }: Props) {
 									to="/sign-up"
 									className="h-9 px-4 text-sm font-medium rounded-sm bg-stone-800 text-white hover:bg-stone-700 transition-colors flex items-center"
 								>
-									Sign up
+									{t("nav.signUp")}
 								</Link>
 							)}
 						</>
 					)}
+					<LanguageDropdown />
 				</div>
 
 				{/* Mobile hamburger */}
 				<button
 					type="button"
 					onClick={() => setMobileOpen((o) => !o)}
-					aria-label="Toggle menu"
+					aria-label={t("nav.toggleMenu")}
 					aria-expanded={mobileOpen}
 					className="md:hidden p-2 -mr-2 text-stone-600 hover:text-stone-900 transition-colors"
 				>
@@ -160,7 +223,7 @@ export function SiteHeader({ user }: Props) {
 						onClick={close}
 						className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
 					>
-						Recipes
+						{t("nav.recipes")}
 					</Link>
 					{user ? (
 						<>
@@ -169,21 +232,21 @@ export function SiteHeader({ user }: Props) {
 								onClick={close}
 								className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
 							>
-								My Recipes
+								{t("nav.myRecipes")}
 							</Link>
 							<Link
 								to="/liked-recipes"
 								onClick={close}
 								className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
 							>
-								Liked Recipes
+								{t("nav.likedRecipes")}
 							</Link>
 							<Link
 								to="/weekly-plan"
 								onClick={close}
 								className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
 							>
-								Weekly Plan
+								{t("nav.weeklyPlan")}
 							</Link>
 							{user?.role === "admin" && (
 								<Link
@@ -191,7 +254,7 @@ export function SiteHeader({ user }: Props) {
 									onClick={close}
 									className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
 								>
-									Admin
+									{t("nav.admin")}
 								</Link>
 							)}
 							<Link
@@ -199,14 +262,14 @@ export function SiteHeader({ user }: Props) {
 								onClick={close}
 								className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
 							>
-								Add Recipe
+								{t("nav.addRecipe")}
 							</Link>
 							<button
 								type="button"
 								onClick={signOut}
 								className="self-start h-9 px-4 text-sm font-medium rounded-sm bg-white text-stone-900 border border-stone-300 hover:bg-stone-50 transition-colors"
 							>
-								Sign out
+								{t("nav.signOut")}
 							</button>
 						</>
 					) : (
@@ -217,7 +280,7 @@ export function SiteHeader({ user }: Props) {
 									onClick={close}
 									className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
 								>
-									Sign in
+									{t("nav.signIn")}
 								</Link>
 							)}
 							{pathname !== "/sign-up" && (
@@ -226,11 +289,14 @@ export function SiteHeader({ user }: Props) {
 									onClick={close}
 									className="self-start h-9 px-4 text-sm font-medium rounded-sm bg-stone-800 text-white hover:bg-stone-700 transition-colors flex items-center"
 								>
-									Sign up
+									{t("nav.signUp")}
 								</Link>
 							)}
 						</>
 					)}
+					<div className="flex items-center gap-2">
+						<LanguageDropdown />
+					</div>
 				</div>
 			)}
 		</header>

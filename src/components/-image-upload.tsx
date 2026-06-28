@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 const ACCEPTED = "image/jpeg,image/png,image/webp";
 const MAX_BYTES = 5 * 1024 * 1024;
@@ -10,13 +11,14 @@ interface Props {
 }
 
 export function ImageUpload({ previewUrl, onChange, onRemove }: Props) {
+	const { t } = useTranslation();
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
 		const file = e.target.files?.[0];
 		if (!file) return;
 		if (file.size > MAX_BYTES) {
-			alert("File too large. Maximum size is 5 MB.");
+			alert(t("recipeForm.fileTooLarge"));
 			e.target.value = "";
 			return;
 		}
@@ -26,7 +28,9 @@ export function ImageUpload({ previewUrl, onChange, onRemove }: Props) {
 
 	return (
 		<div className="space-y-1">
-			<span className="text-sm font-medium text-stone-700">Cover Image</span>
+			<span className="text-sm font-medium text-stone-700">
+				{t("recipeForm.coverImage")}
+			</span>
 
 			{previewUrl ? (
 				<div className="relative w-full max-w-sm">
@@ -41,14 +45,14 @@ export function ImageUpload({ previewUrl, onChange, onRemove }: Props) {
 							onClick={() => inputRef.current?.click()}
 							className="text-xs text-stone-500 hover:text-stone-800 underline underline-offset-2"
 						>
-							Replace
+							{t("recipeForm.replace")}
 						</button>
 						<button
 							type="button"
 							onClick={onRemove}
 							className="text-xs text-red-500 hover:text-red-700 underline underline-offset-2"
 						>
-							Remove
+							{t("recipeForm.remove")}
 						</button>
 					</div>
 				</div>
@@ -58,7 +62,7 @@ export function ImageUpload({ previewUrl, onChange, onRemove }: Props) {
 					onClick={() => inputRef.current?.click()}
 					className="flex items-center justify-center w-full max-w-sm aspect-video rounded-sm border-2 border-dashed border-stone-300 hover:border-stone-400 transition-colors text-sm text-stone-400 hover:text-stone-600"
 				>
-					Add cover image
+					{t("recipeForm.addImage")}
 				</button>
 			)}
 

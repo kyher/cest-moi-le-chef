@@ -1,6 +1,6 @@
+import { useTranslation } from "react-i18next";
 import { EntryCard } from "#/components/-weekly-plan-entry-card";
 import type { Entry } from "#/components/-weekly-plan-types";
-import { formatDay } from "#/components/-weekly-plan-types";
 import type { Day } from "#/generated/prisma/enums";
 
 export function DayColumn({
@@ -16,18 +16,20 @@ export function DayColumn({
 	onRemove: (id: string) => void;
 	onMove: (id: string) => void;
 }) {
+	const { t } = useTranslation();
+
 	return (
 		<div>
 			<div className="flex items-center justify-between mb-2 pb-2 border-b border-stone-200">
 				<span className="text-sm font-semibold text-stone-700">
-					{formatDay(day)}
+					{t(`weeklyPlan.days.${day}`)}
 				</span>
 				<button
 					type="button"
 					onClick={onAdd}
 					className="text-xs text-stone-500 hover:text-stone-800 border border-stone-300 hover:border-stone-500 px-2 py-0.5 rounded-sm transition-colors"
 				>
-					+ Add
+					{t("weeklyPlan.add")}
 				</button>
 			</div>
 			<div
@@ -43,7 +45,7 @@ export function DayColumn({
 						onClick={onAdd}
 						className="text-sm text-stone-400 hover:text-stone-600 transition-colors"
 					>
-						+ Add a recipe
+						{t("weeklyPlan.addRecipe")}
 					</button>
 				) : (
 					entries.map((entry) => (

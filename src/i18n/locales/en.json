@@ -15,7 +15,8 @@
 		"signOut": "Sign out",
 		"signIn": "Sign in",
 		"signUp": "Sign up",
-		"toggleMenu": "Toggle menu"
+		"toggleMenu": "Toggle menu",
+		"selectLanguage": "Language"
 	},
 	"marketing": {
 		"tagline": "Your personal recipe book — private by default, shareable when you're ready.",

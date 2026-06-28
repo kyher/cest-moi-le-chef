@@ -15,7 +15,8 @@
 		"signOut": "Se déconnecter",
 		"signIn": "Se connecter",
 		"signUp": "S'inscrire",
-		"toggleMenu": "Basculer le menu"
+		"toggleMenu": "Basculer le menu",
+		"selectLanguage": "Langue"
 	},
 	"marketing": {
 		"tagline": "Votre livre de recettes personnel — privé par défaut, partageable quand vous êtes prêt.",

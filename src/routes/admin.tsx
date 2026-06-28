@@ -5,6 +5,7 @@ import {
 	redirect,
 	useRouterState,
 } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { SiteHeader } from "#/components/-site-header";
 import { getSession } from "#/lib/session";
 
@@ -20,6 +21,7 @@ export const Route = createFileRoute("/admin")({
 
 function AdminLayout() {
 	const { session } = Route.useRouteContext();
+	const { t } = useTranslation();
 	const pathname = useRouterState({ select: (s) => s.location.pathname });
 
 	const navLink = (to: string, label: string) => (
@@ -41,11 +43,11 @@ function AdminLayout() {
 			<div className="w-3/4 mx-auto">
 				<div className="pt-8 pb-4 flex items-center justify-between border-b border-stone-200 mb-8">
 					<h1 className="text-2xl font-bold font-serif text-stone-900">
-						Admin
+						{t("admin.title")}
 					</h1>
 					<nav className="flex gap-6">
-						{navLink("/admin/recipes", "Recipes")}
-						{navLink("/admin/users", "Users")}
+						{navLink("/admin/recipes", t("admin.recipes"))}
+						{navLink("/admin/users", t("admin.users"))}
 					</nav>
 				</div>
 				<Outlet />

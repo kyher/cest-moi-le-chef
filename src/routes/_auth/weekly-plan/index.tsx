@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { MoveDayPicker } from "#/components/-move-day-picker";
 import { RecipePicker } from "#/components/-recipe-picker";
 import { DayColumn } from "#/components/-weekly-plan-day-column";
@@ -31,6 +32,7 @@ export const Route = createFileRoute("/_auth/weekly-plan/")({
 
 function WeeklyPlanPage() {
 	const { entries: loaderEntries, options } = Route.useLoaderData();
+	const { t } = useTranslation();
 	const [dayMap, setDayMap] = useState<DayMap>(() => toDayMap(loaderEntries));
 	const [pickerDay, setPickerDay] = useState<Day | null>(null);
 	const [movingEntryId, setMovingEntryId] = useState<string | null>(null);
@@ -90,7 +92,7 @@ function WeeklyPlanPage() {
 		<div className="py-10">
 			<div className="flex flex-col gap-3 mb-8 sm:flex-row sm:items-center sm:justify-between">
 				<h1 className="text-3xl font-bold font-serif text-stone-900">
-					Weekly Plan
+					{t("weeklyPlan.title")}
 				</h1>
 				{totalEntries > 0 && (
 					<div className="flex items-center gap-2">
@@ -99,14 +101,14 @@ function WeeklyPlanPage() {
 							onClick={() => setShowShoppingList(true)}
 							className="h-8 px-3 text-sm text-stone-500 hover:text-stone-800 border border-stone-300 hover:border-stone-400 transition-colors rounded-sm"
 						>
-							Shopping list
+							{t("weeklyPlan.shoppingList")}
 						</button>
 						<button
 							type="button"
 							onClick={() => setConfirming(true)}
 							className="h-8 px-3 text-sm text-stone-500 hover:text-stone-800 border border-stone-300 hover:border-stone-400 transition-colors rounded-sm"
 						>
-							Clear plan
+							{t("weeklyPlan.clearPlan")}
 						</button>
 					</div>
 				)}
@@ -162,10 +164,10 @@ function WeeklyPlanPage() {
 						className="relative z-10 bg-white w-full max-w-sm shadow-lg p-6"
 					>
 						<h2 className="font-semibold font-serif text-stone-900 mb-2">
-							Clear plan?
+							{t("weeklyPlan.clearTitle")}
 						</h2>
 						<p className="text-sm text-stone-600 mb-6">
-							All recipes will be removed from your weekly plan.
+							{t("weeklyPlan.clearBody")}
 						</p>
 						<div className="flex justify-end gap-2">
 							<button
@@ -173,14 +175,14 @@ function WeeklyPlanPage() {
 								onClick={() => setConfirming(false)}
 								className="h-9 px-4 text-sm text-stone-600 hover:text-stone-900 transition-colors"
 							>
-								Cancel
+								{t("common.cancel")}
 							</button>
 							<button
 								type="button"
 								onClick={handleClear}
 								className="h-9 px-4 text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-colors rounded-sm"
 							>
-								Clear plan
+								{t("weeklyPlan.clearPlan")}
 							</button>
 						</div>
 					</div>

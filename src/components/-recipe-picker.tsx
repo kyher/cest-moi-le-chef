@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { formatDay } from "#/components/-weekly-plan-types";
+import { useTranslation } from "react-i18next";
 import type { Day } from "#/generated/prisma/enums";
 import { formatTotalTime } from "#/lib/format";
 
@@ -25,6 +25,7 @@ export function RecipePicker({
 	onAdd,
 	onClose,
 }: Props) {
+	const { t } = useTranslation();
 	const [query, setQuery] = useState("");
 	const inputRef = useRef<HTMLInputElement>(null);
 
@@ -64,12 +65,12 @@ export function RecipePicker({
 			>
 				<div className="px-4 pt-4 pb-3 border-b border-stone-200 shrink-0">
 					<h2 className="font-semibold font-serif text-stone-900 mb-3">
-						Add to {formatDay(day)}
+						{t("recipePicker.addTo", { day: t(`weeklyPlan.days.${day}`) })}
 					</h2>
 					<input
 						ref={inputRef}
 						type="search"
-						placeholder="Search recipes…"
+						placeholder={t("recipePicker.search")}
 						value={query}
 						onChange={(e) => setQuery(e.target.value)}
 						className="w-full h-9 px-3 text-sm border border-stone-300 bg-white text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-stone-500"
@@ -79,20 +80,20 @@ export function RecipePicker({
 				<div className="overflow-y-auto flex-1">
 					{filteredOwn.length === 0 && filteredLiked.length === 0 ? (
 						<p className="px-4 py-6 text-sm text-stone-500 text-center">
-							No recipes found.
+							{t("recipePicker.noResults")}
 						</p>
 					) : (
 						<>
 							{filteredOwn.length > 0 && (
 								<Section
-									heading="Your Recipes"
+									heading={t("recipePicker.yourRecipes")}
 									recipes={filteredOwn}
 									onAdd={onAdd}
 								/>
 							)}
 							{filteredLiked.length > 0 && (
 								<Section
-									heading="Liked Recipes"
+									heading={t("recipePicker.likedRecipes")}
 									recipes={filteredLiked}
 									onAdd={onAdd}
 								/>

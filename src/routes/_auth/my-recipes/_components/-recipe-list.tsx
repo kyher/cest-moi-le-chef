@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { UtensilsCrossed } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { formatTotalTime } from "#/lib/format";
 import type { getRecipes } from "#/lib/recipe-fns";
 
@@ -12,26 +13,28 @@ interface Props {
 }
 
 export function RecipeList({ recipes, hasConstraints, onReset }: Props) {
+	const { t } = useTranslation();
+
 	if (recipes.length === 0) {
 		return hasConstraints ? (
 			<p className="text-stone-500">
-				No recipes match your filters.{" "}
+				{t("myRecipes.noMatch")}{" "}
 				<button
 					type="button"
 					onClick={onReset}
 					className="text-stone-800 underline underline-offset-2 cursor-pointer"
 				>
-					Reset
+					{t("common.reset")}
 				</button>
 			</p>
 		) : (
 			<p className="text-stone-500">
-				No recipes yet.{" "}
+				{t("myRecipes.empty")}{" "}
 				<Link
 					to="/my-recipes/new"
 					className="text-stone-800 underline underline-offset-2"
 				>
-					Add your first one.
+					{t("myRecipes.addFirst")}
 				</Link>
 			</p>
 		);
@@ -81,8 +84,7 @@ export function RecipeList({ recipes, hasConstraints, onReset }: Props) {
 									</span>
 								)}
 								<span>
-									{recipe._count.notes}{" "}
-									{recipe._count.notes === 1 ? "note" : "notes"}
+									{t("myRecipes.note", { count: recipe._count.notes })}
 								</span>
 							</div>
 							<span
@@ -92,7 +94,9 @@ export function RecipeList({ recipes, hasConstraints, onReset }: Props) {
 										: "px-2 py-0.5 text-xs text-stone-400 bg-white border border-stone-200"
 								}
 							>
-								{recipe.isPublic ? "Public" : "Private"}
+								{recipe.isPublic
+									? t("myRecipes.public")
+									: t("myRecipes.private")}
 							</span>
 						</div>
 					</div>

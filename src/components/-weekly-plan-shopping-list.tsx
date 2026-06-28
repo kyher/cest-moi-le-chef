@@ -1,7 +1,8 @@
 import { X } from "lucide-react";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import type { DayMap } from "#/components/-weekly-plan-types";
-import { DAYS, formatDay } from "#/components/-weekly-plan-types";
+import { DAYS } from "#/components/-weekly-plan-types";
 
 interface Props {
 	dayMap: DayMap;
@@ -9,6 +10,8 @@ interface Props {
 }
 
 export function ShoppingList({ dayMap, onClose }: Props) {
+	const { t } = useTranslation();
+
 	useEffect(() => {
 		const onKey = (e: KeyboardEvent) => {
 			if (e.key === "Escape") onClose();
@@ -35,7 +38,7 @@ export function ShoppingList({ dayMap, onClose }: Props) {
 			>
 				<div className="px-4 pt-4 pb-3 border-b border-stone-200 shrink-0 flex items-center justify-between">
 					<h2 className="font-semibold font-serif text-stone-900">
-						Shopping List
+						{t("shoppingList.title")}
 					</h2>
 					<button
 						type="button"
@@ -57,7 +60,7 @@ export function ShoppingList({ dayMap, onClose }: Props) {
 								{entry.recipe.title}
 								<span className="font-normal text-stone-400">
 									{" "}
-									· {formatDay(entry.day)}
+									· {t(`weeklyPlan.days.${entry.day}`)}
 								</span>
 							</p>
 							{entry.recipe.ingredients ? (
@@ -66,7 +69,7 @@ export function ShoppingList({ dayMap, onClose }: Props) {
 								</p>
 							) : (
 								<p className="text-sm text-stone-400 italic">
-									No ingredients listed
+									{t("shoppingList.noIngredients")}
 								</p>
 							)}
 						</div>

@@ -5,6 +5,7 @@ import {
 	useRouter,
 } from "@tanstack/react-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { SiteHeader } from "#/components/-site-header";
 import { authClient } from "#/lib/auth-client";
 import { getSession } from "#/lib/session";
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/sign-up")({
 
 function SignUp() {
 	const router = useRouter();
+	const { t } = useTranslation();
 	const [name, setName] = useState("");
 	const [username, setUsername] = useState("");
 	const [email, setEmail] = useState("");
@@ -38,7 +40,7 @@ function SignUp() {
 		});
 		setPending(false);
 		if (error) {
-			setError(error.message ?? "Sign up failed");
+			setError(error.message ?? t("signUp.error"));
 			return;
 		}
 		await router.navigate({ to: "/" });
@@ -50,7 +52,7 @@ function SignUp() {
 			<div className="flex-1 flex items-center justify-center bg-stone-100">
 				<div className="w-full max-w-sm p-8 bg-white border border-stone-200 shadow-sm">
 					<h1 className="text-2xl font-bold font-serif text-stone-900 mb-6">
-						Create account
+						{t("signUp.title")}
 					</h1>
 					<form onSubmit={handleSubmit} className="space-y-4">
 						{error && <p className="text-sm text-red-600">{error}</p>}
@@ -59,7 +61,7 @@ function SignUp() {
 								className="text-sm font-medium text-stone-700"
 								htmlFor="name"
 							>
-								Name
+								{t("signUp.name")}
 							</label>
 							<input
 								id="name"
@@ -75,7 +77,7 @@ function SignUp() {
 								className="text-sm font-medium text-stone-700"
 								htmlFor="username"
 							>
-								Username
+								{t("signUp.username")}
 							</label>
 							<input
 								id="username"
@@ -89,7 +91,7 @@ function SignUp() {
 								className="w-full h-9 px-3 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
 							/>
 							<p className="text-xs text-stone-400">
-								Letters, numbers, hyphens, underscores. Cannot be changed.
+								{t("signUp.usernameHint")}
 							</p>
 						</div>
 						<div className="space-y-1">
@@ -97,7 +99,7 @@ function SignUp() {
 								className="text-sm font-medium text-stone-700"
 								htmlFor="email"
 							>
-								Email
+								{t("signUp.email")}
 							</label>
 							<input
 								id="email"
@@ -113,7 +115,7 @@ function SignUp() {
 								className="text-sm font-medium text-stone-700"
 								htmlFor="password"
 							>
-								Password
+								{t("signUp.password")}
 							</label>
 							<input
 								id="password"
@@ -129,16 +131,16 @@ function SignUp() {
 							disabled={pending}
 							className="w-full h-9 px-4 text-sm font-medium rounded-sm bg-stone-800 text-white hover:bg-stone-700 disabled:opacity-50 transition-colors"
 						>
-							{pending ? "Creating account…" : "Create account"}
+							{pending ? t("signUp.submitting") : t("signUp.submit")}
 						</button>
 					</form>
 					<p className="mt-4 text-sm text-stone-500">
-						Already have an account?{" "}
+						{t("signUp.haveAccount")}{" "}
 						<Link
 							to="/sign-in"
 							className="text-stone-800 underline underline-offset-2"
 						>
-							Sign in
+							{t("signUp.signInLink")}
 						</Link>
 					</p>
 				</div>

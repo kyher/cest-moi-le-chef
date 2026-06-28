@@ -11,10 +11,6 @@ export const DAYS: Day[] = [
 	"SUNDAY",
 ];
 
-export function formatDay(day: Day) {
-	return day[0] + day.slice(1).toLowerCase();
-}
-
 export type Entry = Awaited<ReturnType<typeof getWeeklyPlan>>[number];
 export type DayMap = Record<Day, Entry[]>;
 

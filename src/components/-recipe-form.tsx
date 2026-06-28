@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ImageUpload } from "#/components/-image-upload";
 
 type FormData = {
@@ -36,6 +37,7 @@ export function RecipeForm({
 	submitLabel,
 	pendingLabel,
 }: RecipeFormProps) {
+	const { t } = useTranslation();
 	const [title, setTitle] = useState(initialValues?.title ?? "");
 	const [ingredients, setIngredients] = useState(
 		initialValues?.ingredients ?? "",
@@ -92,7 +94,7 @@ export function RecipeForm({
 				{ file: imageFile, remove: removeImage },
 			);
 		} catch {
-			setError("Failed to save.");
+			setError(t("recipeForm.saveFailed"));
 			setPending(false);
 		}
 	}
@@ -103,7 +105,7 @@ export function RecipeForm({
 
 			<div className="space-y-1">
 				<label htmlFor="title" className="text-sm font-medium text-stone-700">
-					Title <span className="text-red-500">*</span>
+					{t("recipeForm.title")} <span className="text-red-500">*</span>
 				</label>
 				<input
 					id="title"
@@ -120,7 +122,7 @@ export function RecipeForm({
 					htmlFor="tag-input"
 					className="text-sm font-medium text-stone-700"
 				>
-					Tags
+					{t("recipeForm.tags")}
 				</label>
 				{tags.length > 0 && (
 					<div className="flex flex-wrap gap-1 mb-2">
@@ -153,7 +155,7 @@ export function RecipeForm({
 					}}
 					onBlur={() => tagInput && addTag(tagInput)}
 					id="tag-input"
-					placeholder="Type a tag and press Enter"
+					placeholder={t("recipeForm.tagsPlaceholder")}
 					className="w-full h-9 px-3 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
 				/>
 			</div>
@@ -163,7 +165,7 @@ export function RecipeForm({
 					htmlFor="total-time-hours"
 					className="text-sm font-medium text-stone-700"
 				>
-					Total Time
+					{t("recipeForm.totalTime")}
 				</label>
 				<div className="flex items-center gap-2">
 					<input
@@ -175,7 +177,7 @@ export function RecipeForm({
 						placeholder="0"
 						className="w-20 h-9 px-3 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
 					/>
-					<span className="text-sm text-stone-500">hr</span>
+					<span className="text-sm text-stone-500">{t("recipeForm.hr")}</span>
 					<input
 						type="number"
 						min="0"
@@ -185,7 +187,7 @@ export function RecipeForm({
 						placeholder="0"
 						className="w-20 h-9 px-3 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
 					/>
-					<span className="text-sm text-stone-500">min</span>
+					<span className="text-sm text-stone-500">{t("recipeForm.min")}</span>
 				</div>
 			</div>
 
@@ -194,7 +196,7 @@ export function RecipeForm({
 					htmlFor="servings"
 					className="text-sm font-medium text-stone-700"
 				>
-					Servings
+					{t("recipeForm.servings")}
 				</label>
 				<div>
 					<input
@@ -214,7 +216,7 @@ export function RecipeForm({
 					htmlFor="ingredients"
 					className="text-sm font-medium text-stone-700"
 				>
-					Ingredients
+					{t("recipeForm.ingredients")}
 				</label>
 				<textarea
 					id="ingredients"
@@ -227,7 +229,7 @@ export function RecipeForm({
 
 			<div className="space-y-1">
 				<label htmlFor="method" className="text-sm font-medium text-stone-700">
-					Method
+					{t("recipeForm.method")}
 				</label>
 				<textarea
 					id="method"
@@ -269,9 +271,7 @@ export function RecipeForm({
 					/>
 				</button>
 				<span className="text-sm text-stone-700">
-					{isPublic
-						? "Public — visible to everyone"
-						: "Private — only visible to you"}
+					{isPublic ? t("recipeForm.public") : t("recipeForm.private")}
 				</span>
 			</div>
 

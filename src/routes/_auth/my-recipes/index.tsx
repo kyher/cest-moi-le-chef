@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { RecipeFilterPanel } from "#/components/-recipe-filter-panel";
 import { useRecipeFilters, validateRecipeSearch } from "#/lib/recipe-filters";
 import { getRecipes, getTagsInUse } from "#/lib/recipe-fns";
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/_auth/my-recipes/")({
 
 function MyRecipesPage() {
 	const { recipes, tagsInUse } = Route.useLoaderData();
+	const { t } = useTranslation();
 	const search = Route.useSearch();
 	const navigate = useNavigate({ from: Route.fullPath });
 	const filters = useRecipeFilters(search, navigate);
@@ -25,13 +27,13 @@ function MyRecipesPage() {
 		<div className="py-10">
 			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
 				<h1 className="text-3xl font-bold font-serif text-stone-900">
-					My Recipes
+					{t("myRecipes.title")}
 				</h1>
 				<Link
 					to="/my-recipes/new"
 					className="h-9 px-4 text-sm font-medium rounded-sm bg-stone-800 text-white hover:bg-stone-700 transition-colors flex items-center self-start sm:self-auto"
 				>
-					Add Recipe
+					{t("myRecipes.addRecipe")}
 				</Link>
 			</div>
 

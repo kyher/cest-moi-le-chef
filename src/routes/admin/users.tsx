@@ -1,5 +1,6 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { adminBanUser, getAdminUsers } from "#/lib/admin-fns";
 
@@ -12,12 +13,13 @@ type User = Awaited<ReturnType<typeof getAdminUsers>>[number];
 
 function AdminUsersPage() {
 	const users = Route.useLoaderData();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const [banTarget, setBanTarget] = useState<User | null>(null);
 	const [pending, setPending] = useState(false);
 
 	if (users.length === 0) {
-		return <p className="text-stone-500 text-sm">No users.</p>;
+		return <p className="text-stone-500 text-sm">{t("adminUsers.empty")}</p>;
 	}
 
 	async function handleBan(
@@ -30,11 +32,11 @@ function AdminUsersPage() {
 			await adminBanUser({
 				data: { userId: banTarget.id, banReason, banExpires },
 			});
-			toast("User banned and recipes deleted.");
+			toast(t("adminUsers.banToast"));
 			setBanTarget(null);
 			await router.invalidate();
 		} catch {
-			toast.error("Action failed.");
+			toast.error(t("adminUsers.failed"));
 		} finally {
 			setPending(false);
 		}
@@ -43,7 +45,7 @@ function AdminUsersPage() {
 	return (
 		<div className="pb-12">
 			<p className="text-sm text-stone-500 mb-6">
-				{users.length} {users.length === 1 ? "user" : "users"}
+				{t("adminUsers.count", { count: users.length })}
 			</p>
 			<div className="space-y-3">
 				{users.map((user) => (
@@ -63,6 +65,8 @@ function AdminUsersPage() {
 }
 
 function UserRow({ user, onBan }: { user: User; onBan: () => void }) {
+	const { t } = useTranslation();
+
 	return (
 		<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 p-4 rounded-sm border border-stone-200 bg-white">
 			<div className="min-w-0">
@@ -71,18 +75,19 @@ function UserRow({ user, onBan }: { user: User; onBan: () => void }) {
 					<span className="text-xs text-stone-400">@{user.username}</span>
 					{user.banned && (
 						<span className="text-xs font-medium px-1.5 py-0.5 rounded-sm bg-red-100 text-red-700">
-							Banned
+							{t("adminUsers.banned")}
 						</span>
 					)}
 					{user.role === "admin" && (
 						<span className="text-xs font-medium px-1.5 py-0.5 rounded-sm bg-amber-100 text-amber-700">
-							Admin
+							{t("adminUsers.admin")}
 						</span>
 					)}
 				</div>
 				<p className="text-xs text-stone-500 mt-0.5">
-					{user.email} · {user._count.recipes}{" "}
-					{user._count.recipes === 1 ? "recipe" : "recipes"} · joined{" "}
+					{user.email} ·{" "}
+					{t("adminUsers.recipe", { count: user._count.recipes })} ·{" "}
+					{t("adminUsers.joined")}{" "}
 					{new Date(user.createdAt).toLocaleDateString()}
 				</p>
 			</div>
@@ -93,7 +98,7 @@ function UserRow({ user, onBan }: { user: User; onBan: () => void }) {
 					onClick={onBan}
 					className="h-8 px-3 text-xs font-medium rounded-sm border border-red-300 text-red-700 hover:bg-red-50 transition-colors flex-shrink-0"
 				>
-					Ban
+					{t("adminUsers.ban")}
 				</button>
 			)}
 		</div>
@@ -114,6 +119,7 @@ function BanModal({
 	) => void;
 	onCancel: () => void;
 }) {
+	const { t } = useTranslation();
 	const dialogRef = useRef<HTMLDialogElement>(null);
 	const [banReason, setBanReason] = useState("");
 	const [banExpires, setBanExpires] = useState("");
@@ -138,11 +144,10 @@ function BanModal({
 				<div className="p-6 space-y-5">
 					<div>
 						<h2 className="text-base font-semibold text-stone-900">
-							Ban {user.name}
+							{t("adminUsers.banTitle", { name: user.name })}
 						</h2>
 						<p className="text-sm text-stone-500 mt-1">
-							This will permanently delete all of their recipes and block them
-							from signing in.
+							{t("adminUsers.banBody")}
 						</p>
 					</div>
 
@@ -151,8 +156,10 @@ function BanModal({
 							htmlFor="ban-reason"
 							className="text-sm font-medium text-stone-700"
 						>
-							Reason{" "}
-							<span className="text-stone-400 font-normal">(optional)</span>
+							{t("adminUsers.banReason")}{" "}
+							<span className="text-stone-400 font-normal">
+								{t("adminUsers.banReasonOptional")}
+							</span>
 						</label>
 						<textarea
 							id="ban-reason"
@@ -169,9 +176,9 @@ function BanModal({
 							htmlFor="ban-expires"
 							className="text-sm font-medium text-stone-700"
 						>
-							Ban expires{" "}
+							{t("adminUsers.banExpires")}{" "}
 							<span className="text-stone-400 font-normal">
-								(optional — leave blank for permanent)
+								{t("adminUsers.banExpiresOptional")}
 							</span>
 						</label>
 						<input
@@ -192,14 +199,14 @@ function BanModal({
 						disabled={pending}
 						className="h-9 px-4 text-sm font-medium rounded-sm border border-stone-300 text-stone-700 hover:bg-stone-50 disabled:opacity-50 transition-colors"
 					>
-						Cancel
+						{t("common.cancel")}
 					</button>
 					<button
 						type="submit"
 						disabled={pending}
 						className="h-9 px-4 text-sm font-medium rounded-sm bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 transition-colors"
 					>
-						{pending ? "Banning…" : "Ban user"}
+						{pending ? t("adminUsers.banning") : t("adminUsers.banUser")}
 					</button>
 				</div>
 			</form>

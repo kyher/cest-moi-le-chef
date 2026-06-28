@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-router";
 import { ForkKnife, Link2, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { SiteHeader } from "#/components/-site-header";
 import { formatTotalTime } from "#/lib/format";
@@ -53,11 +54,14 @@ export const Route = createFileRoute("/recipes/$recipeId/")({
 			],
 		};
 	},
-	notFoundComponent: () => (
-		<div className="min-h-screen flex flex-col">
-			<div className="p-8 text-stone-500">Recipe not found.</div>
-		</div>
-	),
+	notFoundComponent: () => {
+		const { t } = useTranslation();
+		return (
+			<div className="min-h-screen flex flex-col">
+				<div className="p-8 text-stone-500">{t("recipe.notFound")}</div>
+			</div>
+		);
+	},
 	component: RecipeDetail,
 });
 
@@ -89,6 +93,7 @@ function Detail({
 	isAuthenticated: boolean;
 }) {
 	const router = useRouter();
+	const { t, i18n } = useTranslation();
 	const [noteBody, setNoteBody] = useState("");
 	const [addingNote, setAddingNote] = useState(false);
 	const [likeCount, setLikeCount] = useState(recipe.likeCount);
@@ -107,19 +112,19 @@ function Detail({
 		await addNote({ data: { recipeId: recipe.id, body: noteBody.trim() } });
 		setNoteBody("");
 		setAddingNote(false);
-		toast("Note added");
+		toast(t("recipeToast.noteAdded"));
 		await router.invalidate();
 	}
 
 	async function handleDeleteNote(noteId: string) {
 		await deleteNote({ data: { noteId } });
-		toast("Note deleted");
+		toast(t("recipeToast.noteDeleted"));
 		await router.invalidate();
 	}
 
 	async function handleFork() {
 		const fork = await forkRecipe({ data: { recipeId: recipe.id } });
-		toast("Recipe forked — editing your copy");
+		toast(t("recipeToast.forked"));
 		await router.navigate({
 			to: "/recipes/$recipeId/edit",
 			params: { recipeId: fork.id },
@@ -127,9 +132,9 @@ function Detail({
 	}
 
 	async function handleDeleteRecipe() {
-		if (!confirm("Delete this recipe? This cannot be undone.")) return;
+		if (!confirm(t("recipe.deleteConfirm"))) return;
 		await deleteRecipe({ data: { recipeId: recipe.id } });
-		toast("Recipe deleted");
+		toast(t("recipeToast.deleted"));
 		await router.navigate({ to: "/my-recipes", search: {} });
 	}
 
@@ -141,7 +146,7 @@ function Detail({
 					search={{}}
 					className="text-sm text-stone-500 hover:text-stone-800"
 				>
-					{isOwner ? "← My Recipes" : "← Recipes"}
+					{isOwner ? t("recipe.backToMyRecipes") : t("recipe.backToRecipes")}
 				</Link>
 				{isOwner && (
 					<div className="flex gap-2">
@@ -150,7 +155,7 @@ function Detail({
 							params={{ recipeId: recipe.id }}
 							className="h-8 px-3 text-sm font-medium rounded-sm border border-stone-300 text-stone-700 hover:border-stone-500 transition-colors flex items-center"
 						>
-							Edit
+							{t("recipe.edit")}
 						</Link>
 						<button
 							type="button"
@@ -158,9 +163,9 @@ function Detail({
 							className="relative group h-8 px-3 text-sm font-medium rounded-sm border border-stone-300 text-stone-700 hover:border-stone-500 transition-colors flex items-center gap-1.5"
 						>
 							<ForkKnife size={14} />
-							Fork
+							{t("recipe.fork")}
 							<span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 whitespace-nowrap rounded-sm bg-stone-800 px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100">
-								Create your own editable copy
+								{t("recipe.forkTooltip")}
 							</span>
 						</button>
 						<button
@@ -168,7 +173,7 @@ function Detail({
 							onClick={handleDeleteRecipe}
 							className="h-8 px-3 text-sm font-medium rounded-sm border border-red-200 text-red-600 hover:border-red-400 transition-colors"
 						>
-							Delete
+							{t("recipe.delete")}
 						</button>
 					</div>
 				)}
@@ -187,7 +192,7 @@ function Detail({
 			</h1>
 			{!isOwner && (
 				<p className="text-sm text-stone-400 mb-3">
-					by{" "}
+					{t("common.byPrefix")}{" "}
 					<Link
 						to="/profile/$username"
 						params={{ username: recipe.user.username }}
@@ -199,7 +204,7 @@ function Detail({
 			)}
 			{recipe.forkedFrom?.isPublic && (
 				<p className="text-sm text-stone-400 mb-3">
-					🍴 forked from{" "}
+					🍴 {t("recipe.forkedFrom")}{" "}
 					<Link
 						to="/recipes/$recipeId"
 						params={{ recipeId: recipe.forkedFrom.id }}
@@ -221,12 +226,12 @@ function Detail({
 								: "border-stone-300 text-stone-600 hover:border-stone-500"
 						}`}
 					>
-						{viewerHasLiked ? "♥ Liked" : "♡ Like"}
+						{viewerHasLiked ? t("recipe.liked") : t("recipe.like")}
 					</button>
 				)}
 				{likeCount > 0 && (
 					<span className="text-sm text-stone-400">
-						{likeCount} {likeCount === 1 ? "like" : "likes"}
+						{t("recipe.likes", { count: likeCount })}
 					</span>
 				)}
 				{!isOwner && isAuthenticated && (
@@ -236,9 +241,9 @@ function Detail({
 						className="relative group h-8 px-3 text-sm font-medium rounded-sm border border-stone-300 text-stone-600 hover:border-stone-500 transition-colors flex items-center gap-1.5"
 					>
 						<ForkKnife size={14} />
-						Fork
+						{t("recipe.fork")}
 						<span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 whitespace-nowrap rounded-sm bg-stone-800 px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100">
-							Create your own editable copy
+							{t("recipe.forkTooltip")}
 						</span>
 					</button>
 				)}
@@ -247,12 +252,12 @@ function Detail({
 						type="button"
 						onClick={() => {
 							navigator.clipboard.writeText(window.location.href);
-							toast("Link copied!");
+							toast(t("recipeToast.linkCopied"));
 						}}
 						className="h-8 px-3 text-sm font-medium rounded-sm border border-stone-300 text-stone-600 hover:border-stone-500 transition-colors flex items-center gap-1.5"
 					>
 						<Link2 size={14} />
-						Copy link
+						{t("recipe.copyLink")}
 					</button>
 				)}
 			</div>
@@ -278,7 +283,9 @@ function Detail({
 						</p>
 					)}
 					{recipe.servings != null && (
-						<p className="text-sm text-stone-500">Serves {recipe.servings}</p>
+						<p className="text-sm text-stone-500">
+							{t("recipe.serves", { n: recipe.servings })}
+						</p>
 					)}
 				</div>
 			)}
@@ -286,7 +293,7 @@ function Detail({
 			{recipe.ingredients && (
 				<section className="mb-6">
 					<h2 className="text-xs font-semibold uppercase tracking-wide text-stone-400 mb-2">
-						Ingredients
+						{t("recipe.ingredients")}
 					</h2>
 					<p className="text-sm text-stone-800 whitespace-pre-wrap">
 						{recipe.ingredients}
@@ -297,7 +304,7 @@ function Detail({
 			{recipe.method && (
 				<section className="mb-8">
 					<h2 className="text-xs font-semibold uppercase tracking-wide text-stone-400 mb-2">
-						Method
+						{t("recipe.method")}
 					</h2>
 					<p className="text-sm text-stone-800 whitespace-pre-wrap">
 						{recipe.method}
@@ -309,12 +316,13 @@ function Detail({
 				<section>
 					<div className="flex items-baseline gap-2 mb-4">
 						<h2 className="text-xs font-semibold uppercase tracking-wide text-stone-400">
-							Notes
-							{recipe.notes.length > 0 ? ` (${recipe.notes.length})` : ""}
+							{recipe.notes.length > 0
+								? t("recipe.notesWithCount", { count: recipe.notes.length })
+								: t("recipe.notes")}
 						</h2>
 						{!isOwner && (
 							<span className="text-xs text-stone-400">
-								· only visible to you
+								{t("recipe.notesPrivate")}
 							</span>
 						)}
 					</div>
@@ -323,7 +331,7 @@ function Detail({
 						<textarea
 							value={noteBody}
 							onChange={(e) => setNoteBody(e.target.value)}
-							placeholder="Add a note…"
+							placeholder={t("recipe.addNotePlaceholder")}
 							rows={2}
 							className="w-full px-3 py-2 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400 resize-none"
 						/>
@@ -332,12 +340,12 @@ function Detail({
 							disabled={addingNote || !noteBody.trim()}
 							className="self-end h-9 px-4 text-sm font-medium rounded-sm bg-stone-800 text-white hover:bg-stone-700 disabled:opacity-50 transition-colors"
 						>
-							Add
+							{t("recipe.addNote")}
 						</button>
 					</form>
 
 					{recipe.notes.length === 0 ? (
-						<p className="text-sm text-stone-400">No notes yet.</p>
+						<p className="text-sm text-stone-400">{t("recipe.noNotes")}</p>
 					) : (
 						<div className="space-y-3">
 							{recipe.notes.map((note) => (
@@ -347,11 +355,14 @@ function Detail({
 								>
 									<div className="flex-1">
 										<p className="text-xs text-stone-400 mb-1">
-											{new Date(note.createdAt).toLocaleDateString("en-GB", {
-												day: "numeric",
-												month: "short",
-												year: "numeric",
-											})}
+											{new Date(note.createdAt).toLocaleDateString(
+												i18n.resolvedLanguage ?? "en",
+												{
+													day: "numeric",
+													month: "short",
+													year: "numeric",
+												},
+											)}
 										</p>
 										<p className="text-sm text-stone-800 whitespace-pre-wrap">
 											{note.body}

@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 const TIME_BUCKETS = [
 	{ label: "≤15m", value: 15 },
 	{ label: "≤30m", value: 30 },
@@ -34,6 +36,8 @@ export function RecipeFilterPanel({
 	onToggleVisibility,
 	onReset,
 }: Props) {
+	const { t } = useTranslation();
+
 	if (!show) return null;
 
 	return (
@@ -41,7 +45,7 @@ export function RecipeFilterPanel({
 			<div className="relative mb-4">
 				<input
 					type="text"
-					placeholder="Search recipes…"
+					placeholder={t("filter.search")}
 					value={searchInput}
 					onChange={(e) => onSearchChange(e.target.value)}
 					className="w-full px-3 py-2 text-sm rounded-sm border border-stone-200 bg-white placeholder-stone-400 focus:outline-none focus:border-stone-400"
@@ -51,7 +55,7 @@ export function RecipeFilterPanel({
 						type="button"
 						onClick={() => onSearchChange("")}
 						className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 transition-colors cursor-pointer"
-						aria-label="Clear search"
+						aria-label={t("filter.clearSearch")}
 					>
 						✕
 					</button>
@@ -63,7 +67,7 @@ export function RecipeFilterPanel({
 					{tagsInUse.length > 0 && (
 						<div>
 							<p className="text-xs font-semibold uppercase tracking-wide text-stone-400 mb-2">
-								Tags
+								{t("filter.tags")}
 							</p>
 							<div className="flex flex-wrap gap-2">
 								{tagsInUse.map((tag) => {
@@ -88,7 +92,7 @@ export function RecipeFilterPanel({
 					)}
 					<div>
 						<p className="text-xs font-semibold uppercase tracking-wide text-stone-400 mb-2">
-							Cooking Time
+							{t("filter.cookingTime")}
 						</p>
 						<div className="flex flex-wrap gap-2 items-center">
 							{TIME_BUCKETS.map(({ label, value }) => {
@@ -113,7 +117,7 @@ export function RecipeFilterPanel({
 					{onToggleVisibility && (
 						<div>
 							<p className="text-xs font-semibold uppercase tracking-wide text-stone-400 mb-2">
-								Visibility
+								{t("filter.visibility")}
 							</p>
 							<div className="flex flex-wrap gap-2 items-center">
 								{(["public", "private"] as const).map((v) => (
@@ -142,7 +146,7 @@ export function RecipeFilterPanel({
 					onClick={onReset}
 					className="text-xs text-stone-500 underline underline-offset-2 hover:text-stone-700 transition-colors cursor-pointer mb-6"
 				>
-					Reset
+					{t("common.reset")}
 				</button>
 			)}
 		</>

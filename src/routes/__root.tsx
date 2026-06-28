@@ -6,8 +6,11 @@ import {
 	Scripts,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Toaster } from "sonner";
 
+import "#/i18n/index";
 import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
@@ -48,16 +51,17 @@ export const Route = createRootRoute({
 });
 
 function NotFound() {
+	const { t } = useTranslation();
 	return (
 		<div className="min-h-screen flex flex-col items-center justify-center px-4">
 			<div className="text-center space-y-4">
 				<h1 className="text-5xl font-bold font-serif text-stone-900">404</h1>
-				<p className="text-lg text-stone-600">Page not found</p>
+				<p className="text-lg text-stone-600">{t("notFound.title")}</p>
 				<Link
 					to="/"
 					className="inline-flex h-11 px-6 text-sm font-medium rounded-sm border border-stone-300 text-stone-700 hover:bg-stone-50 transition-colors items-center justify-center"
 				>
-					Go home
+					{t("notFound.goHome")}
 				</Link>
 			</div>
 		</div>
@@ -65,8 +69,14 @@ function NotFound() {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+	const { i18n } = useTranslation();
+
+	useEffect(() => {
+		document.documentElement.lang = i18n.resolvedLanguage ?? "en";
+	}, [i18n.resolvedLanguage]);
+
 	return (
-		<html lang="en">
+		<html lang="en" suppressHydrationWarning>
 			<head>
 				<HeadContent />
 			</head>

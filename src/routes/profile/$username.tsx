@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { SiteHeader } from "#/components/-site-header";
 import { formatTotalTime } from "#/lib/format";
 import { getProfile } from "#/lib/recipe-fns";
@@ -41,6 +42,7 @@ export const Route = createFileRoute("/profile/$username")({
 
 function ProfilePage() {
 	const { session, profile } = Route.useLoaderData();
+	const { t } = useTranslation();
 
 	return (
 		<div className="min-h-screen flex flex-col">
@@ -54,7 +56,7 @@ function ProfilePage() {
 				</div>
 
 				{profile.recipes.length === 0 ? (
-					<p className="text-stone-500">No public recipes yet.</p>
+					<p className="text-stone-500">{t("profile.noRecipes")}</p>
 				) : (
 					<div className="space-y-2">
 						{profile.recipes.map((recipe) => (

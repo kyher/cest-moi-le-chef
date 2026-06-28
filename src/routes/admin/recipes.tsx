@@ -1,5 +1,6 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
 	adminDeleteRecipe,
@@ -17,11 +18,12 @@ type Recipe = Awaited<ReturnType<typeof getAdminRecipes>>[number];
 
 function AdminRecipesPage() {
 	const recipes = Route.useLoaderData();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const [pending, setPending] = useState<string | null>(null);
 
 	if (recipes.length === 0) {
-		return <p className="text-stone-500 text-sm">No public recipes.</p>;
+		return <p className="text-stone-500 text-sm">{t("adminRecipes.empty")}</p>;
 	}
 
 	async function act(
@@ -35,7 +37,7 @@ function AdminRecipesPage() {
 			toast(successMsg);
 			await router.invalidate();
 		} catch {
-			toast.error("Action failed.");
+			toast.error(t("adminRecipes.failed"));
 		} finally {
 			setPending(null);
 		}
@@ -44,7 +46,7 @@ function AdminRecipesPage() {
 	return (
 		<div className="pb-12">
 			<p className="text-sm text-stone-500 mb-6">
-				{recipes.length} public {recipes.length === 1 ? "recipe" : "recipes"}
+				{t("adminRecipes.count", { count: recipes.length })}
 			</p>
 			<div className="space-y-3">
 				{recipes.map((recipe) => (
@@ -56,21 +58,21 @@ function AdminRecipesPage() {
 							act(
 								recipe.id,
 								() => adminForcePrivate({ data: { recipeId: recipe.id } }),
-								"Recipe set to private.",
+								t("adminRecipes.setPrivate"),
 							)
 						}
 						onDelete={() =>
 							act(
 								recipe.id,
 								() => adminDeleteRecipe({ data: { recipeId: recipe.id } }),
-								"Recipe deleted.",
+								t("adminRecipes.deleted"),
 							)
 						}
 						onRemoveImage={() =>
 							act(
 								recipe.id,
 								() => adminRemoveRecipeImage({ data: { recipeId: recipe.id } }),
-								"Image removed.",
+								t("adminRecipes.imageRemoved"),
 							)
 						}
 					/>
@@ -93,6 +95,7 @@ function RecipeRow({
 	onDelete: () => void;
 	onRemoveImage: () => void;
 }) {
+	const { t } = useTranslation();
 	const [confirmDelete, setConfirmDelete] = useState(false);
 
 	return (
@@ -110,7 +113,7 @@ function RecipeRow({
 						{recipe.title}
 					</p>
 					<p className="text-xs text-stone-500">
-						by <span className="font-medium">{recipe.user.name}</span>{" "}
+						{t("common.by", { name: recipe.user.name })}{" "}
 						<span className="text-stone-400">@{recipe.user.username}</span>
 					</p>
 				</div>
@@ -124,7 +127,7 @@ function RecipeRow({
 						onClick={onRemoveImage}
 						className="h-8 px-3 text-xs font-medium rounded-sm border border-stone-300 text-stone-700 hover:bg-stone-50 disabled:opacity-50 transition-colors"
 					>
-						Remove image
+						{t("adminRecipes.removeImage")}
 					</button>
 				)}
 				<button
@@ -133,7 +136,7 @@ function RecipeRow({
 					onClick={onForcePrivate}
 					className="h-8 px-3 text-xs font-medium rounded-sm border border-stone-300 text-stone-700 hover:bg-stone-50 disabled:opacity-50 transition-colors"
 				>
-					Force private
+					{t("adminRecipes.forcePrivate")}
 				</button>
 				{confirmDelete ? (
 					<>
@@ -146,14 +149,14 @@ function RecipeRow({
 							}}
 							className="h-8 px-3 text-xs font-medium rounded-sm bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 transition-colors"
 						>
-							Confirm delete
+							{t("adminRecipes.confirmDelete")}
 						</button>
 						<button
 							type="button"
 							onClick={() => setConfirmDelete(false)}
 							className="h-8 px-3 text-xs font-medium rounded-sm border border-stone-300 text-stone-700 hover:bg-stone-50 transition-colors"
 						>
-							Cancel
+							{t("common.cancel")}
 						</button>
 					</>
 				) : (
@@ -163,7 +166,7 @@ function RecipeRow({
 						onClick={() => setConfirmDelete(true)}
 						className="h-8 px-3 text-xs font-medium rounded-sm border border-red-300 text-red-700 hover:bg-red-50 disabled:opacity-50 transition-colors"
 					>
-						Delete
+						{t("adminRecipes.delete")}
 					</button>
 				)}
 			</div>

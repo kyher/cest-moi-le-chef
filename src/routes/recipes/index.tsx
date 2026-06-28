@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { UtensilsCrossed } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { RecipeFilterPanel } from "#/components/-recipe-filter-panel";
 import { SiteHeader } from "#/components/-site-header";
 import { formatTotalTime } from "#/lib/format";
@@ -37,6 +38,7 @@ function RecipeCard({
 	recipe: Recipe;
 	viewerId: string | null;
 }) {
+	const { t } = useTranslation();
 	const isOwner = viewerId !== null && recipe.userId === viewerId;
 	const [likeCount, setLikeCount] = useState(recipe._count.likes);
 	const [viewerHasLiked, setViewerHasLiked] = useState(
@@ -78,7 +80,7 @@ function RecipeCard({
 					params={{ username: recipe.user.username }}
 					className="relative text-xs text-stone-400 hover:text-stone-600 hover:underline underline-offset-2"
 				>
-					by {recipe.user.name}
+					{t("common.by", { name: recipe.user.name })}
 				</Link>
 				{recipe.tags.length > 0 && (
 					<div className="flex flex-wrap gap-1">
@@ -126,6 +128,7 @@ function RecipeCard({
 
 function RecipesPage() {
 	const { session, recipes, tagsInUse } = Route.useLoaderData();
+	const { t } = useTranslation();
 	const search = Route.useSearch();
 	const navigate = useNavigate({ from: Route.fullPath });
 	const filters = useRecipeFilters(search, navigate);
@@ -136,7 +139,7 @@ function RecipesPage() {
 			<SiteHeader user={session?.user ?? null} />
 			<div className="w-3/4 mx-auto py-10">
 				<h1 className="text-3xl font-bold font-serif text-stone-900 mb-8">
-					Recipes
+					{t("recipes.title")}
 				</h1>
 
 				<RecipeFilterPanel
@@ -156,17 +159,17 @@ function RecipesPage() {
 					<p className="text-stone-500">
 						{filters.hasConstraints ? (
 							<>
-								No recipes match your filters.{" "}
+								{t("recipes.noMatch")}{" "}
 								<button
 									type="button"
 									onClick={filters.reset}
 									className="text-stone-800 underline underline-offset-2 cursor-pointer"
 								>
-									Reset
+									{t("common.reset")}
 								</button>
 							</>
 						) : (
-							"No public recipes yet."
+							t("recipes.empty")
 						)}
 					</p>
 				) : (

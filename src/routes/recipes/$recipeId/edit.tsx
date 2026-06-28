@@ -5,6 +5,7 @@ import {
 	redirect,
 	useRouter,
 } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { RecipeForm } from "#/components/-recipe-form";
 import { SiteHeader } from "#/components/-site-header";
@@ -22,16 +23,20 @@ export const Route = createFileRoute("/recipes/$recipeId/edit")({
 		if (!recipe?.isOwner) throw notFound();
 		return { recipe, session: context.session };
 	},
-	notFoundComponent: () => (
-		<div className="min-h-screen flex flex-col">
-			<div className="p-8 text-stone-500">Recipe not found.</div>
-		</div>
-	),
+	notFoundComponent: () => {
+		const { t } = useTranslation();
+		return (
+			<div className="min-h-screen flex flex-col">
+				<div className="p-8 text-stone-500">{t("recipe.notFound")}</div>
+			</div>
+		);
+	},
 	component: EditRecipe,
 });
 
 function EditRecipe() {
 	const { recipe, session } = Route.useLoaderData();
+	const { t } = useTranslation();
 	const router = useRouter();
 
 	return (
@@ -47,11 +52,11 @@ function EditRecipe() {
 						← {recipe.title}
 					</Link>
 					<h1 className="text-3xl font-bold font-serif text-stone-900 mb-2">
-						Edit Recipe
+						{t("editRecipe.title")}
 					</h1>
 					{recipe.forkedFrom?.isPublic && (
 						<p className="text-sm text-stone-400 mb-8">
-							🍴 forked from{" "}
+							🍴 {t("recipe.forkedFrom")}{" "}
 							<Link
 								to="/recipes/$recipeId"
 								params={{ recipeId: recipe.forkedFrom.id }}
@@ -88,14 +93,14 @@ function EditRecipe() {
 							await updateRecipe({
 								data: { recipeId: recipe.id, ...data },
 							});
-							toast("Recipe saved");
+							toast(t("recipeToast.saved"));
 							await router.navigate({
 								to: "/recipes/$recipeId",
 								params: { recipeId: recipe.id },
 							});
 						}}
-						submitLabel="Save Changes"
-						pendingLabel="Saving…"
+						submitLabel={t("editRecipe.save")}
+						pendingLabel={t("editRecipe.saving")}
 					/>
 				</div>
 			</div>

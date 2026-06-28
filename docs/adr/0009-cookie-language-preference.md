@@ -1,0 +1,3 @@
+# Cookie-based language preference
+
+Language preference is stored in a cookie rather than in the user record. A cookie works for authenticated and anonymous users alike (the Recipes Page and Profiles are publicly accessible), is readable server-side on every request for SSR-correct rendering, and requires no database migration. The trade-off is that preference does not sync across a user's devices — a user who switches language on one device must do so again on another. This was accepted as a reasonable limitation; if cross-device sync becomes important, a per-user locale column can be added later and the cookie used as a fallback for anonymous sessions.

@@ -105,7 +105,10 @@ export function SiteHeader({ user }: Props) {
 					<div className="hidden md:flex items-center gap-3">
 						<Link
 							to="/recipes"
-							className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
+							activeOptions={{ exact: true }}
+							activeProps={{ className: "font-medium text-stone-900" }}
+							inactiveProps={{ className: "text-stone-600" }}
+							className="text-sm hover:text-stone-900 transition-colors"
 						>
 							{t("nav.recipes")}
 						</Link>
@@ -113,33 +116,46 @@ export function SiteHeader({ user }: Props) {
 							<>
 								<Link
 									to="/my-recipes"
-									className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
+									activeOptions={{ exact: true }}
+									activeProps={{ className: "font-medium text-stone-900" }}
+									inactiveProps={{ className: "text-stone-600" }}
+									className="text-sm hover:text-stone-900 transition-colors"
 								>
 									{t("nav.myRecipes")}
 								</Link>
 								<Link
 									to="/liked-recipes"
-									className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
+									activeOptions={{ exact: true }}
+									activeProps={{ className: "font-medium text-stone-900" }}
+									inactiveProps={{ className: "text-stone-600" }}
+									className="text-sm hover:text-stone-900 transition-colors"
 								>
 									{t("nav.likedRecipes")}
 								</Link>
 								<Link
 									to="/weekly-plan"
-									className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
+									activeOptions={{ exact: true }}
+									activeProps={{ className: "font-medium text-stone-900" }}
+									inactiveProps={{ className: "text-stone-600" }}
+									className="text-sm hover:text-stone-900 transition-colors"
 								>
 									{t("nav.weeklyPlan")}
 								</Link>
 								{user?.role === "admin" && (
 									<Link
 										to="/admin/recipes"
-										className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
+										activeOptions={{ exact: true }}
+										activeProps={{ className: "font-medium text-stone-900" }}
+										inactiveProps={{ className: "text-stone-600" }}
+										className="text-sm hover:text-stone-900 transition-colors"
 									>
 										{t("nav.admin")}
 									</Link>
 								)}
+								<div className="border-l border-stone-300 h-4" />
 								<Link
 									to="/my-recipes/new"
-									className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
+									className="h-9 px-4 text-sm font-medium rounded-sm bg-stone-800 text-white hover:bg-stone-700 transition-colors flex items-center"
 								>
 									{t("nav.addRecipe")}
 								</Link>
@@ -153,10 +169,11 @@ export function SiteHeader({ user }: Props) {
 							</>
 						) : (
 							<>
+								<div className="border-l border-stone-300 h-4" />
 								{pathname !== "/sign-in" && (
 									<Link
 										to="/sign-in"
-										className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
+										className="h-9 px-4 text-sm font-medium rounded-sm bg-white text-stone-900 border border-stone-300 hover:bg-stone-50 transition-colors flex items-center"
 									>
 										{t("nav.signIn")}
 									</Link>
@@ -235,7 +252,10 @@ export function SiteHeader({ user }: Props) {
 					<Link
 						to="/recipes"
 						onClick={close}
-						className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
+						activeOptions={{ exact: true }}
+						activeProps={{ className: "font-medium text-stone-900" }}
+						inactiveProps={{ className: "text-stone-600" }}
+						className="text-sm hover:text-stone-900 transition-colors"
 					>
 						{t("nav.recipes")}
 					</Link>
@@ -244,21 +264,30 @@ export function SiteHeader({ user }: Props) {
 							<Link
 								to="/my-recipes"
 								onClick={close}
-								className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
+								activeOptions={{ exact: true }}
+								activeProps={{ className: "font-medium text-stone-900" }}
+								inactiveProps={{ className: "text-stone-600" }}
+								className="text-sm hover:text-stone-900 transition-colors"
 							>
 								{t("nav.myRecipes")}
 							</Link>
 							<Link
 								to="/liked-recipes"
 								onClick={close}
-								className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
+								activeOptions={{ exact: true }}
+								activeProps={{ className: "font-medium text-stone-900" }}
+								inactiveProps={{ className: "text-stone-600" }}
+								className="text-sm hover:text-stone-900 transition-colors"
 							>
 								{t("nav.likedRecipes")}
 							</Link>
 							<Link
 								to="/weekly-plan"
 								onClick={close}
-								className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
+								activeOptions={{ exact: true }}
+								activeProps={{ className: "font-medium text-stone-900" }}
+								inactiveProps={{ className: "text-stone-600" }}
+								className="text-sm hover:text-stone-900 transition-colors"
 							>
 								{t("nav.weeklyPlan")}
 							</Link>
@@ -266,15 +295,19 @@ export function SiteHeader({ user }: Props) {
 								<Link
 									to="/admin/recipes"
 									onClick={close}
-									className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
+									activeOptions={{ exact: true }}
+									activeProps={{ className: "font-medium text-stone-900" }}
+									inactiveProps={{ className: "text-stone-600" }}
+									className="text-sm hover:text-stone-900 transition-colors"
 								>
 									{t("nav.admin")}
 								</Link>
 							)}
+							<div className="border-t border-stone-200" />
 							<Link
 								to="/my-recipes/new"
 								onClick={close}
-								className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
+								className="self-start h-9 px-4 text-sm font-medium rounded-sm bg-stone-800 text-white hover:bg-stone-700 transition-colors flex items-center"
 							>
 								{t("nav.addRecipe")}
 							</Link>
@@ -288,11 +321,12 @@ export function SiteHeader({ user }: Props) {
 						</>
 					) : (
 						<>
+							<div className="border-t border-stone-200" />
 							{pathname !== "/sign-in" && (
 								<Link
 									to="/sign-in"
 									onClick={close}
-									className="text-sm text-stone-600 hover:text-stone-900 transition-colors"
+									className="self-start h-9 px-4 text-sm font-medium rounded-sm bg-white text-stone-900 border border-stone-300 hover:bg-stone-50 transition-colors flex items-center"
 								>
 									{t("nav.signIn")}
 								</Link>

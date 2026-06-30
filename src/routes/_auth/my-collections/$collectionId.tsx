@@ -4,16 +4,16 @@ import {
 	redirect,
 	useNavigate,
 } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RecipePicker } from "#/components/-recipe-picker";
-import { formatTotalTime } from "#/lib/format";
 import {
 	addCollectionEntry,
 	getCollection,
 	removeCollectionEntry,
 	renameCollection,
 } from "#/lib/collection-fns";
+import { formatTotalTime } from "#/lib/format";
 import { getWeeklyPlanRecipeOptions } from "#/lib/weekly-plan-fns";
 
 export const Route = createFileRoute("/_auth/my-collections/$collectionId")({
@@ -29,8 +29,7 @@ export const Route = createFileRoute("/_auth/my-collections/$collectionId")({
 });
 
 function CollectionDetailPage() {
-	const { collection: loaderCollection, recipeOptions } =
-		Route.useLoaderData();
+	const { collection: loaderCollection, recipeOptions } = Route.useLoaderData();
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 
@@ -41,7 +40,13 @@ function CollectionDetailPage() {
 	const [confirmDelete, setConfirmDelete] = useState(false);
 	const nameInputRef = useRef<HTMLInputElement>(null);
 
-	const collectionRecipeIds = new Set(collection.entries.map((e) => e.recipeId));
+	useEffect(() => {
+		if (editingName) nameInputRef.current?.focus();
+	}, [editingName]);
+
+	const collectionRecipeIds = new Set(
+		collection.entries.map((e) => e.recipeId),
+	);
 
 	async function handleAdd(recipeId: string) {
 		setPickerOpen(false);
@@ -103,7 +108,6 @@ function CollectionDetailPage() {
 							value={nameInput}
 							onChange={(e) => setNameInput(e.target.value)}
 							className="flex-1 h-9 px-3 text-sm border border-stone-300 bg-white text-stone-900 focus:outline-none focus:border-stone-500"
-							autoFocus
 						/>
 						<button
 							type="submit"

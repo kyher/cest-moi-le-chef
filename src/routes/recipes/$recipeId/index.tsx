@@ -130,7 +130,10 @@ function Detail({
 		return () => document.removeEventListener("pointerdown", onPointerDown);
 	}, [collectionOpen]);
 
-	async function handleToggleCollection(collectionId: string, hasRecipe: boolean) {
+	async function handleToggleCollection(
+		collectionId: string,
+		hasRecipe: boolean,
+	) {
 		if (hasRecipe) {
 			await removeCollectionEntry({
 				data: { collectionId, recipeId: recipe.id },
@@ -140,10 +143,11 @@ function Detail({
 				data: { collectionId, recipeId: recipe.id },
 			});
 		}
-		setCollections((prev) =>
-			prev?.map((c) =>
-				c.id === collectionId ? { ...c, hasRecipe: !hasRecipe } : c,
-			) ?? prev,
+		setCollections(
+			(prev) =>
+				prev?.map((c) =>
+					c.id === collectionId ? { ...c, hasRecipe: !hasRecipe } : c,
+				) ?? prev,
 		);
 	}
 
@@ -347,6 +351,7 @@ function Detail({
 														strokeWidth="2"
 														strokeLinecap="round"
 														strokeLinejoin="round"
+														aria-hidden="true"
 													>
 														<polyline points="1 4 3.5 6.5 9 1" />
 													</svg>

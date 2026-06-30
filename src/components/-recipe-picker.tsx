@@ -51,8 +51,7 @@ export function RecipePicker({
 
 	function filtered(recipes: Recipe[]) {
 		return recipes.filter(
-			(r) =>
-				r.title.toLowerCase().includes(q) && !excludeIds?.has(r.id),
+			(r) => r.title.toLowerCase().includes(q) && !excludeIds?.has(r.id),
 		);
 	}
 

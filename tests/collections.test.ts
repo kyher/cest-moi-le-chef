@@ -121,9 +121,9 @@ describe("deleteCollection", () => {
 		await upsertOtherUser();
 		try {
 			const col = await createCollection(OTHER_USER_ID, "Other's");
-			await expect(
-				deleteCollection(TEST_USER_ID, col.id),
-			).rejects.toThrow("Not found");
+			await expect(deleteCollection(TEST_USER_ID, col.id)).rejects.toThrow(
+				"Not found",
+			);
 		} finally {
 			await cleanupOtherUser();
 		}
@@ -140,8 +140,8 @@ describe("getCollection", () => {
 		await addEntry(TEST_USER_ID, col.id, recipe.id);
 		const found = await getCollection(TEST_USER_ID, col.id);
 		expect(found).not.toBeNull();
-		expect(found!.entries).toHaveLength(1);
-		expect(found!.entries[0].recipe.title).toBe("Pasta");
+		expect(found?.entries).toHaveLength(1);
+		expect(found?.entries[0].recipe.title).toBe("Pasta");
 	});
 
 	it("returns null when the collection does not belong to the user", async () => {
@@ -167,7 +167,7 @@ describe("getCollection", () => {
 			await addEntry(TEST_USER_ID, col.id, recipe.id);
 			await setRecipeVisibility(recipe.id, OTHER_USER_ID, false);
 			const found = await getCollection(TEST_USER_ID, col.id);
-			expect(found!.entries).toHaveLength(0);
+			expect(found?.entries).toHaveLength(0);
 		} finally {
 			await cleanupOtherUser();
 		}
@@ -182,7 +182,7 @@ describe("getCollection", () => {
 		const col = await createCollection(TEST_USER_ID, "My Collection");
 		await addEntry(TEST_USER_ID, col.id, recipe.id);
 		const found = await getCollection(TEST_USER_ID, col.id);
-		expect(found!.entries).toHaveLength(1);
+		expect(found?.entries).toHaveLength(1);
 	});
 });
 
@@ -256,9 +256,9 @@ describe("addEntry", () => {
 				tags: [],
 			});
 			const col = await createCollection(TEST_USER_ID, "My Collection");
-			await expect(
-				addEntry(TEST_USER_ID, col.id, recipe.id),
-			).rejects.toThrow("Recipe not accessible");
+			await expect(addEntry(TEST_USER_ID, col.id, recipe.id)).rejects.toThrow(
+				"Recipe not accessible",
+			);
 		} finally {
 			await cleanupOtherUser();
 		}
@@ -272,9 +272,9 @@ describe("addEntry", () => {
 				title: "Pasta",
 				tags: [],
 			});
-			await expect(
-				addEntry(TEST_USER_ID, col.id, recipe.id),
-			).rejects.toThrow("Not found");
+			await expect(addEntry(TEST_USER_ID, col.id, recipe.id)).rejects.toThrow(
+				"Not found",
+			);
 		} finally {
 			await cleanupOtherUser();
 		}

@@ -30,13 +30,14 @@ model Recipe {
   updatedAt    DateTime @updatedAt
   userId       String
   forkedFromId String?
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  forkedFrom   Recipe?    @relation("RecipeForks", fields: [forkedFromId], references: [id], onDelete: SetNull)
-  forks        Recipe[]   @relation("RecipeForks")
-  notes        Note[]
-  tags         RecipeTag[]
-  likes        Like[]
-  planEntries  PlanEntry[]
+  user               User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  forkedFrom         Recipe?           @relation("RecipeForks", fields: [forkedFromId], references: [id], onDelete: SetNull)
+  forks              Recipe[]          @relation("RecipeForks")
+  notes              Note[]
+  tags               RecipeTag[]
+  likes              Like[]
+  planEntries        PlanEntry[]
+  collectionEntries  CollectionEntry[]
 
   @@index([userId])
   @@index([forkedFromId])
@@ -108,6 +109,30 @@ model User {
   likes           Like[]
   notes           Note[]
   weeklyPlan      WeeklyPlan?
+  collections     Collection[]
+}
+
+model Collection {
+  id        String            @id @default(cuid())
+  name      String
+  userId    String
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entries   CollectionEntry[]
+
+  @@index([userId])
+}
+
+model CollectionEntry {
+  collectionId String
+  recipeId     String
+  createdAt    DateTime   @default(now())
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  recipe       Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@id([collectionId, recipeId])
+  @@index([recipeId])
 }
 
 model WeeklyPlan {

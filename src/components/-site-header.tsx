@@ -133,6 +133,15 @@ export function SiteHeader({ user }: Props) {
 									{t("nav.likedRecipes")}
 								</Link>
 								<Link
+									to="/my-collections"
+									activeOptions={{ exact: true }}
+									activeProps={{ className: "font-medium text-stone-900" }}
+									inactiveProps={{ className: "text-stone-600" }}
+									className="text-sm hover:text-stone-900 transition-colors"
+								>
+									{t("nav.myCollections")}
+								</Link>
+								<Link
 									to="/weekly-plan"
 									activeOptions={{ exact: true }}
 									activeProps={{ className: "font-medium text-stone-900" }}
@@ -280,6 +289,16 @@ export function SiteHeader({ user }: Props) {
 								className="text-sm hover:text-stone-900 transition-colors"
 							>
 								{t("nav.likedRecipes")}
+							</Link>
+							<Link
+								to="/my-collections"
+								onClick={close}
+								activeOptions={{ exact: true }}
+								activeProps={{ className: "font-medium text-stone-900" }}
+								inactiveProps={{ className: "text-stone-600" }}
+								className="text-sm hover:text-stone-900 transition-colors"
+							>
+								{t("nav.myCollections")}
 							</Link>
 							<Link
 								to="/weekly-plan"

@@ -4,11 +4,16 @@ import {
 	notFound,
 	useRouter,
 } from "@tanstack/react-router";
-import { ForkKnife, Link2, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { Bookmark, ForkKnife, Link2, Trash2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { SiteHeader } from "#/components/-site-header";
+import {
+	addCollectionEntry,
+	getCollectionsForRecipe,
+	removeCollectionEntry,
+} from "#/lib/collection-fns";
 import { formatTotalTime } from "#/lib/format";
 import {
 	addNote,
@@ -27,7 +32,10 @@ export const Route = createFileRoute("/recipes/$recipeId/")({
 			getRecipe({ data: { recipeId: params.recipeId } }),
 		]);
 		if (!recipe) throw notFound();
-		return { session, recipe };
+		const collections = session
+			? await getCollectionsForRecipe({ data: { recipeId: params.recipeId } })
+			: null;
+		return { session, recipe, collections };
 	},
 	head: ({ loaderData }) => {
 		const recipe = loaderData?.recipe;
@@ -66,7 +74,7 @@ export const Route = createFileRoute("/recipes/$recipeId/")({
 });
 
 function RecipeDetail() {
-	const { session, recipe } = Route.useLoaderData();
+	const { session, recipe, collections } = Route.useLoaderData();
 	return (
 		<div className="min-h-screen flex flex-col">
 			<SiteHeader user={session?.user ?? null} />
@@ -75,6 +83,7 @@ function RecipeDetail() {
 					recipe={recipe}
 					isOwner={recipe.isOwner}
 					isAuthenticated={!!session}
+					initialCollections={collections}
 				/>
 			</div>
 		</div>
@@ -82,15 +91,20 @@ function RecipeDetail() {
 }
 
 type Recipe = NonNullable<Awaited<ReturnType<typeof getRecipe>>>;
+type CollectionSummary = NonNullable<
+	Awaited<ReturnType<typeof getCollectionsForRecipe>>
+>[number];
 
 function Detail({
 	recipe,
 	isOwner,
 	isAuthenticated,
+	initialCollections,
 }: {
 	recipe: Recipe;
 	isOwner: boolean;
 	isAuthenticated: boolean;
+	initialCollections: CollectionSummary[] | null;
 }) {
 	const router = useRouter();
 	const { t, i18n } = useTranslation();
@@ -98,6 +112,44 @@ function Detail({
 	const [addingNote, setAddingNote] = useState(false);
 	const [likeCount, setLikeCount] = useState(recipe.likeCount);
 	const [viewerHasLiked, setViewerHasLiked] = useState(recipe.viewerHasLiked);
+	const [collections, setCollections] = useState(initialCollections);
+	const [collectionOpen, setCollectionOpen] = useState(false);
+	const collectionRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		if (!collectionOpen) return;
+		function onPointerDown(e: PointerEvent) {
+			if (
+				collectionRef.current &&
+				!collectionRef.current.contains(e.target as Node)
+			) {
+				setCollectionOpen(false);
+			}
+		}
+		document.addEventListener("pointerdown", onPointerDown);
+		return () => document.removeEventListener("pointerdown", onPointerDown);
+	}, [collectionOpen]);
+
+	async function handleToggleCollection(
+		collectionId: string,
+		hasRecipe: boolean,
+	) {
+		if (hasRecipe) {
+			await removeCollectionEntry({
+				data: { collectionId, recipeId: recipe.id },
+			});
+		} else {
+			await addCollectionEntry({
+				data: { collectionId, recipeId: recipe.id },
+			});
+		}
+		setCollections(
+			(prev) =>
+				prev?.map((c) =>
+					c.id === collectionId ? { ...c, hasRecipe: !hasRecipe } : c,
+				) ?? prev,
+		);
+	}
 
 	async function handleToggleLike() {
 		const liked = await toggleLike({ data: { recipeId: recipe.id } });
@@ -246,6 +298,72 @@ function Detail({
 							{t("recipe.forkTooltip")}
 						</span>
 					</button>
+				)}
+				{collections !== null && (
+					<div ref={collectionRef} className="relative">
+						<button
+							type="button"
+							onClick={() => setCollectionOpen((o) => !o)}
+							className={`h-8 px-3 text-sm font-medium rounded-sm border transition-colors flex items-center gap-1.5 ${
+								collections.some((c) => c.hasRecipe)
+									? "bg-amber-50 border-amber-300 text-amber-700 hover:border-amber-400"
+									: "border-stone-300 text-stone-600 hover:border-stone-500"
+							}`}
+						>
+							<Bookmark size={14} />
+							{t("recipe.collect")}
+						</button>
+
+						{collectionOpen && (
+							<div className="absolute left-0 top-full mt-1 z-20 bg-white border border-stone-200 shadow-md min-w-48 py-1">
+								{collections.length === 0 ? (
+									<div className="px-4 py-3 text-xs text-stone-500">
+										{t("recipe.collectNoCollections")}{" "}
+										<Link
+											to="/my-collections"
+											className="text-stone-800 underline underline-offset-2"
+											onClick={() => setCollectionOpen(false)}
+										>
+											{t("recipe.collectCreate")}
+										</Link>
+									</div>
+								) : (
+									collections.map((c) => (
+										<button
+											key={c.id}
+											type="button"
+											onClick={() => handleToggleCollection(c.id, c.hasRecipe)}
+											className="w-full flex items-center gap-3 px-4 py-2 text-sm text-left hover:bg-stone-50 transition-colors"
+										>
+											<span
+												className={`w-4 h-4 shrink-0 rounded-sm border flex items-center justify-center transition-colors ${
+													c.hasRecipe
+														? "bg-amber-400 border-amber-400 text-white"
+														: "border-stone-300"
+												}`}
+											>
+												{c.hasRecipe && (
+													<svg
+														viewBox="0 0 10 8"
+														className="w-2.5 h-2.5"
+														fill="none"
+														stroke="currentColor"
+														strokeWidth="2"
+														strokeLinecap="round"
+														strokeLinejoin="round"
+														aria-hidden="true"
+													>
+														<polyline points="1 4 3.5 6.5 9 1" />
+													</svg>
+												)}
+											</span>
+											<span className="truncate">{c.name}</span>
+										</button>
+									))
+								)}
+							</div>
+						)}
+					</div>
 				)}
 				{recipe.isPublic && (
 					<button

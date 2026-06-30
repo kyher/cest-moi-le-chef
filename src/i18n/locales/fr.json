@@ -9,6 +9,7 @@
 		"recipes": "Recettes",
 		"myRecipes": "Mes recettes",
 		"likedRecipes": "Recettes aimées",
+		"myCollections": "Mes collections",
 		"weeklyPlan": "Plan de la semaine",
 		"admin": "Admin",
 		"addRecipe": "Ajouter une recette",
@@ -77,6 +78,9 @@
 		"liked": "♥ Aimé",
 		"likes_one": "{{count}} j'aime",
 		"likes_other": "{{count}} j'aime",
+		"collect": "Collecter",
+		"collectNoCollections": "Aucune collection pour l'instant.",
+		"collectCreate": "En créer une.",
 		"copyLink": "Copier le lien",
 		"forkedFrom": "dupliqué depuis",
 		"notFound": "Recette introuvable."
@@ -160,12 +164,34 @@
 			"SUNDAY": "Dimanche"
 		}
 	},
+	"myCollections": {
+		"title": "Mes collections",
+		"empty": "Aucune collection pour l'instant.",
+		"new": "Nouvelle collection",
+		"namePlaceholder": "Nom de la collection…",
+		"create": "Créer",
+		"delete": "Supprimer",
+		"deleteConfirm": "Supprimer cette collection ? Cette action est irréversible.",
+		"recipes_one": "{{count}} recette",
+		"recipes_other": "{{count}} recettes"
+	},
+	"collection": {
+		"backToCollections": "← Mes collections",
+		"empty": "Aucune recette dans cette collection pour l'instant.",
+		"addRecipe": "Ajouter une recette",
+		"remove": "Retirer",
+		"rename": "Renommer",
+		"save": "Enregistrer",
+		"delete": "Supprimer la collection",
+		"deleteConfirm": "Supprimer cette collection ? Cette action est irréversible."
+	},
 	"recipePicker": {
-		"addTo": "Ajouter à {{day}}",
+		"addTo": "Ajouter à {{name}}",
 		"search": "Rechercher des recettes…",
 		"noResults": "Aucune recette trouvée.",
-		"yourRecipes": "Vos recettes",
-		"likedRecipes": "Recettes aimées"
+		"yourRecipes": "Mes recettes",
+		"likedRecipes": "Aimées",
+		"allRecipes": "Toutes les recettes"
 	},
 	"moveDayPicker": {
 		"title": "Déplacer vers…",

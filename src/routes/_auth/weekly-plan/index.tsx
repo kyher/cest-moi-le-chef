@@ -129,9 +129,12 @@ function WeeklyPlanPage() {
 
 			{pickerDay && (
 				<RecipePicker
-					day={pickerDay}
+					title={t("recipePicker.addTo", {
+						name: t(`weeklyPlan.days.${pickerDay}`),
+					})}
 					ownRecipes={options.ownRecipes}
 					likedRecipes={options.likedRecipes}
+					allRecipes={options.allRecipes}
 					onAdd={handleAdd}
 					onClose={() => setPickerDay(null)}
 				/>

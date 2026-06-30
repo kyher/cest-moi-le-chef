@@ -144,7 +144,7 @@ describe("addEntry", () => {
 		}
 	});
 
-	it("throws when the recipe is public but not liked by the user", async () => {
+	it("adds an unliked public recipe from another user", async () => {
 		await upsertOtherUser();
 		try {
 			const recipe = await createRecipe(OTHER_USER_ID, {
@@ -152,9 +152,8 @@ describe("addEntry", () => {
 				isPublic: true,
 				tags: [],
 			});
-			await expect(addEntry(TEST_USER_ID, recipe.id, "MONDAY")).rejects.toThrow(
-				"Recipe not in your liked recipes",
-			);
+			const entry = await addEntry(TEST_USER_ID, recipe.id, "MONDAY");
+			expect(entry.recipe.title).toBe("Not Liked");
 		} finally {
 			await cleanupOtherUser();
 		}
@@ -309,6 +308,46 @@ describe("getRecipeOptions", () => {
 			await setRecipeVisibility(recipe.id, OTHER_USER_ID, false);
 			const { likedRecipes } = await getRecipeOptions(TEST_USER_ID);
 			expect(likedRecipes.map((r) => r.title)).not.toContain("Now Private");
+		} finally {
+			await cleanupOtherUser();
+		}
+	});
+
+	it("includes public recipes from other users in allRecipes regardless of Like", async () => {
+		await upsertOtherUser();
+		try {
+			const recipe = await createRecipe(OTHER_USER_ID, {
+				title: "Unliked Public",
+				isPublic: true,
+				tags: [],
+			});
+			const { allRecipes } = await getRecipeOptions(TEST_USER_ID);
+			expect(allRecipes.map((r) => r.id)).toContain(recipe.id);
+		} finally {
+			await cleanupOtherUser();
+		}
+	});
+
+	it("does not include own recipes in allRecipes", async () => {
+		const recipe = await createRecipe(TEST_USER_ID, {
+			title: "Mine",
+			isPublic: true,
+			tags: [],
+		});
+		const { allRecipes } = await getRecipeOptions(TEST_USER_ID);
+		expect(allRecipes.map((r) => r.id)).not.toContain(recipe.id);
+	});
+
+	it("does not include private recipes from other users in allRecipes", async () => {
+		await upsertOtherUser();
+		try {
+			const recipe = await createRecipe(OTHER_USER_ID, {
+				title: "Private Other",
+				isPublic: false,
+				tags: [],
+			});
+			const { allRecipes } = await getRecipeOptions(TEST_USER_ID);
+			expect(allRecipes.map((r) => r.id)).not.toContain(recipe.id);
 		} finally {
 			await cleanupOtherUser();
 		}

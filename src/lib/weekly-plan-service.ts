@@ -34,18 +34,12 @@ export async function getPlan(userId: string) {
 }
 
 export async function addEntry(userId: string, recipeId: string, day: Day) {
-	// Validate eligibility: own recipe OR liked public recipe from another user
+	// Validate eligibility: own recipe OR any public recipe from another user
 	const recipe = await prisma.recipe.findUnique({ where: { id: recipeId } });
 	if (!recipe) throw new Error("Recipe not found");
 
 	const isOwn = recipe.userId === userId;
-	if (!isOwn) {
-		if (!recipe.isPublic) throw new Error("Recipe not accessible");
-		const like = await prisma.like.findUnique({
-			where: { userId_recipeId: { userId, recipeId } },
-		});
-		if (!like) throw new Error("Recipe not in your liked recipes");
-	}
+	if (!isOwn && !recipe.isPublic) throw new Error("Recipe not accessible");
 
 	const plan = await findOrCreatePlan(userId);
 
@@ -110,7 +104,7 @@ export async function updateEntries(
 }
 
 export async function getRecipeOptions(userId: string) {
-	const [ownRecipes, likedRecipes] = await Promise.all([
+	const [ownRecipes, likedRecipes, allRecipes] = await Promise.all([
 		prisma.recipe.findMany({
 			where: { userId },
 			select: { id: true, title: true, imageUrl: true, totalTime: true },
@@ -125,6 +119,11 @@ export async function getRecipeOptions(userId: string) {
 			select: { id: true, title: true, imageUrl: true, totalTime: true },
 			orderBy: { updatedAt: "desc" },
 		}),
+		prisma.recipe.findMany({
+			where: { isPublic: true, userId: { not: userId } },
+			select: { id: true, title: true, imageUrl: true, totalTime: true },
+			orderBy: { updatedAt: "desc" },
+		}),
 	]);
-	return { ownRecipes, likedRecipes };
+	return { ownRecipes, likedRecipes, allRecipes };
 }

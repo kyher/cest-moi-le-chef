@@ -9,6 +9,7 @@
 		"recipes": "Recipes",
 		"myRecipes": "My Recipes",
 		"likedRecipes": "Liked Recipes",
+		"myCollections": "My Collections",
 		"weeklyPlan": "Weekly Plan",
 		"admin": "Admin",
 		"addRecipe": "Add Recipe",
@@ -77,6 +78,9 @@
 		"liked": "♥ Liked",
 		"likes_one": "{{count}} like",
 		"likes_other": "{{count}} likes",
+		"collect": "Collect",
+		"collectNoCollections": "No collections yet.",
+		"collectCreate": "Create one.",
 		"copyLink": "Copy link",
 		"forkedFrom": "forked from",
 		"notFound": "Recipe not found."
@@ -160,12 +164,34 @@
 			"SUNDAY": "Sunday"
 		}
 	},
+	"myCollections": {
+		"title": "My Collections",
+		"empty": "No collections yet.",
+		"new": "New Collection",
+		"namePlaceholder": "Collection name…",
+		"create": "Create",
+		"delete": "Delete",
+		"deleteConfirm": "Delete this collection? This cannot be undone.",
+		"recipes_one": "{{count}} recipe",
+		"recipes_other": "{{count}} recipes"
+	},
+	"collection": {
+		"backToCollections": "← My Collections",
+		"empty": "No recipes in this collection yet.",
+		"addRecipe": "Add Recipe",
+		"remove": "Remove",
+		"rename": "Rename",
+		"save": "Save",
+		"delete": "Delete Collection",
+		"deleteConfirm": "Delete this collection? This cannot be undone."
+	},
 	"recipePicker": {
-		"addTo": "Add to {{day}}",
+		"addTo": "Add to {{name}}",
 		"search": "Search recipes…",
 		"noResults": "No recipes found.",
-		"yourRecipes": "Your Recipes",
-		"likedRecipes": "Liked Recipes"
+		"yourRecipes": "My Recipes",
+		"likedRecipes": "Liked",
+		"allRecipes": "All Recipes"
 	},
 	"moveDayPicker": {
 		"title": "Move to…",

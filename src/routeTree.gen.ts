@@ -23,10 +23,12 @@ import { Route as AdminRecipesRouteImport } from './routes/admin/recipes'
 import { Route as RecipesRecipeIdIndexRouteImport } from './routes/recipes/$recipeId/index'
 import { Route as AuthWeeklyPlanIndexRouteImport } from './routes/_auth/weekly-plan/index'
 import { Route as AuthMyRecipesIndexRouteImport } from './routes/_auth/my-recipes/index'
+import { Route as AuthMyCollectionsIndexRouteImport } from './routes/_auth/my-collections/index'
 import { Route as AuthLikedRecipesIndexRouteImport } from './routes/_auth/liked-recipes/index'
 import { Route as RecipesRecipeIdEditRouteImport } from './routes/recipes/$recipeId/edit'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AuthMyRecipesNewRouteImport } from './routes/_auth/my-recipes/new'
+import { Route as AuthMyCollectionsCollectionIdRouteImport } from './routes/_auth/my-collections/$collectionId'
 
 const SignUpRoute = SignUpRouteImport.update({
   id: '/sign-up',
@@ -97,6 +99,11 @@ const AuthMyRecipesIndexRoute = AuthMyRecipesIndexRouteImport.update({
   path: '/my-recipes/',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthMyCollectionsIndexRoute = AuthMyCollectionsIndexRouteImport.update({
+  id: '/my-collections/',
+  path: '/my-collections/',
+  getParentRoute: () => AuthRoute,
+} as any)
 const AuthLikedRecipesIndexRoute = AuthLikedRecipesIndexRouteImport.update({
   id: '/liked-recipes/',
   path: '/liked-recipes/',
@@ -117,6 +124,12 @@ const AuthMyRecipesNewRoute = AuthMyRecipesNewRouteImport.update({
   path: '/my-recipes/new',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthMyCollectionsCollectionIdRoute =
+  AuthMyCollectionsCollectionIdRouteImport.update({
+    id: '/my-collections/$collectionId',
+    path: '/my-collections/$collectionId',
+    getParentRoute: () => AuthRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -129,10 +142,12 @@ export interface FileRoutesByFullPath {
   '/profile/$username': typeof ProfileUsernameRoute
   '/admin/': typeof AdminIndexRoute
   '/recipes/': typeof RecipesIndexRoute
+  '/my-collections/$collectionId': typeof AuthMyCollectionsCollectionIdRoute
   '/my-recipes/new': typeof AuthMyRecipesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/recipes/$recipeId/edit': typeof RecipesRecipeIdEditRoute
   '/liked-recipes/': typeof AuthLikedRecipesIndexRoute
+  '/my-collections/': typeof AuthMyCollectionsIndexRoute
   '/my-recipes/': typeof AuthMyRecipesIndexRoute
   '/weekly-plan/': typeof AuthWeeklyPlanIndexRoute
   '/recipes/$recipeId/': typeof RecipesRecipeIdIndexRoute
@@ -147,10 +162,12 @@ export interface FileRoutesByTo {
   '/profile/$username': typeof ProfileUsernameRoute
   '/admin': typeof AdminIndexRoute
   '/recipes': typeof RecipesIndexRoute
+  '/my-collections/$collectionId': typeof AuthMyCollectionsCollectionIdRoute
   '/my-recipes/new': typeof AuthMyRecipesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/recipes/$recipeId/edit': typeof RecipesRecipeIdEditRoute
   '/liked-recipes': typeof AuthLikedRecipesIndexRoute
+  '/my-collections': typeof AuthMyCollectionsIndexRoute
   '/my-recipes': typeof AuthMyRecipesIndexRoute
   '/weekly-plan': typeof AuthWeeklyPlanIndexRoute
   '/recipes/$recipeId': typeof RecipesRecipeIdIndexRoute
@@ -168,10 +185,12 @@ export interface FileRoutesById {
   '/profile/$username': typeof ProfileUsernameRoute
   '/admin/': typeof AdminIndexRoute
   '/recipes/': typeof RecipesIndexRoute
+  '/_auth/my-collections/$collectionId': typeof AuthMyCollectionsCollectionIdRoute
   '/_auth/my-recipes/new': typeof AuthMyRecipesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/recipes/$recipeId/edit': typeof RecipesRecipeIdEditRoute
   '/_auth/liked-recipes/': typeof AuthLikedRecipesIndexRoute
+  '/_auth/my-collections/': typeof AuthMyCollectionsIndexRoute
   '/_auth/my-recipes/': typeof AuthMyRecipesIndexRoute
   '/_auth/weekly-plan/': typeof AuthWeeklyPlanIndexRoute
   '/recipes/$recipeId/': typeof RecipesRecipeIdIndexRoute
@@ -189,10 +208,12 @@ export interface FileRouteTypes {
     | '/profile/$username'
     | '/admin/'
     | '/recipes/'
+    | '/my-collections/$collectionId'
     | '/my-recipes/new'
     | '/api/auth/$'
     | '/recipes/$recipeId/edit'
     | '/liked-recipes/'
+    | '/my-collections/'
     | '/my-recipes/'
     | '/weekly-plan/'
     | '/recipes/$recipeId/'
@@ -207,10 +228,12 @@ export interface FileRouteTypes {
     | '/profile/$username'
     | '/admin'
     | '/recipes'
+    | '/my-collections/$collectionId'
     | '/my-recipes/new'
     | '/api/auth/$'
     | '/recipes/$recipeId/edit'
     | '/liked-recipes'
+    | '/my-collections'
     | '/my-recipes'
     | '/weekly-plan'
     | '/recipes/$recipeId'
@@ -227,10 +250,12 @@ export interface FileRouteTypes {
     | '/profile/$username'
     | '/admin/'
     | '/recipes/'
+    | '/_auth/my-collections/$collectionId'
     | '/_auth/my-recipes/new'
     | '/api/auth/$'
     | '/recipes/$recipeId/edit'
     | '/_auth/liked-recipes/'
+    | '/_auth/my-collections/'
     | '/_auth/my-recipes/'
     | '/_auth/weekly-plan/'
     | '/recipes/$recipeId/'
@@ -350,6 +375,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthMyRecipesIndexRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_auth/my-collections/': {
+      id: '/_auth/my-collections/'
+      path: '/my-collections'
+      fullPath: '/my-collections/'
+      preLoaderRoute: typeof AuthMyCollectionsIndexRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/_auth/liked-recipes/': {
       id: '/_auth/liked-recipes/'
       path: '/liked-recipes'
@@ -378,19 +410,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthMyRecipesNewRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_auth/my-collections/$collectionId': {
+      id: '/_auth/my-collections/$collectionId'
+      path: '/my-collections/$collectionId'
+      fullPath: '/my-collections/$collectionId'
+      preLoaderRoute: typeof AuthMyCollectionsCollectionIdRouteImport
+      parentRoute: typeof AuthRoute
+    }
   }
 }
 
 interface AuthRouteChildren {
+  AuthMyCollectionsCollectionIdRoute: typeof AuthMyCollectionsCollectionIdRoute
   AuthMyRecipesNewRoute: typeof AuthMyRecipesNewRoute
   AuthLikedRecipesIndexRoute: typeof AuthLikedRecipesIndexRoute
+  AuthMyCollectionsIndexRoute: typeof AuthMyCollectionsIndexRoute
   AuthMyRecipesIndexRoute: typeof AuthMyRecipesIndexRoute
   AuthWeeklyPlanIndexRoute: typeof AuthWeeklyPlanIndexRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
+  AuthMyCollectionsCollectionIdRoute: AuthMyCollectionsCollectionIdRoute,
   AuthMyRecipesNewRoute: AuthMyRecipesNewRoute,
   AuthLikedRecipesIndexRoute: AuthLikedRecipesIndexRoute,
+  AuthMyCollectionsIndexRoute: AuthMyCollectionsIndexRoute,
   AuthMyRecipesIndexRoute: AuthMyRecipesIndexRoute,
   AuthWeeklyPlanIndexRoute: AuthWeeklyPlanIndexRoute,
 }

@@ -89,7 +89,7 @@ A copy of a Recipe — either your own or another user's public Recipe — that 
 _Avoid_: Clone, copy, remix, duplicate
 
 **Weekly Plan**:
-A single, persistent, reusable planning template per authenticated User, accessible at `/weekly-plan`. Assigns Recipes to the seven named days of the week (Monday through Sunday). Not tied to any specific calendar date — the user updates it in place week to week. A User has exactly one Weekly Plan; there is no concept of multiple named plans. Recipes eligible to be added are the user's own Recipes (public or private) and any public Recipe they have Liked. Plan Entries on a liked Recipe that becomes private are silently hidden until the Recipe is public again, mirroring Like behaviour. Plan Entries on a deleted Recipe are cascade-deleted. The entire Weekly Plan can be cleared in one action, or individual Plan Entries can be removed.
+A single, persistent, reusable planning template per authenticated User, accessible at `/weekly-plan`. Assigns Recipes to the seven named days of the week (Monday through Sunday). Not tied to any specific calendar date — the user updates it in place week to week. A User has exactly one Weekly Plan; there is no concept of multiple named plans. Recipes eligible to be added are the user's own Recipes (public or private) and any public Recipe from any other User — no Like is required. The recipe picker uses three tabs to navigate eligible recipes: "My Recipes", "Liked Recipes", and "All Recipes" (all public recipes from all users). Plan Entries on a public Recipe from another user that becomes private are silently hidden until the Recipe is public again, mirroring Like and Collection Entry behaviour. Plan Entries on a deleted Recipe are cascade-deleted. The entire Weekly Plan can be cleared in one action, or individual Plan Entries can be removed.
 _Avoid_: Meal plan, week planner, schedule, planner
 
 **Plan Entry**:
@@ -99,6 +99,18 @@ _Avoid_: Meal, slot, assignment, item
 **Shopping List**:
 A read-only panel on the Weekly Plan page that aggregates the `ingredients` field from every Plan Entry in the user's Weekly Plan, to help the user prepare a physical shopping list. Grouped by Recipe, with each section headed by the Recipe title and the day it is planned for (e.g. "Pasta Bolognese · Monday"). If the same Recipe appears on multiple days, it appears once per Plan Entry — not deduplicated. Recipes with no ingredients show a placeholder rather than being silently omitted. The Shopping List trigger is hidden when the Weekly Plan is empty, consistent with the "Clear plan" button.
 _Avoid_: Ingredient list, grocery list, meal list
+
+**Collection**:
+A user-created, always-private, named list of Recipes. A Collection can hold any of the owner's own Recipes (public or private) and any public Recipe from any other User — no Like is required. A Recipe can belong to multiple Collections simultaneously. Collections are flat (no nesting) and unordered. Collections are personal and never visible to other users. Accessible at `/my-collections`; each Collection has its own detail view at `/my-collections/:id`.
+_Avoid_: Folder, group, playlist, board, bookmark list
+
+**Collection Entry**:
+The record linking a single Recipe to a Collection. A Recipe and Collection pair is unique — the same Recipe cannot appear twice in the same Collection. Collection Entries on a Recipe that becomes private are silently hidden until the Recipe is public again, mirroring Like and Plan Entry behaviour. Collection Entries are cascade-deleted when the Recipe is deleted or when the Collection is deleted.
+_Avoid_: Item, slot, member
+
+**My Collections**:
+An authenticated user's list of all their Collections, accessible at `/my-collections`. Linked from the nav bar, visible only when authenticated. Each Collection can be opened to view its recipes.
+_Avoid_: Saved recipes, bookmarks, folders
 
 ## Example dialogue
 
@@ -110,3 +122,9 @@ _Avoid_: Ingredient list, grocery list, meal list
 
 > "I want to group recipes by cuisine too."
 > — Create Tags like "italian", "thai" and apply them alongside course tags.
+
+> "I want to save this public recipe for later without liking it."
+> — Add it to a Collection. Collections are private and don't require a Like.
+
+> "I want to organise my pasta recipes and some I've found from other users."
+> — Create a Collection and add both your own Recipes and any public Recipes to it.

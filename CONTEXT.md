@@ -21,7 +21,7 @@ Whether a Recipe is public or private. Public recipes are visible to anyone (aut
 _Avoid_: Status, access level, sharing
 
 **Recipes Page**:
-The publicly accessible feed of all public recipes from all users, available at `/recipes`. Supports the same Search and Filter capabilities as My Recipes. Tag filters on the Recipes Page match case-insensitively across all users' public recipes. Visible to authenticated and non-authenticated users alike. Linked from the nav bar ("Recipes") and from the marketing page at `/`.
+The publicly accessible feed of all public recipes from all users, available at `/recipes`. Supports the same Search and Filter capabilities as My Recipes. Tag filters on the Recipes Page match case-insensitively across all users' public recipes. Visible to authenticated and non-authenticated users alike. Linked from the nav bar as "All Recipes" — a plain top-level link for signed-out visitors, or nested inside the "Recipes" nav category for authenticated Users — and from the marketing page at `/`.
 _Avoid_: Home page, landing page, public feed, discover page
 
 **My Recipes**:
@@ -49,7 +49,7 @@ The total number of Likes on a Recipe. Visible to all users (authenticated or no
 _Avoid_: Likes, popularity score
 
 **Liked Recipes**:
-An authenticated user's list of public Recipes they have Liked, accessible at `/liked-recipes`. Recipes that have been liked but are currently private are hidden. Supports the same Search and Filter capabilities as My Recipes and the Recipes Page. The Filter panel offers only Tags applied to the user's currently visible liked Recipes. Linked from the nav bar ("Liked Recipes"), visible only when authenticated.
+An authenticated user's list of public Recipes they have Liked, accessible at `/liked-recipes`. Recipes that have been liked but are currently private are hidden. Supports the same Search and Filter capabilities as My Recipes and the Recipes Page. The Filter panel offers only Tags applied to the user's currently visible liked Recipes. Linked from the nav bar under the "Recipes" category ("Liked Recipes"), visible only when authenticated.
 _Avoid_: Saved recipes, favourites, bookmarks
 
 **Filter**:
@@ -65,8 +65,8 @@ A unique, permanent handle chosen by a User at sign-up, used to address their Pr
 _Avoid_: Handle, display name, user ID
 
 **Profile**:
-A public page at `/profile/:username` showing a User's `name`, `username`, and all of their public Recipes as an unfiltered list. Accessible to authenticated and unauthenticated users alike. Reached by clicking the username attribution on a public Recipe — both on the Home Page and on the Recipe detail page.
-_Avoid_: User page, public profile, account page
+A public page at `/profile/:username` showing a User's `name`, `username`, and all of their public Recipes as an unfiltered list. Accessible to authenticated and unauthenticated users alike. Reached by clicking the username attribution on a public Recipe (both on the Home Page and on the Recipe detail page), or, for an authenticated User viewing their own Profile, via "My Profile" inside the nav bar's User menu. There is no separate "My Profile" page or concept — the nav link opens the same public Profile, scoped to the signed-in User's own username, and shows only their public Recipes like any other visitor would see.
+_Avoid_: User page, public profile, account page, My Profile page
 
 **Role**:
 A classification on a User that determines their privileges. Two values: `user` (default) and `admin`. A User's Role is assigned at the database level on bootstrap and cannot be changed through the app UI.
@@ -109,7 +109,7 @@ The record linking a single Recipe to a Collection. A Recipe and Collection pair
 _Avoid_: Item, slot, member
 
 **My Collections**:
-An authenticated user's list of all their Collections, accessible at `/my-collections`. Linked from the nav bar, visible only when authenticated. Each Collection can be opened to view its recipes.
+An authenticated user's list of all their Collections, accessible at `/my-collections`. Linked from the nav bar under the "Recipes" category, visible only when authenticated. Each Collection can be opened to view its recipes.
 _Avoid_: Saved recipes, bookmarks, folders
 
 ## Example dialogue

@@ -7,10 +7,13 @@
 	},
 	"nav": {
 		"recipes": "Recettes",
+		"allRecipes": "Toutes les recettes",
 		"myRecipes": "Mes recettes",
 		"likedRecipes": "Recettes aimées",
 		"myCollections": "Mes collections",
 		"weeklyPlan": "Plan de la semaine",
+		"myProfile": "Mon profil",
+		"account": "Compte",
 		"admin": "Admin",
 		"addRecipe": "Ajouter une recette",
 		"signOut": "Se déconnecter",

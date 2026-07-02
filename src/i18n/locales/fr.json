@@ -205,7 +205,9 @@
 		"noIngredients": "Aucun ingrédient indiqué"
 	},
 	"profile": {
-		"noRecipes": "Aucune recette publique pour l'instant."
+		"noRecipes": "Aucune recette publique pour l'instant.",
+		"follow": "Suivre",
+		"following": "Suivi(e)"
 	},
 	"admin": {
 		"title": "Admin",
@@ -244,6 +246,8 @@
 		"failed": "Action échouée.",
 		"joined": "inscrit",
 		"recipe_one": "{{count}} recette",
-		"recipe_other": "{{count}} recettes"
+		"recipe_other": "{{count}} recettes",
+		"follower_one": "{{count}} abonné",
+		"follower_other": "{{count}} abonnés"
 	}
 }

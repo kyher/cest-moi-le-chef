@@ -44,7 +44,7 @@ export function listAllUsers() {
 			role: true,
 			banned: true,
 			createdAt: true,
-			_count: { select: { recipes: true } },
+			_count: { select: { recipes: true, followers: true } },
 		},
 		orderBy: { createdAt: "desc" },
 	});
@@ -65,6 +65,9 @@ export async function banUser(
 	);
 	await prisma.recipe.deleteMany({ where: { userId } });
 	await prisma.session.deleteMany({ where: { userId } });
+	await prisma.follow.deleteMany({
+		where: { OR: [{ followerId: userId }, { followingId: userId }] },
+	});
 	await prisma.user.update({
 		where: { id: userId },
 		data: {

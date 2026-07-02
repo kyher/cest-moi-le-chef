@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { auth } from "#/lib/auth";
+import * as followService from "#/lib/follow-service";
 import * as likeService from "#/lib/like-service";
 import * as noteService from "#/lib/note-service";
 import * as profileService from "#/lib/profile-service";
@@ -137,7 +138,17 @@ export const deleteNote = createServerFn({ method: "POST" })
 export const getProfile = createServerFn()
 	.validator((d: { username: string }) => d)
 	.handler(async ({ data }) => {
-		return profileService.findProfile(data.username);
+		const user = await optionalUser();
+		return profileService.findProfile(data.username, user?.id ?? null);
+	});
+
+export const toggleFollow = createServerFn({ method: "POST" })
+	.validator((d: { username: string }) => d)
+	.handler(async ({ data }) => {
+		const user = await requireUser();
+		const target = await profileService.findProfile(data.username, user.id);
+		if (!target) throw new Error("User not found");
+		return followService.toggleFollow(user.id, target.id);
 	});
 
 export const toggleLike = createServerFn({ method: "POST" })

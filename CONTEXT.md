@@ -65,8 +65,20 @@ A unique, permanent handle chosen by a User at sign-up, used to address their Pr
 _Avoid_: Handle, display name, user ID
 
 **Profile**:
-A public page at `/profile/:username` showing a User's `name`, `username`, and all of their public Recipes as an unfiltered list. Accessible to authenticated and unauthenticated users alike. Reached by clicking the username attribution on a public Recipe (both on the Home Page and on the Recipe detail page), or, for an authenticated User viewing their own Profile, via "My Profile" inside the nav bar's User menu. There is no separate "My Profile" page or concept — the nav link opens the same public Profile, scoped to the signed-in User's own username, and shows only their public Recipes like any other visitor would see.
+A public page at `/profile/:username` showing a User's `name`, `username`, and all of their public Recipes as an unfiltered list. Accessible to authenticated and unauthenticated users alike. Reached by clicking the username attribution on a public Recipe (both on the Home Page and on the Recipe detail page), or, for an authenticated User viewing their own Profile, via "My Profile" inside the nav bar's User menu. There is no separate "My Profile" page or concept — the nav link opens the same public Profile, scoped to the signed-in User's own username, and shows only their public Recipes like any other visitor would see. Does not currently distinguish banned Users — a banned User's Profile still resolves, showing zero Recipes since Ban hard-deletes them.
 _Avoid_: User page, public profile, account page, My Profile page
+
+**Follow**:
+An authenticated User's expression of interest in another User's future activity, toggled via a button on the target User's Profile page. A User cannot follow themselves, and cannot follow a banned User (the button is hidden on a banned User's Profile, and the server also rejects it). Following is a toggle — a second action unfollows, mirroring Like. Unrestricted otherwise: a User may be followed regardless of whether they have published any public Recipes. This is groundwork for a future feed of Recipes from followed Users — for now there is no Followers/Following list page and no counts are displayed anywhere.
+_Avoid_: Subscribe, connect, friend, favourite user
+
+**Following** (relationship):
+The set of Users a given User follows via Follow. Not currently exposed as a browsable list or count.
+_Avoid_: Subscriptions
+
+**Follower**:
+A User who follows a given User via Follow. Not currently exposed as a browsable list or count.
+_Avoid_: Subscriber
 
 **Role**:
 A classification on a User that determines their privileges. Two values: `user` (default) and `admin`. A User's Role is assigned at the database level on bootstrap and cannot be changed through the app UI.
@@ -81,7 +93,7 @@ A dedicated area of the application, accessible only to Admins, for content mode
 _Avoid_: Dashboard, control panel, back-office
 
 **Ban**:
-An admin action that permanently blocks a User from signing in and hard-deletes all of their Recipes (including private ones) and all associated data. A banned User's sessions are invalidated immediately. Irreversible through the app — only a database intervention can restore a banned User.
+An admin action that permanently blocks a User from signing in and hard-deletes all of their Recipes (including private ones) and all associated data, including Follow relationships in either direction (as follower and as followed). A banned User's sessions are invalidated immediately. Irreversible through the app — only a database intervention can restore a banned User.
 _Avoid_: Suspend, deactivate, disable
 
 **Fork**:
@@ -128,3 +140,6 @@ _Avoid_: Saved recipes, bookmarks, folders
 
 > "I want to organise my pasta recipes and some I've found from other users."
 > — Create a Collection and add both your own Recipes and any public Recipes to it.
+
+> "I found a cook whose recipes I like — can I keep track of them for later?"
+> — Follow them from their Profile page. There's no feed of their new Recipes yet, but Following lays the groundwork for one.

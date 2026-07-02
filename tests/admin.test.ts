@@ -259,6 +259,21 @@ describe("listAllUsers", () => {
 		expect(found?.role).toBe("user");
 		expect(found?.banned).toBe(false);
 	});
+
+	it("includes follower count", async () => {
+		await upsertOtherUser();
+		try {
+			await prisma.follow.create({
+				data: { followerId: OTHER_USER_ID, followingId: TEST_USER_ID },
+			});
+			const users = await listAllUsers();
+			const found = users.find((u) => u.id === TEST_USER_ID);
+			expect(found?._count.followers).toBe(1);
+		} finally {
+			await prisma.follow.deleteMany({ where: { followingId: TEST_USER_ID } });
+			await cleanupOtherUser();
+		}
+	});
 });
 
 describe("banUser", () => {
@@ -403,6 +418,52 @@ describe("banUser", () => {
 			expect(user?.banExpires).toEqual(expiry);
 		} finally {
 			await cleanupBanTarget();
+		}
+	});
+
+	it("deletes follows where the banned user is the target", async () => {
+		await upsertBanTarget();
+		await upsertOtherUser();
+		try {
+			await prisma.follow.create({
+				data: { followerId: OTHER_USER_ID, followingId: BAN_TARGET_ID },
+			});
+			await banUser(BAN_TARGET_ID);
+			const follow = await prisma.follow.findUnique({
+				where: {
+					followerId_followingId: {
+						followerId: OTHER_USER_ID,
+						followingId: BAN_TARGET_ID,
+					},
+				},
+			});
+			expect(follow).toBeNull();
+		} finally {
+			await cleanupBanTarget();
+			await cleanupOtherUser();
+		}
+	});
+
+	it("deletes follows where the banned user is the follower", async () => {
+		await upsertBanTarget();
+		await upsertOtherUser();
+		try {
+			await prisma.follow.create({
+				data: { followerId: BAN_TARGET_ID, followingId: OTHER_USER_ID },
+			});
+			await banUser(BAN_TARGET_ID);
+			const follow = await prisma.follow.findUnique({
+				where: {
+					followerId_followingId: {
+						followerId: BAN_TARGET_ID,
+						followingId: OTHER_USER_ID,
+					},
+				},
+			});
+			expect(follow).toBeNull();
+		} finally {
+			await cleanupBanTarget();
+			await cleanupOtherUser();
 		}
 	});
 

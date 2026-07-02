@@ -87,6 +87,7 @@ function UserRow({ user, onBan }: { user: User; onBan: () => void }) {
 				<p className="text-xs text-stone-500 mt-0.5">
 					{user.email} ·{" "}
 					{t("adminUsers.recipe", { count: user._count.recipes })} ·{" "}
+					{t("adminUsers.follower", { count: user._count.followers })} ·{" "}
 					{t("adminUsers.joined")}{" "}
 					{new Date(user.createdAt).toLocaleDateString()}
 				</p>

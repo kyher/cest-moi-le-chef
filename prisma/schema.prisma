@@ -54,6 +54,17 @@ model Like {
   @@index([recipeId])
 }
 
+model Follow {
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+  follower    User     @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@id([followerId, followingId])
+  @@index([followingId])
+}
+
 model Note {
   id        String   @id @default(cuid())
   body      String
@@ -110,6 +121,8 @@ model User {
   notes           Note[]
   weeklyPlan      WeeklyPlan?
   collections     Collection[]
+  following       Follow[]  @relation("Following")
+  followers       Follow[]  @relation("Followers")
 }
 
 model Collection {

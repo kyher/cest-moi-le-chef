@@ -1,8 +1,9 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { SiteHeader } from "#/components/-site-header";
 import { formatTotalTime } from "#/lib/format";
-import { getProfile } from "#/lib/recipe-fns";
+import { getProfile, toggleFollow } from "#/lib/recipe-fns";
 import { getSession } from "#/lib/session";
 
 export const Route = createFileRoute("/profile/$username")({
@@ -43,6 +44,14 @@ export const Route = createFileRoute("/profile/$username")({
 function ProfilePage() {
 	const { session, profile } = Route.useLoaderData();
 	const { t } = useTranslation();
+	const [isFollowing, setIsFollowing] = useState(profile.viewerIsFollowing);
+
+	async function handleToggleFollow() {
+		const following = await toggleFollow({
+			data: { username: profile.username },
+		});
+		setIsFollowing(following);
+	}
 
 	return (
 		<div className="min-h-screen flex flex-col">
@@ -53,6 +62,19 @@ function ProfilePage() {
 						{profile.name}
 					</h1>
 					<p className="text-sm text-stone-400 mt-1">@{profile.username}</p>
+					{isFollowing !== null && (
+						<button
+							type="button"
+							onClick={handleToggleFollow}
+							className={`mt-3 h-8 px-3 text-sm font-medium rounded-sm border transition-colors ${
+								isFollowing
+									? "bg-amber-50 border-amber-300 text-amber-700 hover:border-amber-400"
+									: "border-stone-300 text-stone-600 hover:border-stone-500"
+							}`}
+						>
+							{isFollowing ? t("profile.following") : t("profile.follow")}
+						</button>
+					)}
 				</div>
 
 				{profile.recipes.length === 0 ? (

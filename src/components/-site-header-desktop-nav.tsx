@@ -9,6 +9,7 @@ const RECIPES_PATHS = [
 	"/my-recipes",
 	"/liked-recipes",
 	"/my-collections",
+	"/feed",
 ];
 
 const menuItemProps = {
@@ -92,6 +93,13 @@ export function DesktopNav({
 								{...menuItemProps}
 							>
 								{t("nav.allRecipes")}
+							</Link>
+							<Link
+								to="/feed"
+								onClick={() => recipesDropdown.setOpen(false)}
+								{...menuItemProps}
+							>
+								{t("nav.feed")}
 							</Link>
 							<Link
 								to="/my-recipes"

@@ -76,6 +76,10 @@ _Avoid_: Subscribe, connect, friend, favourite user
 The set of Users a given User follows via Follow. Not currently exposed as a browsable list or count.
 _Avoid_: Subscriptions
 
+**Feed**:
+An authenticated User's list of Recipes from the Users they Follow, accessible at `/feed`, ordered newest-first by the Recipe's `createdAt`. Only public Recipes are shown — a Recipe that becomes private after being followed simply disappears from the Feed until made public again, mirroring Like, Plan Entry, and Collection Entry behaviour. Strictly recipes from Followed Users — since a User cannot follow themselves, the Feed never includes the viewer's own Recipes. Unfiltered, like the Profile page's Recipe list — does not support Filter or Search. Linked from the nav bar under the "Recipes" category, visible only when authenticated. Does not change the sign-in redirect or the app's landing page.
+_Avoid_: Timeline, following feed, home feed
+
 **Follower**:
 A User who follows a given User via Follow. Not currently exposed as a browsable list or count.
 _Avoid_: Subscriber

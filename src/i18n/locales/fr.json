@@ -8,6 +8,7 @@
 	"nav": {
 		"recipes": "Recettes",
 		"allRecipes": "Toutes les recettes",
+		"feed": "Fil d'actualité",
 		"myRecipes": "Mes recettes",
 		"likedRecipes": "Recettes aimées",
 		"myCollections": "Mes collections",
@@ -148,6 +149,12 @@
 		"empty": "Aucune recette aimée pour l'instant.",
 		"browse": "Parcourez les recettes pour en trouver.",
 		"noMatch": "Aucune recette ne correspond à vos filtres."
+	},
+	"feed": {
+		"title": "Fil d'actualité",
+		"emptyNotFollowing": "Suivez des cuisiniers pour voir leurs recettes ici.",
+		"emptyNoRecipes": "Aucune recette pour l'instant de la part des personnes que vous suivez.",
+		"browse": "Parcourez les recettes pour en trouver."
 	},
 	"weeklyPlan": {
 		"title": "Plan de la semaine",

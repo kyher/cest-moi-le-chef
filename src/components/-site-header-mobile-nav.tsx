@@ -9,6 +9,7 @@ const RECIPES_PATHS = [
 	"/my-recipes",
 	"/liked-recipes",
 	"/my-collections",
+	"/feed",
 ];
 
 const topLevelLinkProps = {
@@ -67,6 +68,9 @@ export function MobileNav({
 						<div className="flex flex-col pl-3 ml-1 border-l border-stone-200 mb-1">
 							<Link to="/recipes" onClick={onNavigate} {...subLinkProps}>
 								{t("nav.allRecipes")}
+							</Link>
+							<Link to="/feed" onClick={onNavigate} {...subLinkProps}>
+								{t("nav.feed")}
 							</Link>
 							<Link to="/my-recipes" onClick={onNavigate} {...subLinkProps}>
 								{t("nav.myRecipes")}

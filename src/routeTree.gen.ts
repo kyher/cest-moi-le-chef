@@ -25,6 +25,7 @@ import { Route as AuthWeeklyPlanIndexRouteImport } from './routes/_auth/weekly-p
 import { Route as AuthMyRecipesIndexRouteImport } from './routes/_auth/my-recipes/index'
 import { Route as AuthMyCollectionsIndexRouteImport } from './routes/_auth/my-collections/index'
 import { Route as AuthLikedRecipesIndexRouteImport } from './routes/_auth/liked-recipes/index'
+import { Route as AuthFeedIndexRouteImport } from './routes/_auth/feed/index'
 import { Route as RecipesRecipeIdEditRouteImport } from './routes/recipes/$recipeId/edit'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AuthMyRecipesNewRouteImport } from './routes/_auth/my-recipes/new'
@@ -109,6 +110,11 @@ const AuthLikedRecipesIndexRoute = AuthLikedRecipesIndexRouteImport.update({
   path: '/liked-recipes/',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthFeedIndexRoute = AuthFeedIndexRouteImport.update({
+  id: '/feed/',
+  path: '/feed/',
+  getParentRoute: () => AuthRoute,
+} as any)
 const RecipesRecipeIdEditRoute = RecipesRecipeIdEditRouteImport.update({
   id: '/recipes/$recipeId/edit',
   path: '/recipes/$recipeId/edit',
@@ -146,6 +152,7 @@ export interface FileRoutesByFullPath {
   '/my-recipes/new': typeof AuthMyRecipesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/recipes/$recipeId/edit': typeof RecipesRecipeIdEditRoute
+  '/feed/': typeof AuthFeedIndexRoute
   '/liked-recipes/': typeof AuthLikedRecipesIndexRoute
   '/my-collections/': typeof AuthMyCollectionsIndexRoute
   '/my-recipes/': typeof AuthMyRecipesIndexRoute
@@ -166,6 +173,7 @@ export interface FileRoutesByTo {
   '/my-recipes/new': typeof AuthMyRecipesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/recipes/$recipeId/edit': typeof RecipesRecipeIdEditRoute
+  '/feed': typeof AuthFeedIndexRoute
   '/liked-recipes': typeof AuthLikedRecipesIndexRoute
   '/my-collections': typeof AuthMyCollectionsIndexRoute
   '/my-recipes': typeof AuthMyRecipesIndexRoute
@@ -189,6 +197,7 @@ export interface FileRoutesById {
   '/_auth/my-recipes/new': typeof AuthMyRecipesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/recipes/$recipeId/edit': typeof RecipesRecipeIdEditRoute
+  '/_auth/feed/': typeof AuthFeedIndexRoute
   '/_auth/liked-recipes/': typeof AuthLikedRecipesIndexRoute
   '/_auth/my-collections/': typeof AuthMyCollectionsIndexRoute
   '/_auth/my-recipes/': typeof AuthMyRecipesIndexRoute
@@ -212,6 +221,7 @@ export interface FileRouteTypes {
     | '/my-recipes/new'
     | '/api/auth/$'
     | '/recipes/$recipeId/edit'
+    | '/feed/'
     | '/liked-recipes/'
     | '/my-collections/'
     | '/my-recipes/'
@@ -232,6 +242,7 @@ export interface FileRouteTypes {
     | '/my-recipes/new'
     | '/api/auth/$'
     | '/recipes/$recipeId/edit'
+    | '/feed'
     | '/liked-recipes'
     | '/my-collections'
     | '/my-recipes'
@@ -254,6 +265,7 @@ export interface FileRouteTypes {
     | '/_auth/my-recipes/new'
     | '/api/auth/$'
     | '/recipes/$recipeId/edit'
+    | '/_auth/feed/'
     | '/_auth/liked-recipes/'
     | '/_auth/my-collections/'
     | '/_auth/my-recipes/'
@@ -389,6 +401,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLikedRecipesIndexRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_auth/feed/': {
+      id: '/_auth/feed/'
+      path: '/feed'
+      fullPath: '/feed/'
+      preLoaderRoute: typeof AuthFeedIndexRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/recipes/$recipeId/edit': {
       id: '/recipes/$recipeId/edit'
       path: '/recipes/$recipeId/edit'
@@ -423,6 +442,7 @@ declare module '@tanstack/react-router' {
 interface AuthRouteChildren {
   AuthMyCollectionsCollectionIdRoute: typeof AuthMyCollectionsCollectionIdRoute
   AuthMyRecipesNewRoute: typeof AuthMyRecipesNewRoute
+  AuthFeedIndexRoute: typeof AuthFeedIndexRoute
   AuthLikedRecipesIndexRoute: typeof AuthLikedRecipesIndexRoute
   AuthMyCollectionsIndexRoute: typeof AuthMyCollectionsIndexRoute
   AuthMyRecipesIndexRoute: typeof AuthMyRecipesIndexRoute
@@ -432,6 +452,7 @@ interface AuthRouteChildren {
 const AuthRouteChildren: AuthRouteChildren = {
   AuthMyCollectionsCollectionIdRoute: AuthMyCollectionsCollectionIdRoute,
   AuthMyRecipesNewRoute: AuthMyRecipesNewRoute,
+  AuthFeedIndexRoute: AuthFeedIndexRoute,
   AuthLikedRecipesIndexRoute: AuthLikedRecipesIndexRoute,
   AuthMyCollectionsIndexRoute: AuthMyCollectionsIndexRoute,
   AuthMyRecipesIndexRoute: AuthMyRecipesIndexRoute,

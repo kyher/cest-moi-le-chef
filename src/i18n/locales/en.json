@@ -8,6 +8,7 @@
 	"nav": {
 		"recipes": "Recipes",
 		"allRecipes": "All Recipes",
+		"feed": "Feed",
 		"myRecipes": "My Recipes",
 		"likedRecipes": "Liked Recipes",
 		"myCollections": "My Collections",
@@ -148,6 +149,12 @@
 		"empty": "No liked recipes yet.",
 		"browse": "Browse recipes to find some.",
 		"noMatch": "No recipes match your filters."
+	},
+	"feed": {
+		"title": "Feed",
+		"emptyNotFollowing": "Follow some cooks to see their recipes here.",
+		"emptyNoRecipes": "No recipes yet from people you follow.",
+		"browse": "Browse recipes to find some."
 	},
 	"weeklyPlan": {
 		"title": "Weekly Plan",

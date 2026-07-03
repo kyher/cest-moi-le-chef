@@ -84,6 +84,21 @@ export function listPublicRecipes(
 	});
 }
 
+export function listFeedRecipes(userId: string) {
+	return prisma.recipe.findMany({
+		where: {
+			isPublic: true,
+			user: { followers: { some: { followerId: userId } } },
+		},
+		include: {
+			tags: { include: { tag: true } },
+			user: { select: { name: true, username: true } },
+			_count: { select: { likes: true } },
+		},
+		orderBy: { createdAt: "desc" },
+	});
+}
+
 const forkedFromSelect = {
 	select: { id: true, title: true, isPublic: true },
 } as const;

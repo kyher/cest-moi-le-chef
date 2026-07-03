@@ -22,3 +22,7 @@ export async function toggleFollow(followerId: string, followingId: string) {
 	await prisma.follow.create({ data: { followerId, followingId } });
 	return true;
 }
+
+export function countFollowing(userId: string) {
+	return prisma.follow.count({ where: { followerId: userId } });
+}

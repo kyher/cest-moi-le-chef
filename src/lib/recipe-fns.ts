@@ -175,6 +175,15 @@ export const getLikedTagsInUse = createServerFn().handler(async () => {
 	return likeService.listLikedTagsInUse(user.id);
 });
 
+export const getFeed = createServerFn().handler(async () => {
+	const user = await requireUser();
+	const [recipes, followingCount] = await Promise.all([
+		recipeService.listFeedRecipes(user.id),
+		followService.countFollowing(user.id),
+	]);
+	return { recipes, followingCount };
+});
+
 export const forkRecipe = createServerFn({ method: "POST" })
 	.validator((d: { recipeId: string }) => d)
 	.handler(async ({ data }) => {

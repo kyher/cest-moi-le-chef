@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ImageUpload } from "#/components/-image-upload";
+import type { Difficulty } from "#/generated/prisma/enums";
+
+const DIFFICULTIES = ["EASY", "MEDIUM", "HARD"] as const;
 
 type FormData = {
 	title: string;
@@ -8,6 +11,7 @@ type FormData = {
 	method?: string;
 	totalTime?: number;
 	servings?: number;
+	difficulty?: Difficulty;
 	isPublic: boolean;
 	tags: string[];
 };
@@ -19,6 +23,7 @@ type RecipeFormProps = {
 		method?: string;
 		totalTime?: number | null;
 		servings?: number | null;
+		difficulty?: Difficulty | null;
 		tags?: string[];
 		isPublic?: boolean;
 		imageUrl?: string | null;
@@ -54,6 +59,9 @@ export function RecipeForm({
 	const [servings, setServings] = useState(
 		initialValues?.servings ? String(initialValues.servings) : "",
 	);
+	const [difficulty, setDifficulty] = useState<Difficulty | "">(
+		initialValues?.difficulty ?? "",
+	);
 	const [tags, setTags] = useState<string[]>(initialValues?.tags ?? []);
 	const [tagInput, setTagInput] = useState("");
 	const [isPublic, setIsPublic] = useState(initialValues?.isPublic ?? false);
@@ -88,6 +96,7 @@ export function RecipeForm({
 					method: method || undefined,
 					totalTime,
 					servings: parsedServings,
+					difficulty: difficulty || undefined,
 					isPublic,
 					tags,
 				},
@@ -209,6 +218,28 @@ export function RecipeForm({
 						className="w-20 h-9 px-3 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
 					/>
 				</div>
+			</div>
+
+			<div className="space-y-1">
+				<label
+					htmlFor="difficulty"
+					className="text-sm font-medium text-stone-700"
+				>
+					{t("recipeForm.difficulty")}
+				</label>
+				<select
+					id="difficulty"
+					value={difficulty}
+					onChange={(e) => setDifficulty(e.target.value as Difficulty | "")}
+					className="block w-40 h-9 px-3 text-sm rounded-sm bg-white border border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400"
+				>
+					<option value="">{t("recipeForm.difficultyNone")}</option>
+					{DIFFICULTIES.map((value) => (
+						<option key={value} value={value}>
+							{t(`difficulty.${value}`)}
+						</option>
+					))}
+				</select>
 			</div>
 
 			<div className="space-y-1">

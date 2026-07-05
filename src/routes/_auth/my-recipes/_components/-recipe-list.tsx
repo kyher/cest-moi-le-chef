@@ -83,6 +83,11 @@ export function RecipeList({ recipes, hasConstraints, onReset }: Props) {
 										{formatTotalTime(recipe.totalTime)}
 									</span>
 								)}
+								{recipe.difficulty != null && (
+									<span className="text-stone-500">
+										{t(`difficulty.${recipe.difficulty}`)}
+									</span>
+								)}
 								<span>
 									{t("myRecipes.note", { count: recipe._count.notes })}
 								</span>

@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
+import type { Difficulty } from "#/generated/prisma/enums";
+
+const DIFFICULTIES = ["EASY", "MEDIUM", "HARD"] as const;
 
 export type RecipeSearchParams = {
 	tags?: string;
 	maxTime?: number;
+	difficulty?: Difficulty;
 	q?: string;
 	visibility?: "public" | "private";
 };
@@ -17,12 +21,15 @@ export function validateRecipeSearch(
 		search.maxTime != null && search.maxTime !== "" && !Number.isNaN(maxTimeRaw)
 			? maxTimeRaw
 			: undefined;
+	const difficulty = DIFFICULTIES.includes(search.difficulty as Difficulty)
+		? (search.difficulty as Difficulty)
+		: undefined;
 	const q = typeof search.q === "string" && search.q ? search.q : undefined;
 	const visibility =
 		search.visibility === "public" || search.visibility === "private"
 			? search.visibility
 			: undefined;
-	return { tags, maxTime, q, visibility };
+	return { tags, maxTime, difficulty, q, visibility };
 }
 
 type NavigateFn = (opts: {
@@ -37,11 +44,13 @@ export function useRecipeFilters(
 ) {
 	const activeTags = search.tags?.split(",").filter(Boolean) ?? [];
 	const activeMaxTime = search.maxTime;
+	const activeDifficulty = search.difficulty;
 	const activeQ = search.q;
 	const activeVisibility = search.visibility;
 	const hasConstraints =
 		activeTags.length > 0 ||
 		activeMaxTime != null ||
+		activeDifficulty != null ||
 		activeQ != null ||
 		activeVisibility != null;
 
@@ -77,6 +86,15 @@ export function useRecipeFilters(
 		});
 	}
 
+	function toggleDifficulty(value: Difficulty) {
+		navigate({
+			search: (prev) => ({
+				...prev,
+				difficulty: prev.difficulty === value ? undefined : value,
+			}),
+		});
+	}
+
 	function toggleVisibility(value: "public" | "private") {
 		navigate({
 			search: (prev) => ({
@@ -92,6 +110,7 @@ export function useRecipeFilters(
 			search: {
 				tags: undefined,
 				maxTime: undefined,
+				difficulty: undefined,
 				q: undefined,
 				visibility: undefined,
 			},
@@ -101,6 +120,7 @@ export function useRecipeFilters(
 	return {
 		activeTags,
 		activeMaxTime,
+		activeDifficulty,
 		activeQ,
 		activeVisibility,
 		hasConstraints,
@@ -108,6 +128,7 @@ export function useRecipeFilters(
 		setSearchInput,
 		toggleTag,
 		toggleMaxTime,
+		toggleDifficulty,
 		toggleVisibility,
 		reset,
 	};

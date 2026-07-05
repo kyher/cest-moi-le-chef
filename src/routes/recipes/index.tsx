@@ -95,9 +95,11 @@ function RecipeCard({
 					</div>
 				)}
 				<div className="relative flex items-center justify-between mt-auto pt-2">
-					{recipe.totalTime != null ? (
-						<span className="text-xs text-stone-500">
-							{formatTotalTime(recipe.totalTime)}
+					{recipe.totalTime != null || recipe.difficulty != null ? (
+						<span className="flex items-center gap-2 text-xs text-stone-500">
+							{recipe.totalTime != null && formatTotalTime(recipe.totalTime)}
+							{recipe.difficulty != null &&
+								t(`difficulty.${recipe.difficulty}`)}
 						</span>
 					) : (
 						<span />
@@ -147,11 +149,13 @@ function RecipesPage() {
 					tagsInUse={tagsInUse}
 					activeTags={filters.activeTags}
 					activeMaxTime={filters.activeMaxTime}
+					activeDifficulty={filters.activeDifficulty}
 					hasConstraints={filters.hasConstraints}
 					searchInput={filters.searchInput}
 					onSearchChange={filters.setSearchInput}
 					onToggleTag={filters.toggleTag}
 					onToggleMaxTime={filters.toggleMaxTime}
+					onToggleDifficulty={filters.toggleDifficulty}
 					onReset={filters.reset}
 				/>
 

@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import type { Difficulty } from "#/generated/prisma/enums";
 
 const TIME_BUCKETS = [
 	{ label: "≤15m", value: 15 },
@@ -7,17 +8,21 @@ const TIME_BUCKETS = [
 	{ label: "≤2h", value: 120 },
 ] as const;
 
+const DIFFICULTIES = ["EASY", "MEDIUM", "HARD"] as const;
+
 interface Props {
 	show: boolean;
 	tagsInUse: { name: string }[];
 	activeTags: string[];
 	activeMaxTime: number | undefined;
+	activeDifficulty: Difficulty | undefined;
 	activeVisibility?: "public" | "private" | undefined;
 	hasConstraints: boolean;
 	searchInput: string;
 	onSearchChange: (value: string) => void;
 	onToggleTag: (name: string) => void;
 	onToggleMaxTime: (minutes: number) => void;
+	onToggleDifficulty: (value: Difficulty) => void;
 	onToggleVisibility?: (value: "public" | "private") => void;
 	onReset: () => void;
 }
@@ -27,12 +32,14 @@ export function RecipeFilterPanel({
 	tagsInUse,
 	activeTags,
 	activeMaxTime,
+	activeDifficulty,
 	activeVisibility,
 	hasConstraints,
 	searchInput,
 	onSearchChange,
 	onToggleTag,
 	onToggleMaxTime,
+	onToggleDifficulty,
 	onToggleVisibility,
 	onReset,
 }: Props) {
@@ -109,6 +116,30 @@ export function RecipeFilterPanel({
 										}
 									>
 										{label}
+									</button>
+								);
+							})}
+						</div>
+					</div>
+					<div>
+						<p className="text-xs font-semibold uppercase tracking-wide text-stone-400 mb-2">
+							{t("filter.difficulty")}
+						</p>
+						<div className="flex flex-wrap gap-2 items-center">
+							{DIFFICULTIES.map((value) => {
+								const active = activeDifficulty === value;
+								return (
+									<button
+										type="button"
+										key={value}
+										onClick={() => onToggleDifficulty(value)}
+										className={
+											active
+												? "px-2.5 py-1 text-xs font-medium rounded-sm bg-amber-100 text-stone-800 border border-amber-400 cursor-pointer"
+												: "px-2.5 py-1 text-xs rounded-sm text-stone-600 bg-white border border-stone-300 hover:border-stone-400 transition-colors cursor-pointer"
+										}
+									>
+										{t(`difficulty.${value}`)}
 									</button>
 								);
 							})}

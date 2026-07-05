@@ -5,6 +5,7 @@ const recipeSelect = {
 	title: true,
 	imageUrl: true,
 	totalTime: true,
+	difficulty: true,
 	isPublic: true,
 	userId: true,
 	tags: { include: { tag: true } },

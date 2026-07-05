@@ -215,6 +215,11 @@ function CollectionDetailPage() {
 										{formatTotalTime(entry.recipe.totalTime)}
 									</span>
 								)}
+								{entry.recipe.difficulty != null && (
+									<span className="text-xs text-stone-500">
+										{t(`difficulty.${entry.recipe.difficulty}`)}
+									</span>
+								)}
 								<button
 									type="button"
 									onClick={(e) => {

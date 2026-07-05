@@ -36,6 +36,10 @@ _Avoid_: Photo, thumbnail, hero image
 The estimated duration to prepare and cook a Recipe from start to finish, stored as an integer number of minutes. Optional — a Recipe without a Total Time is valid. Displayed in compact format (e.g. "1h 30m", "45m"). Entered as separate hours and minutes fields.
 _Avoid_: Cook time, prep time, duration
 
+**Difficulty**:
+A three-level classification of how hard a Recipe is to make: Easy, Medium, or Hard. Optional — a Recipe without a Difficulty is valid. Displayed on the Recipe detail page and on recipe cards on the Recipes Page, My Recipes, Liked Recipes, Profile, Feed, Collection detail view, and the recipe-picker modal (used by the Weekly Plan and Collections to add a Recipe) — the same set of views that already surface Total Time. Not shown in the Weekly Plan's day-grid slots or the Admin Panel's recipe list, which display bare titles only. Filterable with exact-match, single-select logic, offering all three levels regardless of which Difficulties are currently in use (mirroring Total Time's fixed buckets rather than Tags' dynamic scoping); recipes with no Difficulty are excluded when a Difficulty filter is active. Copied when a Recipe is Forked.
+_Avoid_: Complexity, skill level
+
 **Servings**:
 The number of people a Recipe is intended to feed, stored as an optional integer. Displayed on the Recipe detail page alongside Total Time. Not filterable. Optional — a Recipe without Servings is valid.
 _Avoid_: Portions, yield, serves
@@ -53,7 +57,7 @@ An authenticated user's list of public Recipes they have Liked, accessible at `/
 _Avoid_: Saved recipes, favourites, bookmarks
 
 **Filter**:
-A constraint applied to a Recipe list to narrow results. Filters are expressed as URL search params and evaluated server-side. Tag filters use AND logic (a recipe must match all selected Tags). The Total Time filter is a maximum threshold expressed as a preset bucket (≤15m, ≤30m, ≤1h, ≤2h); recipes with no Total Time are excluded when this filter is active. On My Recipes, only Tags applied to at least one of the user's own recipes are offered. On the Recipes Page, only Tags applied to at least one public recipe are offered, matched case-insensitively across all users. On Liked Recipes, only Tags applied to at least one of the user's currently visible liked Recipes are offered.
+A constraint applied to a Recipe list to narrow results. Filters are expressed as URL search params and evaluated server-side. Tag filters use AND logic (a recipe must match all selected Tags). The Total Time filter is a maximum threshold expressed as a preset bucket (≤15m, ≤30m, ≤1h, ≤2h); recipes with no Total Time are excluded when this filter is active. The Difficulty filter is an exact match on a single level (Easy, Medium, or Hard); recipes with no Difficulty are excluded when this filter is active. On My Recipes, only Tags applied to at least one of the user's own recipes are offered. On the Recipes Page, only Tags applied to at least one public recipe are offered, matched case-insensitively across all users. On Liked Recipes, only Tags applied to at least one of the user's currently visible liked Recipes are offered.
 _Avoid_: Search, query
 
 **Search**:
@@ -101,7 +105,7 @@ An admin action that permanently blocks a User from signing in and hard-deletes 
 _Avoid_: Suspend, deactivate, disable
 
 **Fork**:
-A copy of a Recipe — either your own or another user's public Recipe — that becomes an independent Recipe in your account. A Fork copies the title, ingredients, method, Total Time, Servings, and Tags (by name, creating new Tag records under the forking user's account as needed) but not the Cover Image. A Fork defaults to private on creation, consistent with all new Recipes. The Fork holds a `forkedFrom` reference to the original Recipe; if the original is deleted, made private, or its author is banned, the reference is silently dropped and no attribution is shown. The forking user is redirected to the edit page immediately after the Fork is created. The Fork's title starts identical to the original's; attribution ("forked from [original]") is displayed in the UI on the Recipe detail and edit pages rather than encoded in the title. You may Fork your own Recipes, including private ones — useful for creating variations.
+A copy of a Recipe — either your own or another user's public Recipe — that becomes an independent Recipe in your account. A Fork copies the title, ingredients, method, Total Time, Servings, Difficulty, and Tags (by name, creating new Tag records under the forking user's account as needed) but not the Cover Image. A Fork defaults to private on creation, consistent with all new Recipes. The Fork holds a `forkedFrom` reference to the original Recipe; if the original is deleted, made private, or its author is banned, the reference is silently dropped and no attribution is shown. The forking user is redirected to the edit page immediately after the Fork is created. The Fork's title starts identical to the original's; attribution ("forked from [original]") is displayed in the UI on the Recipe detail and edit pages rather than encoded in the title. You may Fork your own Recipes, including private ones — useful for creating variations.
 _Avoid_: Clone, copy, remix, duplicate
 
 **Weekly Plan**:

@@ -74,6 +74,7 @@ function EditRecipe() {
 							method: recipe.method ?? undefined,
 							totalTime: recipe.totalTime,
 							servings: recipe.servings,
+							difficulty: recipe.difficulty,
 							tags: recipe.tags.map(({ tag }) => tag.name),
 							isPublic: recipe.isPublic,
 							imageUrl: recipe.imageUrl,

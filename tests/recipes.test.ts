@@ -91,6 +91,23 @@ describe("createRecipe", () => {
 		expect(recipe.servings).toBeNull();
 	});
 
+	it("creates a recipe with a difficulty", async () => {
+		const recipe = await createRecipe(TEST_USER_ID, {
+			title: "Soup",
+			difficulty: "EASY",
+			tags: [],
+		});
+		expect(recipe.difficulty).toBe("EASY");
+	});
+
+	it("stores difficulty as null when omitted", async () => {
+		const recipe = await createRecipe(TEST_USER_ID, {
+			title: "Soup",
+			tags: [],
+		});
+		expect(recipe.difficulty).toBeNull();
+	});
+
 	it("normalises tags to lowercase", async () => {
 		const recipe = await createRecipe(TEST_USER_ID, {
 			title: "Recipe",
@@ -204,6 +221,32 @@ describe("updateRecipe", () => {
 		await updateRecipe(recipe.id, TEST_USER_ID, { title: "Recipe", tags: [] });
 		const updated = await findRecipe(recipe.id, TEST_USER_ID);
 		expect(updated?.servings).toBeNull();
+	});
+
+	it("updates difficulty", async () => {
+		const recipe = await createRecipe(TEST_USER_ID, {
+			title: "Recipe",
+			difficulty: "EASY",
+			tags: [],
+		});
+		await updateRecipe(recipe.id, TEST_USER_ID, {
+			title: "Recipe",
+			difficulty: "HARD",
+			tags: [],
+		});
+		const updated = await findRecipe(recipe.id, TEST_USER_ID);
+		expect(updated?.difficulty).toBe("HARD");
+	});
+
+	it("clears difficulty when omitted", async () => {
+		const recipe = await createRecipe(TEST_USER_ID, {
+			title: "Recipe",
+			difficulty: "EASY",
+			tags: [],
+		});
+		await updateRecipe(recipe.id, TEST_USER_ID, { title: "Recipe", tags: [] });
+		const updated = await findRecipe(recipe.id, TEST_USER_ID);
+		expect(updated?.difficulty).toBeNull();
 	});
 
 	it("clears an optional field when passed an empty string", async () => {
@@ -503,6 +546,29 @@ describe("listRecipes", () => {
 			await createRecipe(TEST_USER_ID, { title: "No Time", tags: [] });
 			const results = await listRecipes(TEST_USER_ID, { maxTime: 30 });
 			expect(results.map((r) => r.title)).not.toContain("No Time");
+		});
+	});
+
+	describe("difficulty filter", () => {
+		it("returns only recipes matching the exact difficulty", async () => {
+			await createRecipe(TEST_USER_ID, {
+				title: "Easy One",
+				difficulty: "EASY",
+				tags: [],
+			});
+			await createRecipe(TEST_USER_ID, {
+				title: "Hard One",
+				difficulty: "HARD",
+				tags: [],
+			});
+			const results = await listRecipes(TEST_USER_ID, { difficulty: "EASY" });
+			expect(results.map((r) => r.title)).toEqual(["Easy One"]);
+		});
+
+		it("excludes recipes with no difficulty when filter is active", async () => {
+			await createRecipe(TEST_USER_ID, { title: "No Difficulty", tags: [] });
+			const results = await listRecipes(TEST_USER_ID, { difficulty: "EASY" });
+			expect(results.map((r) => r.title)).not.toContain("No Difficulty");
 		});
 	});
 
@@ -981,6 +1047,24 @@ describe("listPublicRecipes", () => {
 		const results = await listPublicRecipes({ q: "pasta" });
 		expect(results.map((r) => r.title)).toEqual(["Creamy Pasta"]);
 	});
+
+	it("filters by difficulty", async () => {
+		await createRecipe(TEST_USER_ID, {
+			title: "Easy One",
+			isPublic: true,
+			difficulty: "EASY",
+			tags: [],
+		});
+		await createRecipe(TEST_USER_ID, {
+			title: "Hard One",
+			isPublic: true,
+			difficulty: "HARD",
+			tags: [],
+		});
+		const results = await listPublicRecipes({ difficulty: "EASY" });
+		expect(results.map((r) => r.title)).toContain("Easy One");
+		expect(results.map((r) => r.title)).not.toContain("Hard One");
+	});
 });
 
 describe("listPublicRecipes — like count", () => {
@@ -1051,7 +1135,7 @@ describe("forkRecipe", () => {
 		}
 	});
 
-	it("copies title, ingredients, method, totalTime, and servings", async () => {
+	it("copies title, ingredients, method, totalTime, servings, and difficulty", async () => {
 		await upsertOtherUser();
 		try {
 			const source = await createRecipe(OTHER_USER_ID, {
@@ -1060,6 +1144,7 @@ describe("forkRecipe", () => {
 				method: "Brown the mince",
 				totalTime: 90,
 				servings: 4,
+				difficulty: "MEDIUM",
 				isPublic: true,
 				tags: [],
 			});
@@ -1069,6 +1154,7 @@ describe("forkRecipe", () => {
 			expect(fork.method).toBe("Brown the mince");
 			expect(fork.totalTime).toBe(90);
 			expect(fork.servings).toBe(4);
+			expect(fork.difficulty).toBe("MEDIUM");
 		} finally {
 			await cleanupOtherUser();
 		}

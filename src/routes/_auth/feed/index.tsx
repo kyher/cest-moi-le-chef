@@ -86,6 +86,11 @@ function FeedPage() {
 										{formatTotalTime(recipe.totalTime)}
 									</span>
 								)}
+								{recipe.difficulty != null && (
+									<span className="text-xs text-stone-500">
+										{t(`difficulty.${recipe.difficulty}`)}
+									</span>
+								)}
 								{recipe._count.likes > 0 && (
 									<span className="text-xs text-stone-400">
 										♥ {recipe._count.likes}

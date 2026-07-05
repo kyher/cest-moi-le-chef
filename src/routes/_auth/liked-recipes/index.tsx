@@ -34,11 +34,13 @@ function LikedRecipesPage() {
 				tagsInUse={tagsInUse}
 				activeTags={filters.activeTags}
 				activeMaxTime={filters.activeMaxTime}
+				activeDifficulty={filters.activeDifficulty}
 				hasConstraints={filters.hasConstraints}
 				searchInput={filters.searchInput}
 				onSearchChange={filters.setSearchInput}
 				onToggleTag={filters.toggleTag}
 				onToggleMaxTime={filters.toggleMaxTime}
+				onToggleDifficulty={filters.toggleDifficulty}
 				onReset={filters.reset}
 			/>
 
@@ -117,6 +119,11 @@ function LikedRecipesPage() {
 								{recipe.totalTime != null && (
 									<span className="text-xs text-stone-500">
 										{formatTotalTime(recipe.totalTime)}
+									</span>
+								)}
+								{recipe.difficulty != null && (
+									<span className="text-xs text-stone-500">
+										{t(`difficulty.${recipe.difficulty}`)}
 									</span>
 								)}
 								{recipe._count.likes > 0 && (

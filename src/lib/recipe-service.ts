@@ -1,4 +1,5 @@
 import { prisma } from "#/db";
+import type { Difficulty } from "#/generated/prisma/enums";
 import { deleteImageFile } from "#/lib/image-storage";
 
 async function syncTags(recipeId: string, tagNames: string[], userId: string) {
@@ -20,6 +21,7 @@ export function listRecipes(
 	filters: {
 		tags?: string[];
 		maxTime?: number;
+		difficulty?: Difficulty;
 		q?: string;
 		visibility?: "public" | "private";
 	} = {},
@@ -34,6 +36,7 @@ export function listRecipes(
 			userId,
 			AND: tagFilters,
 			totalTime: filters.maxTime != null ? { lte: filters.maxTime } : undefined,
+			difficulty: filters.difficulty,
 			title: filters.q
 				? { contains: filters.q, mode: "insensitive" }
 				: undefined,
@@ -53,7 +56,12 @@ export function listRecipes(
 }
 
 export function listPublicRecipes(
-	filters: { tags?: string[]; maxTime?: number; q?: string } = {},
+	filters: {
+		tags?: string[];
+		maxTime?: number;
+		difficulty?: Difficulty;
+		q?: string;
+	} = {},
 	viewerId?: string | null,
 ) {
 	const tagFilters =
@@ -68,6 +76,7 @@ export function listPublicRecipes(
 			isPublic: true,
 			AND: tagFilters,
 			totalTime: filters.maxTime != null ? { lte: filters.maxTime } : undefined,
+			difficulty: filters.difficulty,
 			title: filters.q
 				? { contains: filters.q, mode: "insensitive" }
 				: undefined,
@@ -166,6 +175,7 @@ export async function forkRecipe(recipeId: string, userId: string) {
 			method: source.method,
 			totalTime: source.totalTime,
 			servings: source.servings,
+			difficulty: source.difficulty,
 			isPublic: false,
 			userId,
 			forkedFromId: recipeId,
@@ -188,6 +198,7 @@ export async function createRecipe(
 		method?: string;
 		totalTime?: number;
 		servings?: number;
+		difficulty?: Difficulty;
 		isPublic?: boolean;
 		tags: string[];
 	},
@@ -199,6 +210,7 @@ export async function createRecipe(
 			method: data.method || null,
 			totalTime: data.totalTime ?? null,
 			servings: data.servings ?? null,
+			difficulty: data.difficulty ?? null,
 			isPublic: data.isPublic ?? false,
 			userId,
 		},
@@ -216,6 +228,7 @@ export async function updateRecipe(
 		method?: string;
 		totalTime?: number;
 		servings?: number;
+		difficulty?: Difficulty;
 		isPublic?: boolean;
 		tags: string[];
 	},
@@ -228,6 +241,7 @@ export async function updateRecipe(
 			method: data.method || null,
 			totalTime: data.totalTime ?? null,
 			servings: data.servings ?? null,
+			difficulty: data.difficulty ?? null,
 			...(data.isPublic !== undefined && { isPublic: data.isPublic }),
 		},
 	});

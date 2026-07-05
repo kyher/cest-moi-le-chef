@@ -114,9 +114,12 @@ function ProfilePage() {
 										)}
 									</div>
 								</div>
-								{recipe.totalTime != null && (
-									<span className="text-xs text-stone-500 shrink-0 mt-0.5">
-										{formatTotalTime(recipe.totalTime)}
+								{(recipe.totalTime != null || recipe.difficulty != null) && (
+									<span className="flex items-center gap-2 text-xs text-stone-500 shrink-0 mt-0.5">
+										{recipe.totalTime != null &&
+											formatTotalTime(recipe.totalTime)}
+										{recipe.difficulty != null &&
+											t(`difficulty.${recipe.difficulty}`)}
 									</span>
 								)}
 							</Link>

@@ -1,4 +1,5 @@
 import { prisma } from "#/db";
+import type { Difficulty } from "#/generated/prisma/enums";
 
 export async function toggleLike(recipeId: string, userId: string) {
 	const recipe = await prisma.recipe.findUnique({
@@ -23,7 +24,12 @@ export async function toggleLike(recipeId: string, userId: string) {
 
 export async function listLikedRecipes(
 	userId: string,
-	filters: { tags?: string[]; maxTime?: number; q?: string } = {},
+	filters: {
+		tags?: string[];
+		maxTime?: number;
+		difficulty?: Difficulty;
+		q?: string;
+	} = {},
 ) {
 	const tagFilters =
 		filters.tags && filters.tags.length > 0
@@ -38,6 +44,7 @@ export async function listLikedRecipes(
 			likes: { some: { userId } },
 			AND: tagFilters,
 			totalTime: filters.maxTime != null ? { lte: filters.maxTime } : undefined,
+			difficulty: filters.difficulty,
 			title: filters.q
 				? { contains: filters.q, mode: "insensitive" }
 				: undefined,

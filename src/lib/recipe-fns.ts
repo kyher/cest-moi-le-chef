@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
+import type { Difficulty } from "#/generated/prisma/enums";
 import { auth } from "#/lib/auth";
 import * as followService from "#/lib/follow-service";
 import * as likeService from "#/lib/like-service";
@@ -26,6 +27,7 @@ export const getRecipes = createServerFn()
 		(d: {
 			tags?: string;
 			maxTime?: number;
+			difficulty?: Difficulty;
 			q?: string;
 			visibility?: "public" | "private";
 		}) => d,
@@ -36,18 +38,26 @@ export const getRecipes = createServerFn()
 		return recipeService.listRecipes(user.id, {
 			tags,
 			maxTime: data.maxTime,
+			difficulty: data.difficulty,
 			q: data.q,
 			visibility: data.visibility,
 		});
 	});
 
 export const getPublicRecipes = createServerFn()
-	.validator((d: { tags?: string; maxTime?: number; q?: string }) => d)
+	.validator(
+		(d: {
+			tags?: string;
+			maxTime?: number;
+			difficulty?: Difficulty;
+			q?: string;
+		}) => d,
+	)
 	.handler(async ({ data }) => {
 		const user = await optionalUser();
 		const tags = data.tags?.split(",").filter(Boolean);
 		return recipeService.listPublicRecipes(
-			{ tags, maxTime: data.maxTime, q: data.q },
+			{ tags, maxTime: data.maxTime, difficulty: data.difficulty, q: data.q },
 			user?.id ?? null,
 		);
 	});
@@ -76,6 +86,7 @@ export const createRecipe = createServerFn({ method: "POST" })
 			method?: string;
 			totalTime?: number;
 			servings?: number;
+			difficulty?: Difficulty;
 			isPublic?: boolean;
 			tags: string[];
 		}) => d,
@@ -94,6 +105,7 @@ export const updateRecipe = createServerFn({ method: "POST" })
 			method?: string;
 			totalTime?: number;
 			servings?: number;
+			difficulty?: Difficulty;
 			isPublic?: boolean;
 			tags: string[];
 		}) => d,
@@ -159,13 +171,21 @@ export const toggleLike = createServerFn({ method: "POST" })
 	});
 
 export const getLikedRecipes = createServerFn()
-	.validator((d: { tags?: string; maxTime?: number; q?: string }) => d)
+	.validator(
+		(d: {
+			tags?: string;
+			maxTime?: number;
+			difficulty?: Difficulty;
+			q?: string;
+		}) => d,
+	)
 	.handler(async ({ data }) => {
 		const user = await requireUser();
 		const tags = data.tags?.split(",").filter(Boolean);
 		return likeService.listLikedRecipes(user.id, {
 			tags,
 			maxTime: data.maxTime,
+			difficulty: data.difficulty,
 			q: data.q,
 		});
 	});

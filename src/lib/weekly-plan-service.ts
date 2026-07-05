@@ -107,7 +107,13 @@ export async function getRecipeOptions(userId: string) {
 	const [ownRecipes, likedRecipes, allRecipes] = await Promise.all([
 		prisma.recipe.findMany({
 			where: { userId },
-			select: { id: true, title: true, imageUrl: true, totalTime: true },
+			select: {
+				id: true,
+				title: true,
+				imageUrl: true,
+				totalTime: true,
+				difficulty: true,
+			},
 			orderBy: { updatedAt: "desc" },
 		}),
 		prisma.recipe.findMany({
@@ -116,12 +122,24 @@ export async function getRecipeOptions(userId: string) {
 				userId: { not: userId },
 				likes: { some: { userId } },
 			},
-			select: { id: true, title: true, imageUrl: true, totalTime: true },
+			select: {
+				id: true,
+				title: true,
+				imageUrl: true,
+				totalTime: true,
+				difficulty: true,
+			},
 			orderBy: { updatedAt: "desc" },
 		}),
 		prisma.recipe.findMany({
 			where: { isPublic: true, userId: { not: userId } },
-			select: { id: true, title: true, imageUrl: true, totalTime: true },
+			select: {
+				id: true,
+				title: true,
+				imageUrl: true,
+				totalTime: true,
+				difficulty: true,
+			},
 			orderBy: { updatedAt: "desc" },
 		}),
 	]);

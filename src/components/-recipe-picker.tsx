@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import type { Difficulty } from "#/generated/prisma/enums";
 import { formatTotalTime } from "#/lib/format";
 
 type Recipe = {
@@ -7,6 +8,7 @@ type Recipe = {
 	title: string;
 	imageUrl: string | null;
 	totalTime: number | null;
+	difficulty: Difficulty | null;
 };
 
 type Tab = "own" | "liked" | "all";
@@ -145,9 +147,12 @@ export function RecipePicker({
 									<span className="block text-sm font-medium text-stone-900 truncate">
 										{recipe.title}
 									</span>
-									{recipe.totalTime != null && (
-										<span className="text-xs text-stone-400">
-											{formatTotalTime(recipe.totalTime)}
+									{(recipe.totalTime != null || recipe.difficulty != null) && (
+										<span className="flex items-center gap-2 text-xs text-stone-400">
+											{recipe.totalTime != null &&
+												formatTotalTime(recipe.totalTime)}
+											{recipe.difficulty != null &&
+												t(`difficulty.${recipe.difficulty}`)}
 										</span>
 									)}
 								</span>

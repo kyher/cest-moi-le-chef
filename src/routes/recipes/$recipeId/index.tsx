@@ -393,7 +393,9 @@ function Detail({
 				</div>
 			)}
 
-			{(recipe.totalTime != null || recipe.servings != null) && (
+			{(recipe.totalTime != null ||
+				recipe.servings != null ||
+				recipe.difficulty != null) && (
 				<div className="flex items-center gap-4 mb-6">
 					{recipe.totalTime != null && (
 						<p className="text-sm text-stone-500">
@@ -403,6 +405,11 @@ function Detail({
 					{recipe.servings != null && (
 						<p className="text-sm text-stone-500">
 							{t("recipe.serves", { n: recipe.servings })}
+						</p>
+					)}
+					{recipe.difficulty != null && (
+						<p className="text-sm text-stone-500">
+							{t(`difficulty.${recipe.difficulty}`)}
 						</p>
 					)}
 				</div>

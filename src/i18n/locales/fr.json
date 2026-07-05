@@ -126,6 +126,8 @@
 		"hr": "h",
 		"min": "min",
 		"servings": "Portions",
+		"difficulty": "Difficulté",
+		"difficultyNone": "Aucune difficulté",
 		"ingredients": "Ingrédients",
 		"method": "Préparation",
 		"coverImage": "Image de couverture",
@@ -142,7 +144,13 @@
 		"clearSearch": "Effacer la recherche",
 		"tags": "Tags",
 		"cookingTime": "Temps de cuisson",
+		"difficulty": "Difficulté",
 		"visibility": "Visibilité"
+	},
+	"difficulty": {
+		"EASY": "Facile",
+		"MEDIUM": "Moyen",
+		"HARD": "Difficile"
 	},
 	"likedRecipes": {
 		"title": "Recettes aimées",

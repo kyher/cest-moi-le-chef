@@ -72,4 +72,19 @@ describe("validateRecipeSearch", () => {
 		const result = validateRecipeSearch({});
 		expect(result.visibility).toBeUndefined();
 	});
+
+	it("returns a valid difficulty value", () => {
+		const result = validateRecipeSearch({ difficulty: "EASY" });
+		expect(result.difficulty).toBe("EASY");
+	});
+
+	it("returns undefined for an invalid difficulty value", () => {
+		const result = validateRecipeSearch({ difficulty: "IMPOSSIBLE" });
+		expect(result.difficulty).toBeUndefined();
+	});
+
+	it("returns undefined for a missing difficulty field", () => {
+		const result = validateRecipeSearch({});
+		expect(result.difficulty).toBeUndefined();
+	});
 });

@@ -176,6 +176,33 @@ describe("listLikedRecipes", () => {
 		}
 	});
 
+	it("filters by difficulty", async () => {
+		await upsertOtherUser();
+		try {
+			const easy = await createRecipe(OTHER_USER_ID, {
+				title: "Easy One",
+				isPublic: true,
+				difficulty: "EASY",
+				tags: [],
+			});
+			const hard = await createRecipe(OTHER_USER_ID, {
+				title: "Hard One",
+				isPublic: true,
+				difficulty: "HARD",
+				tags: [],
+			});
+			await toggleLike(easy.id, TEST_USER_ID);
+			await toggleLike(hard.id, TEST_USER_ID);
+			const results = await listLikedRecipes(TEST_USER_ID, {
+				difficulty: "EASY",
+			});
+			expect(results.map((r) => r.title)).toContain("Easy One");
+			expect(results.map((r) => r.title)).not.toContain("Hard One");
+		} finally {
+			await cleanupOtherUser();
+		}
+	});
+
 	it("filters by search query", async () => {
 		await upsertOtherUser();
 		try {
